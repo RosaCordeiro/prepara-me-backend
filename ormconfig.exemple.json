@@ -1,9 +1,9 @@
 {
     "type": "",
     "port": 0,
-    "host": "",
-    "username": "",
-    "password": "",
+    "host": "database",
+    "username": "docker",
+    "password": "admin@01",
     "database": "", 
     "migrations": ["./src/shared/infra/typeorm/migrations/*.ts"],
     "entities": ["./src/modules/**/entities/*.ts"],

@@ -5,6 +5,9 @@ services:
         image: postgres
         container_name: database_preparame
         restart: always
+
+        networks:
+            - app-network
         ports:
             - 5435:5432
         environment:
@@ -15,19 +18,26 @@ services:
             - pgdata:/data/postgres
 
     app:
-        build: .
+        build: 
+            context: .
+            dockerfile: Dockerfile
         container_name: preparame
         restart: always
         ports:
             - 3334:3334
+            - 3335:3335
             - 9230:9230
         volumes:
             - .:/usr/app
+        networks:
+            - app-network
         links:
             - database
         depends_on:
             - database
-
+networks:
+  app-network:
+    driver: bridge
 volumes:
     pgdata:
         driver: local
