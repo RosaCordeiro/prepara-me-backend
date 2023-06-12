@@ -1,0 +1,13 @@
+{
+    "type": "postgres",
+    "port": 5432,
+    "host": "database",
+    "username": "docker",
+    "password": "admin@01",
+    "database": "preparame", 
+    "migrations": ["./dist/shared/infra/typeorm/migrations/*.{ts,js}"],
+    "entities": ["./dist/modules/**/entities/*.{ts,js}"],
+    "cli": {
+      "migrationsDir": "./dist/shared/infra/typeorm/migrations"
+    }
+  }
