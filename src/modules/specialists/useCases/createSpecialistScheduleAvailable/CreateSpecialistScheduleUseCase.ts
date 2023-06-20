@@ -50,7 +50,9 @@ class CreateSpecialistScheduleUseCase {
                 console.log('userProducts', userProducts)
 
             if (userProducts.length > 0) {
-                const userProduct = userProducts[0];
+                const userProduct = userProducts[userProducts.length - 1];
+
+
 
                 console.log('userProduct', userProduct)
 
