@@ -67,6 +67,8 @@ class ScheduleGoogle implements IScheduleProvider {
                 console.log(err);
             });
 
+        console.log("resultado", resultado);
+
         return resultado;
     }
 
