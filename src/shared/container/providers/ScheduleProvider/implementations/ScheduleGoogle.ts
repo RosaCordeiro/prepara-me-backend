@@ -14,10 +14,19 @@ class ScheduleGoogle implements IScheduleProvider {
     ) {
         const { OAuth2 } = google.auth;
 
+        console.log("CLIENT_ID", process.env.CLIENT_ID);
+        console.log("CLIENT_SECRET", process.env.CLIENT_SECRET);
+        console.log("REFRESH_TOKEN", process.env.REFRESH_TOKEN);
+
+
+
+
         const oAuth2Client = new OAuth2(
             process.env.CLIENT_ID,
             process.env.CLIENT_SECRET
         );
+
+        console.log("oAuth2Client", oAuth2Client);
 
         oAuth2Client.setCredentials({
             refresh_token: process.env.REFRESH_TOKEN,

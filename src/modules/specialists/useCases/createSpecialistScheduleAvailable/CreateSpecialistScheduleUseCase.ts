@@ -87,6 +87,8 @@ class CreateSpecialistScheduleUseCase {
                             );
 
                         if (userProductUpdated) {
+                            console.log('Chegou aqui no primeiro if')
+
                             const eventScheduled =
                                 await this.scheduleGoogle.scheduleEvent(
                                     `${userProduct.product.shortName} com o(a) especialista ${specialistsSchedule[0].specialist.name}`,
