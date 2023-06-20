@@ -50,11 +50,12 @@ class CreateSpecialistScheduleUseCase {
                 console.log('userProducts', userProducts)
 
             if (userProducts.length > 0) {
-                const userProduct = userProducts[userProducts.length - 1];
+                const availableQuantity = userProducts.findIndex(
+                    (userProduct) => userProduct.availableQuantity >= 1
+                );
 
-
-
-                console.log('userProduct', userProduct)
+                const userProduct = userProducts[availableQuantity === -1 ? 0 : availableQuantity];
+                
 
                 if (userProduct.availableQuantity >= 1) {
                     const specialistsSchedule =
