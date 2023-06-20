@@ -37,12 +37,17 @@ class CreateSpecialistScheduleUseCase {
         createEvent,
         rating
     }: ICreateSpecialistScheduleDTO): Promise<SpecialistSchedule> {
+        console.log('productId', productId)
+        console.log('userId', userId)
+        console.log('createEvent', createEvent)
         if (productId && userId && createEvent) {
             const userProducts =
                 await this.userProductsAvailableRepository.find({
                     productId,
                     userId,
                 });
+
+                console.log('userProducts', userProducts)
 
             if (userProducts.length > 0) {
                 const userProduct = userProducts[0];

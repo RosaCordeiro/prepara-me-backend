@@ -23,6 +23,20 @@ class CreateSpecialistScheduleController {
             CreateSpecialistScheduleUseCase
         );
 
+        console.log('dateSchedule', {
+            dateSchedule,
+            specialistId,
+            status,
+            productId,
+            userId,
+            comments,
+            hangoutLink,
+            scheduleEventId,
+            id,
+            createEvent,
+            rating
+        })
+
         const specialistSchedule =
             await createSpecialistScheduleUseCase.execute({
                 dateSchedule,
