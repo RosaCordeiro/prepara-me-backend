@@ -55,6 +55,8 @@ class ScheduleGoogle implements IScheduleProvider {
             },
         };
 
+        console.log("event", event);
+
         const resultado = await calendar.events
             .insert({
                 calendarId: "primary",
