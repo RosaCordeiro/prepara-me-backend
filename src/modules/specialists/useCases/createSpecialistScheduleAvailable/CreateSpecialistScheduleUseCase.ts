@@ -47,6 +47,8 @@ class CreateSpecialistScheduleUseCase {
             if (userProducts.length > 0) {
                 const userProduct = userProducts[0];
 
+                console.log('userProduct', userProduct)
+
                 if (userProduct.availableQuantity >= 1) {
                     const specialistsSchedule =
                         await this.specialistSchedulesRepository.find({
