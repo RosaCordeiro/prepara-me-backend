@@ -11,3 +11,4 @@ passwordRoutes.post("/forgot", sendForgotPasswordMailController.handle);
 passwordRoutes.post("/reset", resetPasswordUserController.handle);
 
 export { passwordRoutes };
+

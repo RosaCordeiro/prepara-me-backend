@@ -39,7 +39,8 @@ subscriptionPlansRoutes.delete(
     removeSubscriptionPlanController.handle
 );
 
-const createSubscriptionPlanProductController = new CreateSubscriptionPlanProductController();
+const createSubscriptionPlanProductController =
+    new CreateSubscriptionPlanProductController();
 subscriptionPlansRoutes.post(
     "/:id/products",
     ensuredAuthenticated,

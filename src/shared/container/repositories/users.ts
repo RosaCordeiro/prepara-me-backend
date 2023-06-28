@@ -26,4 +26,5 @@ container.registerSingleton<IUserProductsAvailableRepository>(
 container.registerSingleton<ISubscriptionNewslettersRepository>(
     "SubscriptionNewslettersRepository",
     SubscriptionNewslettersRepository
-)
+);
+
