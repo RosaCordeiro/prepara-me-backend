@@ -10,6 +10,7 @@ import { usersRoutes } from "./users.routes";
 import { reportsRoutes } from "./reports.routes";
 import { ordersRoutes } from "./orders.routes";
 import { resumesRoutes } from "./resumes.routes";
+import { clicksRoutes } from "./clicks.routes";
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.use("/users", usersRoutes);
 router.use("/reports", reportsRoutes);
 router.use("/orders", ordersRoutes);
 router.use("/resumes", resumesRoutes);
+router.use("/clicks", clicksRoutes);
 router.use(authenticateRoutes);
 
 export { router };
