@@ -62,6 +62,8 @@ class CreateUserUseCase {
             }
         }
 
+        console.log("userFind", userFind);
+
         let passwordHash = "";
 
         if (!userFind) {
@@ -109,7 +111,14 @@ class CreateUserUseCase {
             subscribeToken,
         });
 
-        if (userCreated && userCreated.id && !userFind && process.env.NODE_ENV !== "test") {
+        console.log("userCreated", userCreated);
+
+        if (
+            userCreated &&
+            userCreated.id &&
+            !userFind &&
+            process.env.NODE_ENV !== "test"
+        ) {
             let companyEmployee = await this.companyEmployeesRepository.find({
                 documentId,
                 notUserId: "true",

@@ -5,6 +5,7 @@ import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepositor
 import { getRepository, Repository } from "typeorm";
 
 import { User } from "../entities/User";
+import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
 
 class UsersRepository implements IUsersRepository {
     private repository: Repository<User>;
@@ -37,7 +38,7 @@ class UsersRepository implements IUsersRepository {
         periodTest,
         subscribeToken,
     }: ICreateUserDTO): Promise<User> {
-        const user = this.repository.create({
+        console.log("user object", {
             id,
             name,
             username,
@@ -61,8 +62,50 @@ class UsersRepository implements IUsersRepository {
             periodTest,
             subscribeToken,
         });
+        const user = this.repository.create({
+            id,
+            name,
+            username: username ?? name,
+            email,
+            password,
+            documentId,
+            type,
+            status,
+            avatar,
+            NPSSurvey,
+            laborRisk,
+            surveyAnswered,
+            companyId,
+            realocated,
+            feelingsMapJSON,
+            brandRisk,
+            laborRiskJSON,
+            brandRiskJSON,
+            laborRiskAlert,
+            expiresDate,
+            periodTest,
+            subscribeToken,
+        });
+
+        console.log(user);
+        console.log(id);
 
         await this.repository.save(user);
+        /* if (!id) {
+            console.log("entrou no save");
+        } else {
+            console.log("entrou no update");
+            const response = await this.repository.update(
+                {
+                    id,
+                },
+                {
+                    name: "TESTE",
+                }
+            );
+
+            console.log(response);
+        } */
 
         return user;
     }
