@@ -15,6 +15,7 @@ class SchedulesUseCase {
             "Nome",
             "Origem",
             "Empresa",
+            "Acolhimento Realizado",
             "Data 1 login",
             "Pesquisa Desligamento Realizada",
             "Pedido de Ajuda Processo Trabalhista (apertou o botão vermelho)",

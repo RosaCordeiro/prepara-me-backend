@@ -31,56 +31,70 @@ class Schedules {
 
         const data: ISchedulesReport[] = await this.repository.query(`
             select 
-                u."name" as name,
-                case
-                    when u."subscribeToken" != '' then
-                        'B2C'
-                    else 
-                        'B2B'
-                end as origem,
-                case
-                    when u."subscribeToken" != '' then
-                        u."subscribeToken"
-                    else 
-                        '-'
-                end as empresa,
-                (
+            u."name" as name,
+            case
+                when u."subscribeToken" != '' then
+                    'B2B'
+                else 
+                    'B2C'
+            end as origem,
+            case
+                when u."subscribeToken" != '' then
+                    u."subscribeToken"
+                else 
+                    '-'
+            end as empresa,
+            case
+                when (
                     select 
                     created_at  
                     from user_tokens ut 
                     where ut.user_id = U.id  
                     order by created_at 
                     limit 1 
-                ) as primeiro_login,
-                case
-                    when u."surveyAnswered" then
-                        'Sim'
-                    else 
-                        'Não'
-                end as pesquisa_desligamento,
-                case
-                    when u."laborRiskAlert" = 'ALERT' then
-                        'Sim'
-                    else 
-                        'Não'
-                end as botao_vermelho,
-                p."name" as servico,
-                ss."dateSchedule" as data_agendamento,
-                ss."dateSchedule" as data_servico,
-                s."name" as especialista ,
-                ss.rating as nota,
-                case
-                    when u.realocated  = 'NOT_REALOCATED' then
-                        'Não'
-                    else 
-                        'Sim'
-                end as recolocacao
-                from users u 
-                inner join "specialistSchedule" ss on ss."userId" = u.id 
-                inner join specialists s on s.id  = ss."specialistId" 
-                inner join products p on p.id = ss."productId" 
-                ${where}
-                order by ss."dateSchedule" `);
+                ) isnull then
+                    'Não'
+                else 
+                    'Sim'
+            end as acolhimento_realizado,
+            (
+                select 
+                created_at  
+                from user_tokens ut 
+                where ut.user_id = U.id  
+                order by created_at 
+                limit 1 
+            ) as primeiro_login,
+            case
+                when u."surveyAnswered" then
+                    'Sim'
+                else 
+                    'Não'
+            end as pesquisa_desligamento,
+            case
+                when u."laborRiskAlert" = 'ALERT' then
+                    'Sim'
+                else 
+                    'Não'
+            end as botao_vermelho,
+            p."name" as servico,
+            ss."dateSchedule" as data_agendamento,
+            ss."dateSchedule" as data_servico,
+            s."name" as especialista ,
+            ss.rating as nota,
+            case
+                when u.realocated  = 'NOT_REALOCATED' then
+                    'Não'
+                else 
+                    'Sim'
+            end as recolocacao
+            from users u 
+            inner join "specialistSchedule" ss on ss."userId" = u.id 
+            inner join specialists s on s.id  = ss."specialistId" 
+            inner join products p on p.id = ss."productId" 
+            ${where}
+            order by ss."dateSchedule" 
+        `);
 
         return data;
     }

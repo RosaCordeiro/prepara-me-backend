@@ -64,20 +64,17 @@ usersRoutes.get(
     listUserController.handle
 );
 
-usersRoutes.get(
-    "/:id",
-    ensuredAuthenticated,
-    listUserController.handle
-);
+usersRoutes.get("/:id", ensuredAuthenticated, listUserController.handle);
 
-const updateUserSurveyFieldsController = new UpdateUserSurveyFieldsController()
+const updateUserSurveyFieldsController = new UpdateUserSurveyFieldsController();
 usersRoutes.put(
     "/updateSurveyFields",
     ensuredAuthenticated,
     updateUserSurveyFieldsController.handle
 );
 
-const updateUserLaborRiskAlertController = new UpdateUserLaborRiskAlertController()
+const updateUserLaborRiskAlertController =
+    new UpdateUserLaborRiskAlertController();
 usersRoutes.put(
     "/updateLaborRiskAlert",
     ensuredAuthenticated,

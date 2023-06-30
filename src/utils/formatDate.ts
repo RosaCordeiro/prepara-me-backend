@@ -1,4 +1,8 @@
 export function formatDate(date: string) {
+    if (date === undefined || date === null || date === "") {
+        return "-";
+    }
+
     const data = new Date(date);
 
     const dia = String(data.getDate()).padStart(2, "0");
@@ -14,3 +18,4 @@ export function formatDate(date: string) {
 
     return `${dataFormatada} - ${horaFormatada}`;
 }
+
