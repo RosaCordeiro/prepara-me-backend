@@ -11,15 +11,8 @@ class ScheduleGoogle implements IScheduleProvider {
         eventEndTime: string,
         timeZone: string,
         attendees: Array<Object>
-    ) {
+    ): Promise<any> {
         const { OAuth2 } = google.auth;
-
-        console.log("CLIENT_ID", process.env.CLIENT_ID);
-        console.log("CLIENT_SECRET", process.env.CLIENT_SECRET);
-        console.log("REFRESH_TOKEN", process.env.REFRESH_TOKEN);
-
-
-
 
         const oAuth2Client = new OAuth2(
             process.env.CLIENT_ID,
@@ -55,19 +48,11 @@ class ScheduleGoogle implements IScheduleProvider {
             },
         };
 
-        console.log("event", event);
-
-        const resultado = await calendar.events
-            .insert({
-                calendarId: "primary",
-                requestBody: event,
-                conferenceDataVersion: 1,
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-        console.log("resultado", resultado);
+        const resultado = await calendar.events.insert({
+            calendarId: "primary",
+            requestBody: event,
+            conferenceDataVersion: 1,
+        });
 
         return resultado;
     }
@@ -93,6 +78,45 @@ class ScheduleGoogle implements IScheduleProvider {
             calendarId,
             eventId,
         });
+    }
+
+    async addAttendeeInEventByLink(eventId: string, email: string) {
+        const { OAuth2 } = google.auth;
+
+        const oAuth2Client = new OAuth2(
+            process.env.CLIENT_ID,
+            process.env.CLIENT_SECRET
+        );
+
+        oAuth2Client.setCredentials({
+            refresh_token: process.env.REFRESH_TOKEN,
+        });
+
+        const calendar = google.calendar({
+            version: "v3",
+            auth: oAuth2Client,
+        });
+
+        const event = await calendar.events.get({
+            calendarId: "primary",
+            eventId: eventId,
+        });
+
+        const attendees = event.data.attendees;
+
+        attendees.push({
+            email,
+        });
+
+        const result = await calendar.events.patch({
+            calendarId: "primary",
+            eventId: eventId,
+            requestBody: {
+                attendees,
+            },
+        });
+
+        return result;
     }
 }
 

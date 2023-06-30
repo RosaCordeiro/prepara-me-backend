@@ -20,6 +20,9 @@ class Mentoring {
     linkMeet: string;
 
     @Column()
+    eventId: string;
+
+    @Column()
     vacancies: number;
 
     @Column()

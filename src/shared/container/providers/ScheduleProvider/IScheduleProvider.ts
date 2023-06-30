@@ -10,6 +10,7 @@ interface IScheduleProvider {
     );
 
     cancelScheduledEvent(calendarId: string, eventId: string);
+    addAttendeeInEventByLink(eventId: string, email: string);
 }
 
 export { IScheduleProvider };

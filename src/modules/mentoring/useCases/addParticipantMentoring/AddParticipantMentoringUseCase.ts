@@ -1,8 +1,5 @@
 import { ICreateMentoringDTO } from "@modules/mentoring/dtos/ICreateMentoring";
-import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
-
 import { MentoringRepository } from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
-import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
 import { IScheduleProvider } from "@shared/container/providers/ScheduleProvider/IScheduleProvider";
 import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
 import { AppError } from "@shared/errors/AppError";
@@ -10,54 +7,49 @@ import { AppError } from "@shared/errors/AppError";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
-class CreateMentoringUseCase {
+class AddParticipantMentoringUseCase {
     constructor(
         @inject("MentoringRepository")
         private mentoringRepository: MentoringRepository,
         @inject("StorageProvider")
         private storageProvider: IStorageProvider,
         @inject("ScheduleGoogle")
-        private scheduleGoogle: IScheduleProvider,
-        @inject("DayjsDateProvider")
-        private dateProvider: IDateProvider
+        private scheduleGoogle: IScheduleProvider
     ) {}
 
-    async execute(
-        content: ICreateMentoringDTO,
-        file: string
-    ): Promise<Mentoring> {
-        this.validInput(content);
+    async execute(mentoringId: string, email: string): Promise<void> {
+        if (
+            mentoringId === null ||
+            mentoringId === undefined ||
+            mentoringId === ""
+        ) {
+            throw new AppError("Mentoring id can't be null");
+        }
 
-        await this.storageProvider.save(file, "mentoring");
-        content.image = file;
+        if (email === null || email === undefined || email === "") {
+            throw new AppError("Email can't be null");
+        }
 
-        const dateMasked = this.dateProvider.formatDateTime(
-            content.date,
-            "YYYY-MM-DDThh:mm:ssfff:00"
+        const mentoringObj = await this.mentoringRepository.findById(
+            mentoringId
         );
 
-        const event = await this.scheduleGoogle.scheduleEvent(
-            content.title,
-            "Online",
-            "Estamos aguardando você",
-            dateMasked,
-            dateMasked,
-            "America/Sao_Paulo",
-            [
-                {
-                    email: "lucas.correa@okn.com.br",
-                },
-            ]
+        if (mentoringObj === null || mentoringObj === undefined) {
+            throw new AppError("Mentoring not found");
+        }
+
+        if (mentoringObj.users >= mentoringObj.vacancies) {
+            throw new AppError("Mentoring is full");
+        }
+
+        await this.scheduleGoogle.addAttendeeInEventByLink(
+            mentoringObj.eventId,
+            email
         );
 
-        console.log(event);
+        mentoringObj.users = mentoringObj.users + 1;
 
-        content.linkMeet = event.data.hangoutLink;
-        content.eventId = event.data.id;
-
-        const mentoring = await this.mentoringRepository.create(content);
-
-        return mentoring;
+        await this.mentoringRepository.update(mentoringId, mentoringObj);
     }
 
     validInput(content: ICreateMentoringDTO): void {
@@ -86,5 +78,5 @@ class CreateMentoringUseCase {
     }
 }
 
-export { CreateMentoringUseCase };
+export { AddParticipantMentoringUseCase };
 

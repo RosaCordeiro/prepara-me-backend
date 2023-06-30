@@ -6,6 +6,7 @@ interface IMentoringRepository {
     find(): Promise<Mentoring[]>;
     delete(id: string): Promise<void>;
     update(id: string, data: ICreateMentoringDTO): Promise<Mentoring>;
+    findById(id: string): Promise<Mentoring>;
 }
 
 export { IMentoringRepository };
