@@ -12,6 +12,29 @@ class MentoringRepository implements IMentoringRepository {
         this.repository = getRepository(Mentoring);
     }
 
+    async paginate(page: number, perPage: number): Promise<Pagination> {
+        page = page - 1;
+        if (page < 0) page = 0;
+
+        const response = await this.repository.findAndCount({
+            skip: page * perPage,
+            take: perPage,
+        });
+
+        const totalPages =
+            response[1] % perPage === 0
+                ? response[1] / perPage
+                : parseInt((response[1] / perPage + 1).toString());
+
+        return {
+            data: response[0],
+            page: page + 1,
+            perPage,
+            pages: totalPages,
+            total: response[1],
+        };
+    }
+
     async delete(id: string): Promise<void> {
         await this.repository.delete(id);
     }
@@ -38,6 +61,14 @@ class MentoringRepository implements IMentoringRepository {
         const mentoring = await this.repository.findOne(id);
         return mentoring;
     }
+}
+
+export interface Pagination {
+    page: number;
+    perPage: number;
+    total: number;
+    pages: number;
+    data: Mentoring[];
 }
 
 export { MentoringRepository };

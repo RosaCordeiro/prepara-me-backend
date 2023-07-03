@@ -1,7 +1,10 @@
 import { IResponseMentoringDTO } from "@modules/mentoring/dtos/IResponseMentoringDTO";
 import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
 
-import { MentoringRepository } from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
+import {
+    MentoringRepository,
+    Pagination,
+} from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
 
 import { inject, injectable } from "tsyringe";
 
@@ -12,15 +15,15 @@ class ListMentoringUseCase {
         private mentoringRepository: MentoringRepository
     ) {}
 
-    async execute(): Promise<Mentoring[]> {
-        const mentoring = await this.mentoringRepository.find();
+    async execute(page: number, limit: number): Promise<Pagination> {
+        const mentoring = await this.mentoringRepository.paginate(page, limit);
 
-        const mentoringList = mentoring.map((mentoring) => {
+        mentoring.data.forEach((mentoring) => {
             mentoring.image = `${process.env.AWS_BUCKET_URL}/mentoring/${mentoring.image}`;
             return mentoring;
         });
 
-        return mentoringList;
+        return mentoring;
     }
 }
 

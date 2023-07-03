@@ -26,75 +26,201 @@ class Schedules {
             initialDate !== "undefined" &&
             finalDate !== "undefined"
         ) {
-            where = ` where ss."dateSchedule" between '${initialDate}' and '${finalDate} 23:59:59'`;
+            where = ` where row."primeiro_login" between '${initialDate}' and '${finalDate} 23:59:59'`;
         }
 
         const data: ISchedulesReport[] = await this.repository.query(`
-            select 
-            u."name" as name,
-            case
-                when u."subscribeToken" != '' then
-                    'B2B'
-                else 
-                    'B2C'
-            end as origem,
-            case
-                when u."subscribeToken" != '' then
-                    u."subscribeToken"
-                else 
-                    '-'
-            end as empresa,
-            case
-                when (
-                    select 
-                    created_at  
-                    from user_tokens ut 
-                    where ut.user_id = U.id  
-                    order by created_at 
-                    limit 1 
-                ) isnull then
-                    'Não'
-                else 
-                    'Sim'
-            end as acolhimento_realizado,
-            (
+            select * from (
                 select 
-                created_at  
-                from user_tokens ut 
-                where ut.user_id = U.id  
-                order by created_at 
-                limit 1 
-            ) as primeiro_login,
-            case
-                when u."surveyAnswered" then
-                    'Sim'
-                else 
-                    'Não'
-            end as pesquisa_desligamento,
-            case
-                when u."laborRiskAlert" = 'ALERT' then
-                    'Sim'
-                else 
-                    'Não'
-            end as botao_vermelho,
-            p."name" as servico,
-            ss."dateSchedule" as data_agendamento,
-            ss."dateSchedule" as data_servico,
-            s."name" as especialista ,
-            ss.rating as nota,
-            case
-                when u.realocated  = 'NOT_REALOCATED' then
-                    'Não'
-                else 
-                    'Sim'
-            end as recolocacao
-            from users u 
-            inner join "specialistSchedule" ss on ss."userId" = u.id 
-            inner join specialists s on s.id  = ss."specialistId" 
-            inner join products p on p.id = ss."productId" 
+                    u."name" as name,
+                    case
+                        when u."subscribeToken" != '' then
+                            'B2B'
+                        else 
+                            'B2C'
+                    end as origem,
+                    case
+                        when u."subscribeToken" != '' then
+                            u."subscribeToken"
+                        else 
+                            '-'
+                    end as empresa,
+                    case
+                        when (
+                            select 
+                            created_at  
+                            from user_tokens ut 
+                            where ut.user_id = U.id  
+                            order by created_at 
+                            limit 1 
+                        ) isnull then
+                            'Não'
+                        else 
+                            'Sim'
+                    end as acolhimento_realizado,
+                    (
+                        select 
+                        created_at  
+                        from user_tokens ut 
+                        where ut.user_id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as primeiro_login,
+                    case
+                        when u."surveyAnswered" then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as pesquisa_desligamento,
+                    case
+                        when u."laborRiskAlert" = 'ALERT' then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as botao_vermelho,
+                    'Conteúdo Livre' as servico,
+                    null as data_agendamento,
+                    null as data_servico,
+                    '-' as especialista ,
+                    '-' as nota,
+                    '-' as recolocacao,
+                    1 as order 
+                from users u 
+                
+                union
+                
+                select 
+                    u."name" as name,
+                    case
+                        when u."subscribeToken" != '' then
+                            'B2B'
+                        else 
+                            'B2C'
+                    end as origem,
+                    case
+                        when u."subscribeToken" != '' then
+                            u."subscribeToken"
+                        else 
+                            '-'
+                    end as empresa,
+                    case
+                        when (
+                            select 
+                            created_at  
+                            from user_tokens ut 
+                            where ut.user_id = U.id  
+                            order by created_at 
+                            limit 1 
+                        ) isnull then
+                            'Não'
+                        else 
+                            'Sim'
+                    end as acolhimento_realizado,
+                    (
+                        select 
+                        created_at  
+                        from user_tokens ut 
+                        where ut.user_id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as primeiro_login,
+                    case
+                        when u."surveyAnswered" then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as pesquisa_desligamento,
+                    case
+                        when u."laborRiskAlert" = 'ALERT' then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as botao_vermelho,
+                    p."name" as servico,
+                    null as data_agendamento,
+                    null as data_servico,
+                    '-' as especialista ,
+                    '-' as nota,
+                    '-' as recolocacao,
+                    2 as order
+                from "userProductsAvailable" upa 
+                inner join users u on u.id = upa."userId"  
+                inner join products p on p.id = upa."productId" 
+                where upa."availableQuantity" > 0	
+                
+                union 
+                
+                select 
+                    u."name" as name,
+                    case
+                        when u."subscribeToken" != '' then
+                            'B2B'
+                        else 
+                            'B2C'
+                    end as origem,
+                    case
+                        when u."subscribeToken" != '' then
+                            u."subscribeToken"
+                        else 
+                            '-'
+                    end as empresa,
+                    case
+                        when (
+                            select 
+                            created_at  
+                            from user_tokens ut 
+                            where ut.user_id = U.id  
+                            order by created_at 
+                            limit 1 
+                        ) isnull then
+                            'Não'
+                        else 
+                            'Sim'
+                    end as acolhimento_realizado,
+                    (
+                        select 
+                        created_at  
+                        from user_tokens ut 
+                        where ut.user_id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as primeiro_login,
+                    case
+                        when u."surveyAnswered" then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as pesquisa_desligamento,
+                    case
+                        when u."laborRiskAlert" = 'ALERT' then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as botao_vermelho,
+                    p."name" as servico,
+                    TO_CHAR(ss."dateSchedule", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
+                    TO_CHAR(ss."dateSchedule", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
+                    s."name" as especialista ,
+                    CAST(ss.rating as text) as nota,
+                    case
+                        when u.realocated  = 'NOT_REALOCATED' then
+                            'Não'
+                        else 
+                            'Sim'
+                    end as recolocacao,
+                    3 as order
+                from users u 
+                inner join "specialistSchedule" ss on ss."userId" = u.id 
+                inner join specialists s on s.id  = ss."specialistId" 
+                inner join products p on p.id = ss."productId" 
+            ) as row
             ${where}
-            order by ss."dateSchedule" 
+            order by row.name, row.order            
         `);
+
+        data.forEach((item) => {
+            delete item.order;
+        });
 
         return data;
     }
@@ -113,6 +239,7 @@ export interface ISchedulesReport {
     especialista: string;
     nota: number;
     recolocacao: string;
+    order: number;
 }
 
 export { Schedules };
