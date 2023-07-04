@@ -1,6 +1,5 @@
 import { google } from "googleapis";
 import { IScheduleProvider } from "../IScheduleProvider";
-import axios from "axios";
 
 class ScheduleGoogle implements IScheduleProvider {
     async scheduleEvent(

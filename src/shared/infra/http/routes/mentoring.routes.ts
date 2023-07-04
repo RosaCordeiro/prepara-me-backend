@@ -11,6 +11,7 @@ import { EditMentoringController } from "@modules/mentoring/useCases/editMentori
 import { DeleteMentoringController } from "@modules/mentoring/useCases/deleteMentoring/DeleteMentoringController";
 import { GetMentoringByIdController } from "@modules/mentoring/useCases/getMentoringById/GetMentoringByIdController";
 import { ListMentoringScheduleController } from "@modules/mentoring/useCases/listMentoringSchedule/ListMentoringScheduleController";
+import { RateMentoringController } from "@modules/mentoring/useCases/rateMentoring/RateMentoringController";
 
 const mentoringRoutes = Router();
 const uploadImage = multer(uploadConfig);
@@ -65,6 +66,13 @@ mentoringRoutes.post(
     "/addParticipant",
     ensuredAuthenticated,
     addParticipantMentoringController.handle
+);
+
+const rateMentoringController = new RateMentoringController();
+mentoringRoutes.put(
+    "/rate",
+    ensuredAuthenticated,
+    rateMentoringController.handle
 );
 
 export { mentoringRoutes };

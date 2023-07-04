@@ -11,6 +11,65 @@ class MentoringRepository implements IMentoringRepository {
     constructor() {
         this.repository = getRepository(Mentoring);
     }
+    async rateMentoring(
+        id: string,
+        idUser: string,
+        rate: number
+    ): Promise<void> {
+        await this.repository.query(
+            `update "mentoringUsers" set rating = ${rate} where "mentoringId" = '${id}' and "userId" = '${idUser}'`
+        );
+    }
+    async findSchedule(
+        userId: string,
+        dateBegin: string,
+        dateEnd: string
+    ): Promise<any> {
+        const schedule: any[] = await this.repository.query(
+            `           
+            select 
+            mu."mentoringId" as id,
+            null as status,
+            null as comments,
+            m."date" as dateSchedule,
+            m."linkMeet" as hangoutLink,
+            to_json(m.*) as product,
+            mu."mentoringId" as productId,
+            m."eventId"  as scheduleEventId,
+            to_json(u.*) as user,
+            u.id as "userId" ,
+            m.mentor as specialist,
+            'id' as specialistId,
+            mu.rating as rating
+            from "mentoringUsers" mu 
+            inner join users u on u.id = mu."userId" 
+            inner join mentoring m on m.id = mu."mentoringId" 
+            where mu."userId" = '${userId}' and m."date" between '${dateBegin}' and '${dateEnd} 23:59:59'
+            `
+        );
+
+        schedule.forEach((item) => {
+            const product = item.product;
+            item.product = {
+                id: product.id,
+                name: product.title,
+            };
+
+            const specialist = item.specialist;
+            item.specialist = {
+                id: specialist,
+                name: specialist,
+            };
+
+            item.dateSchedule = item.dateschedule;
+            delete item.dateschedule;
+
+            item.hangoutLink = item.hangoutlink;
+            delete item.hangoutlink;
+        });
+
+        return schedule;
+    }
 
     async paginate(page: number, perPage: number): Promise<Pagination> {
         page = page - 1;

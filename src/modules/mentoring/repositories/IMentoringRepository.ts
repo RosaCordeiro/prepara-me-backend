@@ -9,6 +9,12 @@ interface IMentoringRepository {
     update(id: string, data: ICreateMentoringDTO): Promise<Mentoring>;
     findById(id: string): Promise<Mentoring>;
     paginate(page: number, perPage: number): Promise<Pagination>;
+    findSchedule(
+        userId: string,
+        dateBegin: string,
+        dateEnd: string
+    ): Promise<any>;
+    rateMentoring(id: string, idUser: string, rate: number): Promise<void>;
 }
 
 export { IMentoringRepository };

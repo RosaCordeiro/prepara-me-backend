@@ -51,15 +51,7 @@ class AddParticipantMentoringUseCase {
             throw new AppError("User not found");
         }
 
-        /*  await this.scheduleGoogle.addAttendeeInEventByLink(
-            mentoringObj.eventId,
-            user.email
-        ); */
-
         mentoringObj.users = mentoringObj.users + 1;
-
-        console.log(mentoringObj);
-
         mentoringObj.usersMentoring.push(user);
 
         await this.mentoringRepository.update(mentoringId, mentoringObj);

@@ -33,9 +33,13 @@ class ListMentoringScheduleUseCase {
             throw new AppError("Date end is not provided!");
         }
 
-        return {
-            data: "Teste",
-        };
+        const schedule = await this.mentoringRepository.findSchedule(
+            userId,
+            dateBegin,
+            dateEnd
+        );
+
+        return schedule;
     }
 }
 
