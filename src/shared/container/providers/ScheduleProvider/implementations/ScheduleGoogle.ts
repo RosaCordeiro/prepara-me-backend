@@ -19,8 +19,6 @@ class ScheduleGoogle implements IScheduleProvider {
             process.env.CLIENT_SECRET
         );
 
-        console.log("oAuth2Client", oAuth2Client);
-
         oAuth2Client.setCredentials({
             refresh_token: process.env.REFRESH_TOKEN,
         });
