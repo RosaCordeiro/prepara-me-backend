@@ -213,6 +213,71 @@ class Schedules {
                 inner join "specialistSchedule" ss on ss."userId" = u.id 
                 inner join specialists s on s.id  = ss."specialistId" 
                 inner join products p on p.id = ss."productId" 
+
+                UNION
+
+                select 
+                u."name" as name,
+                case
+                    when u."subscribeToken" != '' then
+                        'B2B'
+                    else 
+                        'B2C'
+                end as origem,
+                case
+                    when u."subscribeToken" != '' then
+                        u."subscribeToken"
+                    else 
+                        '-'
+                end as empresa,
+                case
+                    when (
+                        select 
+                        created_at  
+                        from user_tokens ut 
+                        where ut.user_id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) isnull then
+                        'Não'
+                    else 
+                        'Sim'
+                end as acolhimento_realizado,
+                (
+                    select 
+                    created_at  
+                    from user_tokens ut 
+                    where ut.user_id = U.id  
+                    order by created_at 
+                    limit 1 
+                ) as primeiro_login,
+                case
+                    when u."surveyAnswered" then
+                        'Sim'
+                    else 
+                        'Não'
+                end as pesquisa_desligamento,
+                case
+                    when u."laborRiskAlert" = 'ALERT' then
+                        'Sim'
+                    else 
+                        'Não'
+                end as botao_vermelho,
+                'Mentorial Coletiva' as servico,
+                TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
+                TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
+                m.mentor as especialista,
+                CAST(mu.rating as text) as nota,
+                case
+                    when u.realocated  = 'NOT_REALOCATED' then
+                        'Não'
+                    else 
+                        'Sim'
+                end as recolocacao,
+                4 as order
+                from "mentoringUsers" mu 
+                inner join users u on u.id = mu."userId" 
+                inner join mentoring m on m.id = mu."mentoringId" 
             ) as row
             ${where}
             order by row.name, row.order            
