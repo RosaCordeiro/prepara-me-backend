@@ -47,18 +47,25 @@ class MentoringRepository implements IMentoringRepository {
     }
 
     find(): Promise<Mentoring[]> {
-        return this.repository.find();
+        return this.repository.find({
+            relations: ["usersMentoring"],
+        });
     }
 
     async create(content: ICreateMentoringDTO): Promise<Mentoring> {
         const mentoring: Mentoring = this.repository.create(content);
+
+        console.log(mentoring);
+
         await this.repository.save(mentoring);
 
         return mentoring;
     }
 
     async findById(id: string): Promise<Mentoring> {
-        const mentoring = await this.repository.findOne(id);
+        const mentoring = await this.repository.findOne(id, {
+            relations: ["usersMentoring"],
+        });
         return mentoring;
     }
 }

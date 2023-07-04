@@ -1,3 +1,4 @@
+import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { ICreateMentoringDTO } from "@modules/mentoring/dtos/ICreateMentoring";
 import { MentoringRepository } from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
 import { IScheduleProvider } from "@shared/container/providers/ScheduleProvider/IScheduleProvider";
@@ -11,13 +12,15 @@ class AddParticipantMentoringUseCase {
     constructor(
         @inject("MentoringRepository")
         private mentoringRepository: MentoringRepository,
+        @inject("UsersRepository")
+        private userRepository: IUsersRepository,
         @inject("StorageProvider")
         private storageProvider: IStorageProvider,
         @inject("ScheduleGoogle")
         private scheduleGoogle: IScheduleProvider
     ) {}
 
-    async execute(mentoringId: string, email: string): Promise<void> {
+    async execute(mentoringId: string, userId: string): Promise<void> {
         if (
             mentoringId === null ||
             mentoringId === undefined ||
@@ -26,8 +29,8 @@ class AddParticipantMentoringUseCase {
             throw new AppError("Mentoring id can't be null");
         }
 
-        if (email === null || email === undefined || email === "") {
-            throw new AppError("Email can't be null");
+        if (userId === null || userId === undefined || userId === "") {
+            throw new AppError("User id can't be null");
         }
 
         const mentoringObj = await this.mentoringRepository.findById(
@@ -42,12 +45,22 @@ class AddParticipantMentoringUseCase {
             throw new AppError("Mentoring is full");
         }
 
-        await this.scheduleGoogle.addAttendeeInEventByLink(
+        const user = await this.userRepository.findById(userId);
+
+        if (user === null || user === undefined) {
+            throw new AppError("User not found");
+        }
+
+        /*  await this.scheduleGoogle.addAttendeeInEventByLink(
             mentoringObj.eventId,
-            email
-        );
+            user.email
+        ); */
 
         mentoringObj.users = mentoringObj.users + 1;
+
+        console.log(mentoringObj);
+
+        mentoringObj.usersMentoring.push(user);
 
         await this.mentoringRepository.update(mentoringId, mentoringObj);
     }

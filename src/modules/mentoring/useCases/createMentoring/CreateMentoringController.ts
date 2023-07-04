@@ -11,17 +11,14 @@ class CreateMentoringController {
 
         const editMentoringUseCase = container.resolve(EditMentoringUseCase);
 
-        console.log(request.body);
-
-        if (!request.body.id) {
+        if (!request.body.id || request.body.id === "") {
+            console.log("create");
             if (
                 request.files === undefined ||
                 request.files.length === 0 ||
                 request.files[0]?.fieldname !== "image"
             ) {
-                return response
-                    .status(400)
-                    .json({ error: "Image is required" });
+                return response.status(400).json("Image is required");
             }
 
             const createMentoring = await createMentoringUseCase.execute(

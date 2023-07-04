@@ -5,6 +5,7 @@ interface IEditMentoringDTO {
     mentor: string;
     image: string;
     file?: string;
+    usersMentoring?: any[];
 }
 
 export { IEditMentoringDTO };

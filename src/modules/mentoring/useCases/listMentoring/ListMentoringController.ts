@@ -4,7 +4,7 @@ import { ListMentoringUseCase } from "./ListMentoringUseCase";
 
 class ListMentoringController {
     async handle(request: Request, response: Response): Promise<Response> {
-        const { page = 0, limit = 10 } = request.query;
+        const { page = 0, limit = 100 } = request.query;
 
         const listMentoringUseCase = container.resolve(ListMentoringUseCase);
 

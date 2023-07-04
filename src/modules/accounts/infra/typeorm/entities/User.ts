@@ -3,6 +3,7 @@ import { UserRealocatedEnum } from "@modules/accounts/enums/UserRealocatedEnum";
 import { UserStatusEnum } from "@modules/accounts/enums/UserStatusEnum";
 import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
 import { Company } from "@modules/company/infra/typeorm/entities/Company";
+import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
 import { Order } from "@modules/orders/infra/typeorm/entities/Order";
 import { SpecialistSchedule } from "@modules/specialists/infra/typeorm/entities/SpecialistSchedule";
 import { ColumnNumericTransformer } from "@utils/ColumnNumericTransformer";
@@ -14,6 +15,7 @@ import {
     CreateDateColumn,
     OneToMany,
     ManyToOne,
+    ManyToMany,
 } from "typeorm";
 import { v4 as uuidV4 } from "uuid";
 
@@ -72,11 +74,8 @@ class User {
         (specialistSchedule) => specialistSchedule.id
     )
     specialistSchedule: SpecialistSchedule[];
-    
-    @OneToMany(
-        () => Order,
-        (order) => order.id
-    )
+
+    @OneToMany(() => Order, (order) => order.id)
     order: Order[];
 
     @ManyToOne(() => Company, (company) => company.id)
@@ -151,6 +150,9 @@ class User {
     @Column()
     periodTest: Date;
 
+    @ManyToMany(() => Mentoring, (mentoring) => mentoring.usersMentoring)
+    mentoring: Mentoring[];
+
     constructor(
         name: string,
         username: string,
@@ -172,7 +174,7 @@ class User {
         laborRiskAlert: UserLaborRiskAlertEnum,
         expiresDate: Date,
         periodTest: Date,
-        subscribeToken: string,
+        subscribeToken: string
     ) {
         if (id) {
             this.id = id;

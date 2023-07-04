@@ -43,17 +43,13 @@ class CreateMentoringUseCase {
             dateMasked,
             dateMasked,
             "America/Sao_Paulo",
-            [
-                {
-                    email: "lucas.correa@okn.com.br",
-                },
-            ]
+            []
         );
-
-        console.log(event);
 
         content.linkMeet = event.data.hangoutLink;
         content.eventId = event.data.id;
+        delete content.id;
+        delete content.users;
 
         const mentoring = await this.mentoringRepository.create(content);
 

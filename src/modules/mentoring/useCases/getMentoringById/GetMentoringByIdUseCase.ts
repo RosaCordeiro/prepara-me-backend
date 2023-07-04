@@ -1,6 +1,8 @@
+import { IResponseMentoringDTO } from "@modules/mentoring/dtos/IResponseMentoringDTO";
 import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
 import { MentoringRepository } from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
 import { AppError } from "@shared/errors/AppError";
+import { formatDateTimeLocal } from "@utils/formatDate";
 
 import { inject, injectable } from "tsyringe";
 
@@ -11,16 +13,31 @@ class GetMentoringByIdUseCase {
         private mentoringRepository: MentoringRepository
     ) {}
 
-    async execute(id: string): Promise<Mentoring> {
+    async execute(id: string): Promise<IResponseMentoringDTO> {
         if (!id) {
             throw new AppError("Id is not provided!");
         }
 
         const mentoring = await this.mentoringRepository.findById(id);
 
-        mentoring.image = `${process.env.AWS_BUCKET_URL}/mentoring/${mentoring.image}`;
+        if (!mentoring) {
+            throw new AppError("Mentoring not found!");
+        }
 
-        return mentoring;
+        console.log(mentoring);
+
+        return {
+            id: mentoring.id,
+            title: mentoring.title,
+            image: `${process.env.AWS_BUCKET_URL}/mentoring/${mentoring.image}`,
+            date: formatDateTimeLocal(mentoring.date),
+            linkMeet: mentoring.linkMeet,
+            mentor: mentoring.mentor,
+            users: mentoring.users,
+            vacancies: mentoring.vacancies,
+            eventId: mentoring.eventId,
+            usersMentoring: mentoring.usersMentoring,
+        };
     }
 }
 

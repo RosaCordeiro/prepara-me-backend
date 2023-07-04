@@ -1,5 +1,13 @@
+import { User } from "@modules/accounts/infra/typeorm/entities/User";
 import { Expose } from "class-transformer";
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    PrimaryColumn,
+} from "typeorm";
 import { v4 as uuidV4 } from "uuid";
 
 @Entity("mentoring")
@@ -28,6 +36,14 @@ class Mentoring {
     @Column()
     users: number;
 
+    @ManyToMany(() => User, (user) => user.mentoring)
+    @JoinTable({
+        name: "mentoringUsers",
+        joinColumns: [{ name: "mentoringId" }],
+        inverseJoinColumns: [{ name: "userId" }],
+    })
+    usersMentoring: User[];
+
     @Column()
     image: string;
 
@@ -35,7 +51,7 @@ class Mentoring {
     created_at: Date;
 
     constructor() {
-        if (!this.id) {
+        if (!this.id || this.id === "") {
             this.id = uuidV4();
         }
 

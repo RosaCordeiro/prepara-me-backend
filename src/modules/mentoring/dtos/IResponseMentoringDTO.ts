@@ -7,6 +7,8 @@ interface IResponseMentoringDTO {
     vacancies: number;
     users: number;
     image: string;
+    eventId?: string;
+    usersMentoring?: any[];
 }
 
 export { IResponseMentoringDTO };

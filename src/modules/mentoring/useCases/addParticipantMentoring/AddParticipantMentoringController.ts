@@ -8,9 +8,14 @@ class AddParticipantMentoringController {
             AddParticipantMentoringUseCase
         );
 
-        const { mentoringId, email } = request.body;
+        if (!request.user) {
+            throw new Error("User not found");
+        }
 
-        await addParticipantMentoringUseCase.execute(mentoringId, email);
+        const { mentoringId } = request.body;
+        const { id } = request.user;
+
+        await addParticipantMentoringUseCase.execute(mentoringId, id);
 
         return response.status(200).json({
             message: "Participant added successfully",
