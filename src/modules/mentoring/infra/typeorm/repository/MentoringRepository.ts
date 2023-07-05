@@ -79,7 +79,7 @@ class MentoringRepository implements IMentoringRepository {
         const response = await this.repository.findAndCount({
             skip: page * perPage,
             take: perPage,
-            relations: ["usersMentoring", "mentor", "mentoringUsers"],
+            relations: ["usersMentoring", "mentor"],
         });
 
         console.log(response);
