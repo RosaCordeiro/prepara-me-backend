@@ -1,8 +1,10 @@
+import { Specialist } from "@modules/specialists/infra/typeorm/entities/Specialist";
+
 interface IResponseMentoringDTO {
     id?: string;
     title: string;
     date: string;
-    mentor: string;
+    mentorId: Specialist;
     linkMeet: string;
     vacancies: number;
     users: number;

@@ -1,4 +1,5 @@
 import { User } from "@modules/accounts/infra/typeorm/entities/User";
+import { Specialist } from "@modules/specialists/infra/typeorm/entities/Specialist";
 import { Expose } from "class-transformer";
 import {
     Column,
@@ -6,6 +7,8 @@ import {
     Entity,
     JoinTable,
     ManyToMany,
+    ManyToOne,
+    OneToMany,
     PrimaryColumn,
 } from "typeorm";
 import { v4 as uuidV4 } from "uuid";
@@ -21,8 +24,8 @@ class Mentoring {
     @Column()
     date: Date;
 
-    @Column()
-    mentor: string;
+    @ManyToOne(() => Specialist, (s) => s.mentoring)
+    mentor: Specialist;
 
     @Column()
     linkMeet: string;

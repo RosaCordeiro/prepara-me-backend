@@ -18,6 +18,7 @@ class ScheduleGoogle implements IScheduleProvider {
             process.env.CLIENT_SECRET
         );
 
+        console.log(oAuth2Client);
         oAuth2Client.setCredentials({
             refresh_token: process.env.REFRESH_TOKEN,
         });
@@ -44,6 +45,8 @@ class ScheduleGoogle implements IScheduleProvider {
                 createRequest: { requestId: "prepara.me13" },
             },
         };
+
+        console.log(event);
 
         const resultado = await calendar.events.insert({
             calendarId: "primary",

@@ -2,7 +2,7 @@ interface ICreateMentoringDTO {
     id?: string;
     title: string;
     date: Date;
-    mentor: string;
+    mentorId: string;
     linkMeet: string;
     eventId: string;
     vacancies: number;

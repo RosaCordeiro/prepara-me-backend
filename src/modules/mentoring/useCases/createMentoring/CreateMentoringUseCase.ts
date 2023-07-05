@@ -2,6 +2,7 @@ import { ICreateMentoringDTO } from "@modules/mentoring/dtos/ICreateMentoring";
 import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
 
 import { MentoringRepository } from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
+import { ISpecialistsRepository } from "@modules/specialists/repositories/ISpecialistsRepository";
 import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
 import { IScheduleProvider } from "@shared/container/providers/ScheduleProvider/IScheduleProvider";
 import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
@@ -19,7 +20,9 @@ class CreateMentoringUseCase {
         @inject("ScheduleGoogle")
         private scheduleGoogle: IScheduleProvider,
         @inject("DayjsDateProvider")
-        private dateProvider: IDateProvider
+        private dateProvider: IDateProvider,
+        @inject("SpecialistsRepository")
+        private specialistRepository: ISpecialistsRepository
     ) {}
 
     async execute(
@@ -27,6 +30,14 @@ class CreateMentoringUseCase {
         file: string
     ): Promise<Mentoring> {
         this.validInput(content);
+
+        const specialist = await this.specialistRepository.findById(
+            content.mentorId
+        );
+
+        if (specialist === null || specialist === undefined) {
+            throw new AppError("Specialist not found");
+        }
 
         await this.storageProvider.save(file, "mentoring");
         content.image = file;
@@ -36,30 +47,33 @@ class CreateMentoringUseCase {
             "YYYY-MM-DDThh:mm:ssfff:00"
         );
 
+        console.log([{ email: specialist.user.email }]);
+
         const event = await this.scheduleGoogle.scheduleEvent(
-            content.title,
+            `Mentorial coletiva com o(a) especialista ${specialist.name}`,
             "Online",
             "Estamos aguardando você",
             dateMasked,
             dateMasked,
             "America/Sao_Paulo",
-            []
+            [{ email: specialist.user.email }]
         );
+
+        console.log("event", event);
 
         content.linkMeet = event.data.hangoutLink;
         content.eventId = event.data.id;
         delete content.id;
         delete content.users;
 
-        const mentoring = await this.mentoringRepository.create(content);
+        const mentoring = await this.mentoringRepository.create({
+            ...content,
+        });
 
         return mentoring;
     }
 
     validInput(content: ICreateMentoringDTO): void {
-        console.log(content);
-        console.log(content.title);
-
         if (
             content.title === null ||
             content.title === "" ||
@@ -69,14 +83,18 @@ class CreateMentoringUseCase {
         }
 
         if (
-            content.mentor === null ||
-            content.mentor === "" ||
-            content.mentor === undefined
+            content.mentorId === null ||
+            content.mentorId === "" ||
+            content.mentorId === undefined
         ) {
             throw new AppError("Mentor can't be null");
         }
 
-        if (content.date === null || content.date === undefined) {
+        if (
+            content.date === null ||
+            content.date === undefined ||
+            String(content.date) === ""
+        ) {
             throw new AppError("Date can't be null");
         }
     }

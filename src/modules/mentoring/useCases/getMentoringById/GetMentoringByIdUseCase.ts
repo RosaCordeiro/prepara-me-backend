@@ -32,7 +32,7 @@ class GetMentoringByIdUseCase {
             image: `${process.env.AWS_BUCKET_URL}/mentoring/${mentoring.image}`,
             date: formatDateTimeLocal(mentoring.date),
             linkMeet: mentoring.linkMeet,
-            mentor: mentoring.mentor,
+            mentorId: mentoring.mentor,
             users: mentoring.users,
             vacancies: mentoring.vacancies,
             eventId: mentoring.eventId,

@@ -4,12 +4,15 @@ import { IMentoringRepository } from "@modules/mentoring/repositories/IMentoring
 import { Mentoring } from "../entities/Mentoring";
 import { ICreateMentoringDTO } from "@modules/mentoring/dtos/ICreateMentoring";
 import { IEditMentoringDTO } from "@modules/mentoring/dtos/IEditMentoring";
+import { Specialist } from "@modules/specialists/infra/typeorm/entities/Specialist";
 
 class MentoringRepository implements IMentoringRepository {
     private repository: Repository<Mentoring>;
+    private repositorySpecialist: Repository<Specialist>;
 
     constructor() {
         this.repository = getRepository(Mentoring);
+        this.repositorySpecialist = getRepository(Specialist);
     }
     async rateMentoring(
         id: string,
@@ -78,7 +81,10 @@ class MentoringRepository implements IMentoringRepository {
         const response = await this.repository.findAndCount({
             skip: page * perPage,
             take: perPage,
+            relations: ["usersMentoring", "mentor"],
         });
+
+        console.log(response);
 
         const totalPages =
             response[1] % perPage === 0
@@ -98,23 +104,50 @@ class MentoringRepository implements IMentoringRepository {
         await this.repository.delete(id);
     }
 
-    async update(id: string, data: IEditMentoringDTO): Promise<Mentoring> {
+    async update(id: string, content: IEditMentoringDTO): Promise<Mentoring> {
+        console.log(content.mentorId);
+        const specialist = await this.repositorySpecialist.findOne(
+            content.mentorId
+        );
+
+        console.log(specialist);
+
+        if (!specialist) {
+            throw new Error("Specialist not found");
+        }
+
+        delete content.mentorId;
+
         return await this.repository.save({
             id,
-            ...data,
+            ...content,
+            mentor: specialist,
         });
     }
 
     find(): Promise<Mentoring[]> {
         return this.repository.find({
-            relations: ["usersMentoring"],
+            relations: ["usersMentoring", "mentor"],
         });
     }
 
     async create(content: ICreateMentoringDTO): Promise<Mentoring> {
-        const mentoring: Mentoring = this.repository.create(content);
+        console.log("Chegou aqui");
 
-        console.log(mentoring);
+        const specialist = await this.repositorySpecialist.findOne(
+            content.mentorId
+        );
+
+        if (!specialist) {
+            throw new Error("Specialist not found");
+        }
+
+        delete content.mentorId;
+
+        const mentoring = this.repository.create({
+            ...content,
+            mentor: specialist,
+        });
 
         await this.repository.save(mentoring);
 
@@ -123,7 +156,7 @@ class MentoringRepository implements IMentoringRepository {
 
     async findById(id: string): Promise<Mentoring> {
         const mentoring = await this.repository.findOne(id, {
-            relations: ["usersMentoring"],
+            relations: ["usersMentoring", "mentor"],
         });
         return mentoring;
     }

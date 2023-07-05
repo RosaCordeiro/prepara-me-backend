@@ -36,7 +36,9 @@ class SpecialistsRepository implements ISpecialistsRepository {
     }
 
     async findById(id: string): Promise<Specialist> {
-        const specialist = await this.repository.findOne(id);
+        const specialist = await this.repository.findOne(id, {
+            relations: ["user"],
+        });
 
         return specialist;
     }

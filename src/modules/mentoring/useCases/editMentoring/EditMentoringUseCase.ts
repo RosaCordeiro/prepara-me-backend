@@ -57,9 +57,9 @@ class EditMentoringUseCase {
         }
 
         if (
-            content.mentor === null ||
-            content.mentor === "" ||
-            content.mentor === undefined
+            content.mentorId === null ||
+            content.mentorId === "" ||
+            content.mentorId === undefined
         ) {
             throw new AppError("Mentor can't be null");
         }

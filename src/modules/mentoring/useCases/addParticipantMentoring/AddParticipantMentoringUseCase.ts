@@ -54,7 +54,13 @@ class AddParticipantMentoringUseCase {
         mentoringObj.users = mentoringObj.users + 1;
         mentoringObj.usersMentoring.push(user);
 
-        await this.mentoringRepository.update(mentoringId, mentoringObj);
+        const newMentoring: any = mentoringObj;
+        delete newMentoring.mentor;
+        newMentoring.mentor = mentoringObj.mentor.id;
+
+        await this.mentoringRepository.update(mentoringId, {
+            ...newMentoring,
+        });
     }
 
     validInput(content: ICreateMentoringDTO): void {
@@ -70,9 +76,9 @@ class AddParticipantMentoringUseCase {
         }
 
         if (
-            content.mentor === null ||
-            content.mentor === "" ||
-            content.mentor === undefined
+            content.mentorId === null ||
+            content.mentorId === "" ||
+            content.mentorId === undefined
         ) {
             throw new AppError("Mentor can't be null");
         }

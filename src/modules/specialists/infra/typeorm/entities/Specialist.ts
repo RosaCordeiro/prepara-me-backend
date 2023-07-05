@@ -4,6 +4,7 @@ import {
     Column,
     Entity,
     JoinColumn,
+    ManyToOne,
     OneToMany,
     OneToOne,
     PrimaryColumn,
@@ -11,6 +12,7 @@ import {
 import { v4 as uuidV4 } from "uuid";
 import { ProductSpecialist } from "./ProductSpecialist";
 import { SpecialistSchedule } from "./SpecialistSchedule";
+import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
 
 @Entity("specialists")
 class Specialist {
@@ -51,6 +53,9 @@ class Specialist {
         (specialistSchedule) => specialistSchedule.specialist
     )
     specialistSchedule: SpecialistSchedule[];
+
+    @OneToMany(() => Mentoring, (m) => m.mentor)
+    mentoring: Mentoring[];
 
     constructor(
         name: string,
