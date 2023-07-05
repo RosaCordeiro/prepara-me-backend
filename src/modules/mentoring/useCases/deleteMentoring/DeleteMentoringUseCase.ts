@@ -40,9 +40,6 @@ class DeleteMentoringUseCase {
     }
 
     validInput(content: ICreateMentoringDTO): void {
-        console.log(content);
-        console.log(content.title);
-
         if (
             content.title === null ||
             content.title === "" ||

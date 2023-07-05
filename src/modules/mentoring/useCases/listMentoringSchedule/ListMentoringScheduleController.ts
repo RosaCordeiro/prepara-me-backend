@@ -5,16 +5,17 @@ import { AppError } from "@shared/errors/AppError";
 
 class ListMentoringScheduleController {
     async handle(request: Request, response: Response): Promise<Response> {
-        const { userId, dateBegin, dateEnd } = request.query;
+        const { userId, dateBegin, dateEnd, specialistUserId } = request.query;
 
         const listMentoringScheduleUseCase = container.resolve(
             ListMentoringScheduleUseCase
         );
 
         const createMentoring = await listMentoringScheduleUseCase.execute(
-            String(userId),
+            userId ?? specialistUserId,
             String(dateBegin),
-            String(dateEnd)
+            String(dateEnd),
+            userId !== undefined ? "user" : "specialist"
         );
 
         return response.status(200).json(createMentoring);

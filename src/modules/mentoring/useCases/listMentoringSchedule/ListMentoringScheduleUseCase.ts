@@ -17,10 +17,13 @@ class ListMentoringScheduleUseCase {
     ) {}
 
     async execute(
-        userId: string,
+        userId: any,
         dateBegin: string,
-        dateEnd: string
+        dateEnd: string,
+        type: string
     ): Promise<any> {
+        console.log(userId, dateBegin, dateEnd);
+
         if (!userId || userId === "undefined") {
             throw new AppError("User id is not provided!");
         }
@@ -36,7 +39,8 @@ class ListMentoringScheduleUseCase {
         const schedule = await this.mentoringRepository.findSchedule(
             userId,
             dateBegin,
-            dateEnd
+            dateEnd,
+            type
         );
 
         return schedule;

@@ -26,7 +26,8 @@ class MentoringRepository implements IMentoringRepository {
     async findSchedule(
         userId: string,
         dateBegin: string,
-        dateEnd: string
+        dateEnd: string,
+        type: string
     ): Promise<any> {
         const schedule: any[] = await this.repository.query(
             `           
@@ -41,13 +42,16 @@ class MentoringRepository implements IMentoringRepository {
             m."eventId"  as scheduleEventId,
             to_json(u.*) as user,
             u.id as "userId" ,
-            m.mentor as specialist,
+            to_json(s.*) as specialist,
             'id' as specialistId,
             mu.rating as rating
             from "mentoringUsers" mu 
             inner join users u on u.id = mu."userId" 
-            inner join mentoring m on m.id = mu."mentoringId" 
-            where mu."userId" = '${userId}' and m."date" between '${dateBegin}' and '${dateEnd} 23:59:59'
+            inner join mentoring m on m.id = mu."mentoringId"
+            inner join specialists s on s.id = m."mentorId" 
+            where ${
+                type === "user" ? 'mu."userId"' : 's."userId"'
+            } = '${userId}' and m."date" between '${dateBegin}' and '${dateEnd} 23:59:59'
             `
         );
 
@@ -56,12 +60,6 @@ class MentoringRepository implements IMentoringRepository {
             item.product = {
                 id: product.id,
                 name: product.title,
-            };
-
-            const specialist = item.specialist;
-            item.specialist = {
-                id: specialist,
-                name: specialist,
             };
 
             item.dateSchedule = item.dateschedule;

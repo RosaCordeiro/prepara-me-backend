@@ -13,7 +13,8 @@ interface IMentoringRepository {
     findSchedule(
         userId: string,
         dateBegin: string,
-        dateEnd: string
+        dateEnd: string,
+        type: string
     ): Promise<any>;
     rateMentoring(id: string, idUser: string, rate: number): Promise<void>;
 }
