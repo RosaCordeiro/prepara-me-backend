@@ -266,7 +266,7 @@ class Schedules {
                 'Mentorial Coletiva' as servico,
                 TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
                 TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
-                m.mentor as especialista,
+                m.mentorId as especialista,
                 CAST(mu.rating as text) as nota,
                 case
                     when u.realocated  = 'NOT_REALOCATED' then
