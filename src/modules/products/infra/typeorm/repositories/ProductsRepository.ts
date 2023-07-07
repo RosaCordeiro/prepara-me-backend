@@ -14,7 +14,30 @@ class ProductsRepository implements IProductsRepository {
     constructor() {
         this.repository = getRepository(Product);
     }
-    
+
+    async removeByProductAvailableId(id: string): Promise<void> {
+        this.repository.query(`
+            delete from "userProductsAvailable" where id = '${id}'
+        `);
+    }
+
+    async findByUserId(userId: string, productId?: string): Promise<any> {
+        let where = `where upa."userId" = '${userId}' `;
+
+        if (productId !== "undefined" && productId !== undefined) {
+            where += ` and upa."productId" = '${productId}' `;
+        }
+
+        return await this.repository.query(`
+            select 
+            upa.*,
+            p."name" 
+            from "userProductsAvailable" upa 
+            inner join products p on p.id = upa."productId"
+            ${where}
+        `);
+    }
+
     findById(id: string): Promise<Product> {
         throw new Error("Method not implemented.");
     }

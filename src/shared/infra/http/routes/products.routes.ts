@@ -13,11 +13,22 @@ import { RemoveSimulatorVideosGroupController } from "@modules/products/useCases
 import { CreateSimulatorVideosController } from "@modules/products/useCases/createSimulatorVideos/CreateSimulatorVideosController";
 import { ListSimulatorVideosController } from "@modules/products/useCases/listSimulatorVideos/ListSimulatorVideosController";
 import { RemoveSimulatorVideosController } from "@modules/products/useCases/removeSimulatorVideos/RemoveSimulatorVideosController";
+import { ListProductByUserController } from "@modules/products/useCases/listProductByUser/ListProductByUserController";
+import { RemoveProductUserUseCase } from "@modules/products/useCases/removeProductUser/RemoveProductUserUseCase";
+import { RemoveProductUserController } from "@modules/products/useCases/removeProductUser/RemoveProductUserController";
 
 const productsRoutes = Router();
 
 const createRequestScheduleController = new CreateRequestScheduleController();
 productsRoutes.post("/requestSchedule", createRequestScheduleController.handle);
+
+const listProductByUserController = new ListProductByUserController();
+productsRoutes.get(
+    "/listProductByUser",
+    ensuredAuthenticated,
+    ensureAdmin,
+    listProductByUserController.handle
+);
 
 const listRequestScheduleController = new ListProductController();
 productsRoutes.get(
@@ -116,6 +127,14 @@ productsRoutes.delete(
     removeProductController.handle
 );
 
+const removeProductUserController = new RemoveProductUserController();
+productsRoutes.delete(
+    "/:id/users",
+    ensuredAuthenticated,
+    ensureAdmin,
+    removeProductUserController.handle
+);
+
 const createProductController = new CreateProductController();
 productsRoutes.post(
     "/",
@@ -123,7 +142,6 @@ productsRoutes.post(
     ensureAdmin,
     createProductController.handle
 );
-
 
 export { productsRoutes };
 
