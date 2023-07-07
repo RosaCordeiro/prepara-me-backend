@@ -80,6 +80,9 @@ class MentoringRepository implements IMentoringRepository {
             skip: page * perPage,
             take: perPage,
             relations: ["usersMentoring", "mentor"],
+            order: {
+                date: "DESC",
+            },
         });
 
         console.log(response);
