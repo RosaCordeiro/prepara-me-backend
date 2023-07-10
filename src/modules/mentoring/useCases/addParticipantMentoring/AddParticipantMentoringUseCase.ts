@@ -54,7 +54,7 @@ class AddParticipantMentoringUseCase {
         mentoringObj.users = mentoringObj.users + 1;
         mentoringObj.usersMentoring.push(user);
 
-        const newMentoring: any = mentoringObj;
+        const newMentoring: any = JSON.parse(JSON.stringify(mentoringObj));
         delete newMentoring.mentor;
         newMentoring.mentor = mentoringObj.mentor.id;
 
