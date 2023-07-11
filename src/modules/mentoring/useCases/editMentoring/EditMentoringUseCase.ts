@@ -1,6 +1,8 @@
 import { ICreateMentoringDTO } from "@modules/mentoring/dtos/ICreateMentoring";
 import { IEditMentoringDTO } from "@modules/mentoring/dtos/IEditMentoring";
 import { MentoringRepository } from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
+import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
+import { IScheduleProvider } from "@shared/container/providers/ScheduleProvider/IScheduleProvider";
 import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
 import { AppError } from "@shared/errors/AppError";
 
@@ -12,7 +14,11 @@ class EditMentoringUseCase {
         @inject("MentoringRepository")
         private mentoringRepository: MentoringRepository,
         @inject("StorageProvider")
-        private storageProvider: IStorageProvider
+        private storageProvider: IStorageProvider,
+        @inject("ScheduleGoogle")
+        private scheduleGoogle: IScheduleProvider,
+        @inject("DayjsDateProvider")
+        private dateProvider: IDateProvider
     ) {}
 
     async execute(
@@ -41,7 +47,38 @@ class EditMentoringUseCase {
             delete content.file;
         }
 
-        await this.mentoringRepository.update(mentoringId, content);
+        const mentoring = await this.mentoringRepository.update(
+            mentoringId,
+            content
+        );
+
+        const dateMasked = this.dateProvider.formatDateTime(
+            content.date,
+            "YYYY-MM-DDThh:mm:ssfff:00"
+        );
+
+        const newDate = new Date(dateMasked);
+        newDate.setHours(newDate.getHours() - 2);
+
+        const dateMaskedEnd = this.dateProvider.formatDateTime(
+            newDate,
+            "YYYY-MM-DDThh:mm:ssfff:00"
+        );
+
+        console.log("dateMaskedEnd", dateMaskedEnd);
+
+        await this.scheduleGoogle.updateScehduledEvent(
+            mentoringObj.eventId,
+            `Mentoria coletiva com o(a) especialista ${mentoring.mentor.name}`,
+            "Online",
+            "Estamos aguardando você",
+            dateMasked,
+            dateMaskedEnd,
+            "America/Sao_Paulo",
+            mentoringObj.usersMentoring.map((user) => {
+                return { email: user.email };
+            })
+        );
     }
 
     validInput(content: ICreateMentoringDTO): void {

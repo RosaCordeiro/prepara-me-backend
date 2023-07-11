@@ -47,14 +47,20 @@ class CreateMentoringUseCase {
             "YYYY-MM-DDThh:mm:ssfff:00"
         );
 
-        console.log([{ email: specialist.user.email }]);
+        const newDate = new Date(dateMasked);
+        newDate.setHours(newDate.getHours() - 2);
+
+        const dateMaskedEnd = this.dateProvider.formatDateTime(
+            newDate,
+            "YYYY-MM-DDThh:mm:ssfff:00"
+        );
 
         const event = await this.scheduleGoogle.scheduleEvent(
             `Mentoria coletiva com o(a) especialista ${specialist.name}`,
             "Online",
             "Estamos aguardando você",
             dateMasked,
-            dateMasked,
+            dateMaskedEnd,
             "America/Sao_Paulo",
             [{ email: specialist.user.email }]
         );

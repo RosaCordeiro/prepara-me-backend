@@ -126,6 +126,14 @@ class MentoringRepository implements IMentoringRepository {
 
     async update(id: string, content: IEditMentoringDTO): Promise<Mentoring> {
         console.log(content.mentorId);
+        if (
+            content.mentorId === undefined ||
+            content.mentorId === null ||
+            content.mentorId === ""
+        ) {
+            throw new Error("Specialist not found");
+        }
+
         const specialist = await this.repositorySpecialist.findOne(
             content.mentorId
         );

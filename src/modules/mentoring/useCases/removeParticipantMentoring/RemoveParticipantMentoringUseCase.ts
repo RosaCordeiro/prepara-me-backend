@@ -8,7 +8,7 @@ import { AppError } from "@shared/errors/AppError";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
-class AddParticipantMentoringUseCase {
+class RemoveParticipantMentoringUseCase {
     constructor(
         @inject("MentoringRepository")
         private mentoringRepository: MentoringRepository,
@@ -41,20 +41,16 @@ class AddParticipantMentoringUseCase {
             throw new AppError("Mentoring not found");
         }
 
-        if (mentoringObj.users >= mentoringObj.vacancies) {
-            throw new AppError("Mentoring is full");
-        }
-
         const user = await this.userRepository.findById(userId);
 
         if (user === null || user === undefined) {
             throw new AppError("User not found");
         }
 
-        mentoringObj.users = mentoringObj.users + 1;
-        console.log(mentoringObj.usersMentoring);
-
-        mentoringObj.usersMentoring.push(user);
+        mentoringObj.users = mentoringObj.users - 1;
+        mentoringObj.usersMentoring = mentoringObj.usersMentoring.filter(
+            (userMentoring) => userMentoring.id !== user.id
+        );
 
         const newMentoring: any = JSON.parse(JSON.stringify(mentoringObj));
         delete newMentoring.mentor;
@@ -64,37 +60,12 @@ class AddParticipantMentoringUseCase {
             ...newMentoring,
         });
 
-        await this.scheduleGoogle.addAttendeeInEventByLink(
+        await this.scheduleGoogle.removeAttendeeInEventByLink(
             mentoringObj.eventId,
             user.email
         );
     }
-
-    validInput(content: ICreateMentoringDTO): void {
-        console.log(content);
-        console.log(content.title);
-
-        if (
-            content.title === null ||
-            content.title === "" ||
-            content.title === undefined
-        ) {
-            throw new AppError("Title can't be null");
-        }
-
-        if (
-            content.mentorId === null ||
-            content.mentorId === "" ||
-            content.mentorId === undefined
-        ) {
-            throw new AppError("Mentor can't be null");
-        }
-
-        if (content.date === null || content.date === undefined) {
-            throw new AppError("Date can't be null");
-        }
-    }
 }
 
-export { AddParticipantMentoringUseCase };
+export { RemoveParticipantMentoringUseCase };
 

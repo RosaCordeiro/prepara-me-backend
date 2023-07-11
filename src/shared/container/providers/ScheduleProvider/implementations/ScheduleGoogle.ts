@@ -18,7 +18,6 @@ class ScheduleGoogle implements IScheduleProvider {
             process.env.CLIENT_SECRET
         );
 
-        console.log(oAuth2Client);
         oAuth2Client.setCredentials({
             refresh_token: process.env.REFRESH_TOKEN,
         });
@@ -53,6 +52,8 @@ class ScheduleGoogle implements IScheduleProvider {
             requestBody: event,
             conferenceDataVersion: 1,
         });
+
+        console.log("resultado", resultado);
 
         return resultado;
     }
@@ -102,16 +103,111 @@ class ScheduleGoogle implements IScheduleProvider {
             eventId: eventId,
         });
 
-        const attendees = event.data.attendees;
+        const existingAttendees = event.data.attendees || [];
+        const newAttendees = existingAttendees.concat(
+            ...[
+                {
+                    email,
+                },
+            ]
+        );
 
-        attendees.push({
-            email,
+        const result = await calendar.events.patch({
+            calendarId: "primary",
+            eventId: eventId,
+            requestBody: {
+                attendees: newAttendees,
+            },
+        });
+
+        return result;
+    }
+
+    async removeAttendeeInEventByLink(eventId: string, email: string) {
+        const { OAuth2 } = google.auth;
+
+        const oAuth2Client = new OAuth2(
+            process.env.CLIENT_ID,
+            process.env.CLIENT_SECRET
+        );
+
+        oAuth2Client.setCredentials({
+            refresh_token: process.env.REFRESH_TOKEN,
+        });
+
+        const calendar = google.calendar({
+            version: "v3",
+            auth: oAuth2Client,
+        });
+
+        const event = await calendar.events.get({
+            calendarId: "primary",
+            eventId: eventId,
+        });
+
+        const existingAttendees = event.data.attendees || [];
+
+        const attendees = existingAttendees.filter((attendee) => {
+            return attendee.email !== email;
         });
 
         const result = await calendar.events.patch({
             calendarId: "primary",
             eventId: eventId,
             requestBody: {
+                attendees,
+            },
+        });
+
+        return result;
+    }
+
+    async updateScehduledEvent(
+        eventId: string,
+        summary: string,
+        location: string,
+        description: string,
+        eventStartTime: string,
+        eventEndTime: string,
+        timeZone: string,
+        attendees: Array<Object>
+    ) {
+        const { OAuth2 } = google.auth;
+
+        const oAuth2Client = new OAuth2(
+            process.env.CLIENT_ID,
+            process.env.CLIENT_SECRET
+        );
+
+        oAuth2Client.setCredentials({
+            refresh_token: process.env.REFRESH_TOKEN,
+        });
+
+        const calendar = google.calendar({
+            version: "v3",
+            auth: oAuth2Client,
+        });
+
+        const event = await calendar.events.get({
+            calendarId: "primary",
+            eventId: eventId,
+        });
+
+        const result = await calendar.events.patch({
+            calendarId: "primary",
+            eventId: eventId,
+            requestBody: {
+                summary,
+                location,
+                description,
+                start: {
+                    dateTime: eventStartTime,
+                    timeZone,
+                },
+                end: {
+                    dateTime: eventEndTime,
+                    timeZone,
+                },
                 attendees,
             },
         });
