@@ -263,7 +263,7 @@ class Schedules {
                     else 
                         'Não'
                 end as botao_vermelho,
-                'Mentorial Coletiva' as servico,
+                'Mentoria Coletiva' as servico,
                 TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
                 TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
                 CAST(m."mentorId" as text) as especialista,

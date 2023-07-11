@@ -72,7 +72,11 @@ class MentoringRepository implements IMentoringRepository {
         return schedule;
     }
 
-    async paginate(page: number, perPage: number): Promise<Pagination> {
+    async paginate(
+        page: number,
+        perPage: number,
+        idUser?: string
+    ): Promise<Pagination> {
         page = page - 1;
         if (page < 0) page = 0;
 
@@ -85,15 +89,30 @@ class MentoringRepository implements IMentoringRepository {
             },
         });
 
-        console.log(response);
-
         const totalPages =
             response[1] % perPage === 0
                 ? response[1] / perPage
                 : parseInt((response[1] / perPage + 1).toString());
 
+        const data = response[0];
+
+        if (idUser !== undefined && idUser !== null && idUser !== "") {
+            const user: any[] = await this.repository.query(
+                `select * from "mentoringUsers" where "userId" = '${idUser}'`
+            );
+
+            data.forEach((item: any) => {
+                const userParticipating = user.findIndex(
+                    (user) =>
+                        user.mentoringId === item.id && user.userId === idUser
+                );
+
+                item.participating = userParticipating !== -1;
+            });
+        }
+
         return {
-            data: response[0],
+            data: data,
             page: page + 1,
             perPage,
             pages: totalPages,
@@ -168,7 +187,7 @@ export interface Pagination {
     perPage: number;
     total: number;
     pages: number;
-    data: Mentoring[];
+    data: any[];
 }
 
 export { MentoringRepository };

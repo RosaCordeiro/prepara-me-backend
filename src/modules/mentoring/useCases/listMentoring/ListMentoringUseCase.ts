@@ -15,13 +15,23 @@ class ListMentoringUseCase {
         private mentoringRepository: MentoringRepository
     ) {}
 
-    async execute(page: number, limit: number): Promise<Pagination> {
-        const mentoring = await this.mentoringRepository.paginate(page, limit);
+    async execute(
+        page: number,
+        limit: number,
+        idUser: string
+    ): Promise<Pagination> {
+        const mentoring = await this.mentoringRepository.paginate(
+            page,
+            limit,
+            idUser
+        );
 
         mentoring.data.forEach((mentoring) => {
             mentoring.image = `${process.env.AWS_BUCKET_URL}/mentoring/${mentoring.image}`;
             return mentoring;
         });
+
+        console.log(mentoring);
 
         return mentoring;
     }

@@ -6,11 +6,14 @@ class ListMentoringController {
     async handle(request: Request, response: Response): Promise<Response> {
         const { page = 0, limit = 100 } = request.query;
 
+        const { id } = request.user;
+
         const listMentoringUseCase = container.resolve(ListMentoringUseCase);
 
         const createMentoring = await listMentoringUseCase.execute(
             Number(page),
-            Number(limit)
+            Number(limit),
+            id
         );
 
         return response.status(200).json(createMentoring);

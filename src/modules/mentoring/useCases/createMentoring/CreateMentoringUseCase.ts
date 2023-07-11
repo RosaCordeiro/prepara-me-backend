@@ -50,7 +50,7 @@ class CreateMentoringUseCase {
         console.log([{ email: specialist.user.email }]);
 
         const event = await this.scheduleGoogle.scheduleEvent(
-            `Mentorial coletiva com o(a) especialista ${specialist.name}`,
+            `Mentoria coletiva com o(a) especialista ${specialist.name}`,
             "Online",
             "Estamos aguardando você",
             dateMasked,
