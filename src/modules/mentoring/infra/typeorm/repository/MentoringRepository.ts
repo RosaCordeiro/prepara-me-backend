@@ -29,6 +29,8 @@ class MentoringRepository implements IMentoringRepository {
         dateEnd: string,
         type: string
     ): Promise<any> {
+        console.log(userId, dateBegin, dateEnd);
+
         const schedule: any[] = await this.repository.query(
             `           
             select 
@@ -54,6 +56,8 @@ class MentoringRepository implements IMentoringRepository {
             } = '${userId}' and m."date" between '${dateBegin}' and '${dateEnd} 23:59:59'
             `
         );
+
+        console.log(schedule);
 
         schedule.forEach((item) => {
             const product = item.product;
