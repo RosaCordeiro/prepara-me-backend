@@ -85,7 +85,7 @@ class MentoringRepository implements IMentoringRepository {
             take: perPage,
             relations: ["usersMentoring", "mentor"],
             order: {
-                date: "DESC",
+                date: "ASC",
             },
         });
 
