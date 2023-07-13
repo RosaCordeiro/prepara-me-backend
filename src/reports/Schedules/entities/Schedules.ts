@@ -34,14 +34,14 @@ class Schedules {
                 select 
                     u."name" as name,
                     case
-                        when u."subscribeToken" != '' then
+                        when u."companyId" is not null then
                             'B2B'
                         else 
                             'B2C'
                     end as origem,
                     case
-                        when u."subscribeToken" != '' then
-                            u."subscribeToken"
+                        when u."companyId" is not null then
+                            (select c.name from companies c where c.id = u."companyId")
                         else 
                             '-'
                     end as empresa,
@@ -91,15 +91,15 @@ class Schedules {
                 
                 select 
                     u."name" as name,
-                    case
-                        when u."subscribeToken" != '' then
+                  	case
+                        when u."companyId" is not null then
                             'B2B'
                         else 
                             'B2C'
                     end as origem,
-                    case
-                        when u."subscribeToken" != '' then
-                            u."subscribeToken"
+                   case
+                        when u."companyId" is not null then
+                            (select c.name from companies c where c.id = u."companyId")
                         else 
                             '-'
                     end as empresa,
@@ -152,15 +152,15 @@ class Schedules {
                 
                 select 
                     u."name" as name,
-                    case
-                        when u."subscribeToken" != '' then
+               	    case
+                        when u."companyId" is not null then
                             'B2B'
                         else 
                             'B2C'
                     end as origem,
                     case
-                        when u."subscribeToken" != '' then
-                            u."subscribeToken"
+                        when u."companyId" is not null then
+                            (select c.name from companies c where c.id = u."companyId")
                         else 
                             '-'
                     end as empresa,
@@ -219,16 +219,16 @@ class Schedules {
                 select 
                 u."name" as name,
                 case
-                    when u."subscribeToken" != '' then
+               		when u."companyId" is not null then
                         'B2B'
                     else 
                         'B2C'
                 end as origem,
-                case
-                    when u."subscribeToken" != '' then
-                        u."subscribeToken"
-                    else 
-                        '-'
+                 case
+                        when u."companyId" is not null then
+                            (select c.name from companies c where c.id = u."companyId")
+                        else 
+                            '-'
                 end as empresa,
                 case
                     when (
