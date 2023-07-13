@@ -11,6 +11,7 @@ import { ListUserProductsAvailableController } from "@modules/accounts/useCases/
 import { CreateSubscriptionNewsletterController } from "@modules/accounts/useCases/createSubscriptionNewsletter/CreateSubscriptionNewsletterController";
 import { UpdateUserSurveyFieldsController } from "@modules/accounts/useCases/updateUserSurveyFields/UpdateUserSurveyFieldsController";
 import { UpdateUserLaborRiskAlertController } from "@modules/accounts/useCases/updateUserLaborRiskAlert/UpdateUserLaborRiskAlertController";
+import { RemoveUserController } from "@modules/accounts/useCases/removeUser/RemoveUserController";
 
 const usersRoutes = Router();
 
@@ -79,6 +80,14 @@ usersRoutes.put(
     "/updateLaborRiskAlert",
     ensuredAuthenticated,
     updateUserLaborRiskAlertController.handle
+);
+
+const removeUserController = new RemoveUserController();
+usersRoutes.delete(
+    "/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
+    removeUserController.handle
 );
 
 export { usersRoutes };
