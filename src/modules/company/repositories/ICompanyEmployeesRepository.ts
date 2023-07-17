@@ -17,6 +17,7 @@ interface ICompanyEmployeesRepository {
     create(data: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee>;
     find(data: IRequestFind): Promise<ICompanyEmployeeResponseDTO[]>;
     remove(id: string): Promise<string>;
+    accept(id: string): Promise<boolean>;
 }
 
 export { ICompanyEmployeesRepository };

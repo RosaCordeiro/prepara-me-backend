@@ -15,6 +15,7 @@ class CompanyEmployeeMap {
         email,
         user,
         easyRegister,
+        accepted,
     }: CompanyEmployee): ICompanyEmployeeResponseDTO {
         let easyRegisterMapped = "";
 
@@ -41,6 +42,7 @@ class CompanyEmployeeMap {
                     : UserMap.toDTO(user)
                 : null,
             easyRegister: { label: easyRegisterMapped, value: easyRegister },
+            accepted,
         });
 
         return companyEmployee;

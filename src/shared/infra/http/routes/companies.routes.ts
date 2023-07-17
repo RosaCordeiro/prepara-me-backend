@@ -11,6 +11,7 @@ import { CreateCompanyController } from "@modules/company/useCases/createCompany
 import { RemoveCompanyController } from "@modules/company/useCases/removeCompany/RemoveCompanyController";
 import { RemoveCompanyEmployeeController } from "@modules/company/useCases/removeCompanyEmployee/RemoveCompanyEmployeeController";
 import { SendFreeMentorshipMailController } from "@modules/company/useCases/sendFreeMentorshipMail/SendFreeMentorshipMailController";
+import { AcceptCompanyEmployeeController } from "@modules/company/useCases/acceptCompanyEmployee/AcceptCompanyEmployeeController";
 
 const companiesRoutes = Router();
 
@@ -49,6 +50,14 @@ companiesRoutes.delete(
     ensuredAuthenticated,
     ensureAdmin,
     removeCompanyEmployeeController.handle
+);
+
+const acceptCompanyEmployeeController = new AcceptCompanyEmployeeController();
+companiesRoutes.put(
+    "/employees/:id/accept",
+    ensuredAuthenticated,
+    ensureAdmin,
+    acceptCompanyEmployeeController.handle
 );
 
 const createCompanySubscriptionPlanController =

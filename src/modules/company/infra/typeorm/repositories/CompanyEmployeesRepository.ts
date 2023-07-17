@@ -11,6 +11,11 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
     constructor() {
         this.repository = getRepository(CompanyEmployee);
     }
+    async accept(id: string): Promise<boolean> {
+        const response = await this.repository.update(id, { accepted: true });
+
+        return response.affected === 1;
+    }
 
     async create({
         companyId,
@@ -111,6 +116,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
 
         const companyEmployeesMapped = companyEmployees.map(
             (companyEmployee) => {
+                console.log(companyEmployee);
                 return CompanyEmployeeMap.toDTO(companyEmployee);
             }
         );

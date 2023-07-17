@@ -73,7 +73,7 @@ class CreateUserUseCase {
 
             passwordHash = await hash(password, 8);
 
-            periodTest = addDays(7);
+            periodTest = addDays(30);
             expiresDate = null;
         } else {
             passwordHash = userFind.password;

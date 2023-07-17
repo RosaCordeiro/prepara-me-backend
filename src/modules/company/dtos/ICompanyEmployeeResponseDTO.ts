@@ -11,6 +11,7 @@ interface ICompanyEmployeeResponseDTO {
     email: string;
     user: IUserResponseDTO;
     easyRegister: Object;
+    accepted: boolean;
 }
 
 export { ICompanyEmployeeResponseDTO };

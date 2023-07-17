@@ -39,13 +39,17 @@ class CompanyEmployee {
 
     @Column()
     userId: string;
-    
+
     @OneToOne(() => User)
     @JoinColumn()
     user: User;
-    
+
     @Column()
     easyRegister: string;
+
+    /* acolhido */
+    @Column()
+    accepted: boolean;
 
     constructor(
         name: string,
@@ -56,7 +60,8 @@ class CompanyEmployee {
         email: string,
         userId: string,
         id: string,
-        easyRegister: string
+        easyRegister: string,
+        accepted: boolean
     ) {
         if (id) {
             this.id = id;
@@ -64,6 +69,10 @@ class CompanyEmployee {
 
         if (!this.id) {
             this.id = uuidV4();
+        }
+
+        if (!this.accepted) {
+            this.accepted = false;
         }
 
         this.name = name;
