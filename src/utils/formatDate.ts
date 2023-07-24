@@ -35,3 +35,25 @@ export function formatDateTimeLocal(date: Date) {
     return `${year}-${month}-${day}T${hour}:${minutes}`;
 }
 
+const daysOfWeek = ["dom.", "seg.", "ter.", "qua.", "qui.", "sex.", "sáb."];
+
+export function formatDateToString(date: Date) {
+    const dateNow = new Date(date);
+    const newDate = new Date(
+        dateNow.setMinutes(dateNow.getMinutes() - -dateNow.getTimezoneOffset())
+    );
+
+    const day = newDate.getDate().toString().padStart(2, "0");
+    const month = newDate.toLocaleString("default", { month: "short" });
+    const year = newDate.getFullYear();
+
+    const hour = newDate.getHours().toString().padStart(2, "0");
+    const minutes = newDate.getMinutes().toString().padStart(2, "0");
+
+    const hourEnd = (newDate.getHours() + 1).toString().padStart(2, "0");
+
+    return `${
+        daysOfWeek[newDate.getDay()]
+    } ${day} ${month}. ${year} ${hour}:${minutes} – ${hourEnd}:${minutes}`;
+}
+

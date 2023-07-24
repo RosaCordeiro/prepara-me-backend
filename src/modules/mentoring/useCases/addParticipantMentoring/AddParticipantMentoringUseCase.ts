@@ -1,9 +1,12 @@
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { ICreateMentoringDTO } from "@modules/mentoring/dtos/ICreateMentoring";
 import { MentoringRepository } from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
+import { IMailProvider } from "@shared/container/providers/MailProvider/IMailProvider";
 import { IScheduleProvider } from "@shared/container/providers/ScheduleProvider/IScheduleProvider";
 import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
 import { AppError } from "@shared/errors/AppError";
+import { formatDateToString } from "@utils/formatDate";
+import { resolve } from "path";
 
 import { inject, injectable } from "tsyringe";
 
@@ -17,7 +20,9 @@ class AddParticipantMentoringUseCase {
         @inject("StorageProvider")
         private storageProvider: IStorageProvider,
         @inject("ScheduleGoogle")
-        private scheduleGoogle: IScheduleProvider
+        private scheduleGoogle: IScheduleProvider,
+        @inject("SESMailProvider")
+        private mailProvider: IMailProvider
     ) {}
 
     async execute(mentoringId: string, userId: string): Promise<void> {
@@ -52,8 +57,6 @@ class AddParticipantMentoringUseCase {
         }
 
         mentoringObj.users = mentoringObj.users + 1;
-        console.log(mentoringObj.usersMentoring);
-
         mentoringObj.usersMentoring.push(user);
 
         const newMentoring: any = JSON.parse(JSON.stringify(mentoringObj));
@@ -68,12 +71,37 @@ class AddParticipantMentoringUseCase {
             mentoringObj.eventId,
             user.email
         );
+
+        try {
+            const templatePath = resolve(
+                __dirname,
+                "..",
+                "..",
+                "views",
+                "emails",
+                "mentoringCreate.hbs"
+            );
+
+            const variables = {
+                name: user.name,
+                mentoring: mentoringObj.title,
+                specialist: mentoringObj.mentor.name,
+                date: formatDateToString(mentoringObj.date),
+                link: mentoringObj.linkMeet,
+            };
+
+            void this.mailProvider.sendMail(
+                user.email,
+                "Confirmação de participação em mentoria",
+                variables,
+                templatePath
+            );
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     validInput(content: ICreateMentoringDTO): void {
-        console.log(content);
-        console.log(content.title);
-
         if (
             content.title === null ||
             content.title === "" ||
@@ -97,4 +125,35 @@ class AddParticipantMentoringUseCase {
 }
 
 export { AddParticipantMentoringUseCase };
+
+/*   const templatePath = resolve(
+            __dirname,
+            "..",
+            "..",
+            "views",
+            "emails",
+            "forgotPassword.hbs"
+        );
+
+        const token = uuidV4();
+
+        const expires_date = this.dateProvider.addHours(3);
+
+        await this.usertokensRepository.create({
+            refresh_token: token,
+            user_id: user.id,
+            expires_date,
+        });
+
+        const variables = {
+            name: user.name,
+            link: `${process.env.FORGOT_MAIL_URL}#/password/reset/${token}`,
+        };
+
+        await this.mailProvider.sendMail(
+            email,
+            "Recuperação de senha",
+            variables,
+            templatePath
+        ); */
 
