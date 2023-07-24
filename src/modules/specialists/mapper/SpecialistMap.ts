@@ -12,7 +12,8 @@ class SpecialistMap {
         specialistSchedule,
         status,
         user,
-        productSpecialist
+        productSpecialist,
+        image,
     }: Specialist): ISpecialistResponseDTO {
         const statusMapped = status === "ACTIVE" ? "Ativo" : "Inativo";
 
@@ -23,8 +24,16 @@ class SpecialistMap {
             linkedinUrl,
             specialistSchedule,
             status: { label: statusMapped, value: status },
-            user: user ? process.env.NODE_ENV === "test" ? user : UserMap.toDTO(user) : null,
-            productSpecialist
+            user: user
+                ? process.env.NODE_ENV === "test"
+                    ? user
+                    : UserMap.toDTO(user)
+                : null,
+            productSpecialist,
+            image:
+                image !== null
+                    ? `${process.env.AWS_BUCKET_URL}/specialists/${image}`
+                    : "https://preparame-backend.s3.sa-east-1.amazonaws.com/avatar/nopic.png",
         });
 
         return specialist;

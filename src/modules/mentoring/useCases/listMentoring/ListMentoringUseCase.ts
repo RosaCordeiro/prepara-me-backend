@@ -31,8 +31,6 @@ class ListMentoringUseCase {
             return mentoring;
         });
 
-        console.log(mentoring);
-
         return mentoring;
     }
 }

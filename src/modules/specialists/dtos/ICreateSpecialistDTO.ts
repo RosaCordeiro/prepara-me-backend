@@ -6,7 +6,9 @@ interface ICreateSpecialistDTO {
     status: SpecialistStatusEnum;
     userId: string;
     linkedinUrl: string;
-    id?: string
+    id?: string;
+    image?: string;
 }
 
-export { ICreateSpecialistDTO }
+export { ICreateSpecialistDTO };
+

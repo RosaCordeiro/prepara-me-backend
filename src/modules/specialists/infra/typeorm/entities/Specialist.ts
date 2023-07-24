@@ -57,13 +57,17 @@ class Specialist {
     @OneToMany(() => Mentoring, (m) => m.mentor)
     mentoring: Mentoring[];
 
+    @Column({ nullable: true })
+    image?: string;
+
     constructor(
         name: string,
         bio: string,
         status: SpecialistStatusEnum,
         userId: string,
         linkedinUrl: string,
-        id: string
+        id: string,
+        image?: string
     ) {
         if (!this.id) {
             this.id = uuidV4();
@@ -78,6 +82,7 @@ class Specialist {
         this.status = status;
         this.userId = userId;
         this.linkedinUrl = linkedinUrl;
+        this.image = image;
     }
 }
 

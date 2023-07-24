@@ -20,6 +20,7 @@ class SpecialistsRepository implements ISpecialistsRepository {
         linkedinUrl,
         userId,
         id,
+        image,
     }: ICreateSpecialistDTO): Promise<Specialist> {
         const specialist = this.repository.create({
             name,
@@ -28,6 +29,7 @@ class SpecialistsRepository implements ISpecialistsRepository {
             linkedinUrl,
             userId,
             id,
+            image,
         });
 
         await this.repository.save(specialist);
