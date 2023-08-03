@@ -9,4 +9,4 @@ import "./repositories/subscriptionPlans";
 import "./repositories/clicks";
 import "./repositories/mentoring";
 import "./repositories/orders";
-
+import "./repositories/interview";

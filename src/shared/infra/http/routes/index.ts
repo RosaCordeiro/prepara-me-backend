@@ -12,6 +12,7 @@ import { ordersRoutes } from "./orders.routes";
 import { resumesRoutes } from "./resumes.routes";
 import { clicksRoutes } from "./clicks.routes";
 import { mentoringRoutes } from "./mentoring.routes";
+import { interviewRoutes } from "./interview.route";
 
 const router = Router();
 
@@ -26,7 +27,7 @@ router.use("/orders", ordersRoutes);
 router.use("/resumes", resumesRoutes);
 router.use("/clicks", clicksRoutes);
 router.use("/mentoring", mentoringRoutes);
+router.use("/interview", interviewRoutes);
 router.use(authenticateRoutes);
 
 export { router };
-
