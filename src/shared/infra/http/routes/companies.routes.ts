@@ -12,6 +12,7 @@ import { RemoveCompanyController } from "@modules/company/useCases/removeCompany
 import { RemoveCompanyEmployeeController } from "@modules/company/useCases/removeCompanyEmployee/RemoveCompanyEmployeeController";
 import { SendFreeMentorshipMailController } from "@modules/company/useCases/sendFreeMentorshipMail/SendFreeMentorshipMailController";
 import { AcceptCompanyEmployeeController } from "@modules/company/useCases/acceptCompanyEmployee/AcceptCompanyEmployeeController";
+import { ListVacanciesController } from "@modules/company/useCases/listVacancies/listVacanciesController";
 
 const companiesRoutes = Router();
 
@@ -125,5 +126,7 @@ companiesRoutes.delete(
     removeCompanyControllerController.handle
 );
 
-export { companiesRoutes };
+const listVacanciesController = new ListVacanciesController();
+companiesRoutes.get("/vacancies/:companyName", listVacanciesController.handle);
 
+export { companiesRoutes };

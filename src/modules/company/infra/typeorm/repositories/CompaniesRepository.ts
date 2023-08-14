@@ -2,12 +2,25 @@ import { ICreateCompanyDTO } from "@modules/company/dtos/ICreateCompanyDTO";
 import { ICompaniesRepository } from "@modules/company/repositories/ICompaniesRepository";
 import { getRepository, Repository } from "typeorm";
 import { Company } from "../entities/Company";
+import { User } from "@modules/accounts/infra/typeorm/entities/User";
 
 class CompaniesRepository implements ICompaniesRepository {
     private repository: Repository<Company>;
+    private repositoryUsers: Repository<User>;
 
     constructor() {
         this.repository = getRepository(Company);
+        this.repositoryUsers = getRepository(User);
+    }
+
+    async listVacancies(companyName: string): Promise<number> {
+        const response = await this.repositoryUsers.count({
+            where: {
+                companyNameSignIn: companyName,
+            },
+        });
+
+        return response;
     }
 
     async create({ name, id }: ICreateCompanyDTO): Promise<Company> {
@@ -64,4 +77,3 @@ class CompaniesRepository implements ICompaniesRepository {
 }
 
 export { CompaniesRepository };
-

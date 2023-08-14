@@ -11,6 +11,7 @@ interface ICompaniesRepository {
     findById(id: string): Promise<Company>;
     find(data: IRequestFind): Promise<Company[]>;
     remove(id: string);
+    listVacancies(companyName: string): Promise<number>;
 }
 
 export { ICompaniesRepository };
