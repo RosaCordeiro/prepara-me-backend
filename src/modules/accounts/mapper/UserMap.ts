@@ -34,6 +34,7 @@ class UserMap {
         expiresDate,
         periodTest,
         subscribeToken,
+        companyNameSignIn,
     }: User): IUserResponseDTO {
         const statusMapped =
             status == UserStatusEnum.INACTIVE ? "Inativo" : "Ativo";
@@ -99,6 +100,7 @@ class UserMap {
             expiryDateFormated,
             periodTest,
             subscribeToken,
+            companyNameSignIn,
         });
 
         return user;
@@ -106,4 +108,3 @@ class UserMap {
 }
 
 export { UserMap };
-

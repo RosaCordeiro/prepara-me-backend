@@ -37,6 +37,7 @@ class UsersRepository implements IUsersRepository {
         expiresDate,
         periodTest,
         subscribeToken,
+        companyNameSignIn,
     }: ICreateUserDTO): Promise<User> {
         console.log("user object", {
             id,
@@ -61,6 +62,7 @@ class UsersRepository implements IUsersRepository {
             expiresDate,
             periodTest,
             subscribeToken,
+            companyNameSignIn,
         });
         const user = this.repository.create({
             id,
@@ -85,27 +87,10 @@ class UsersRepository implements IUsersRepository {
             expiresDate,
             periodTest,
             subscribeToken,
+            companyNameSignIn: companyNameSignIn ?? "",
         });
 
-        console.log(user);
-        console.log(id);
-
         await this.repository.save(user);
-        /* if (!id) {
-            console.log("entrou no save");
-        } else {
-            console.log("entrou no update");
-            const response = await this.repository.update(
-                {
-                    id,
-                },
-                {
-                    name: "TESTE",
-                }
-            );
-
-            console.log(response);
-        } */
 
         return user;
     }
@@ -209,4 +194,3 @@ class UsersRepository implements IUsersRepository {
 }
 
 export { UsersRepository };
-

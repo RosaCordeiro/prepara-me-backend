@@ -22,7 +22,8 @@ class CreateUserController {
             realocated,
             laborRiskAlert,
             expiresDate,
-            periodTest
+            periodTest,
+            companyNameSignIn,
         } = request.body;
 
         const createUserUseCase = container.resolve(CreateUserUseCase);
@@ -44,7 +45,8 @@ class CreateUserController {
             realocated,
             laborRiskAlert,
             expiresDate,
-            periodTest
+            periodTest,
+            companyNameSignIn,
         });
 
         return response.status(201).send();
@@ -52,4 +54,3 @@ class CreateUserController {
 }
 
 export { CreateUserController };
-

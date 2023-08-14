@@ -26,7 +26,7 @@ interface ICreateUserDTO {
     laborRiskAlert?: UserLaborRiskAlertEnum;
     expiresDate: Date;
     periodTest: Date;
+    companyNameSignIn?: string;
 }
 
 export { ICreateUserDTO };
-

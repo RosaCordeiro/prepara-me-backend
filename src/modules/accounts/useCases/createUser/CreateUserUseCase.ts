@@ -43,6 +43,7 @@ class CreateUserUseCase {
         laborRiskAlert,
         expiresDate,
         periodTest,
+        companyNameSignIn,
     }: ICreateUserDTO): Promise<User> {
         var userFind;
 
@@ -59,6 +60,12 @@ class CreateUserUseCase {
 
             if (userFind && userFind.id !== id) {
                 throw new AppError("E-mail used by another user!");
+            }
+        } else {
+            userFind = await this.usersRepository.findByEmail(email);
+
+            if (userFind) {
+                throw new AppError("E-mail already exists!");
             }
         }
 
@@ -109,6 +116,7 @@ class CreateUserUseCase {
             expiresDate,
             periodTest,
             subscribeToken,
+            companyNameSignIn: companyNameSignIn ?? "",
         });
 
         console.log("userCreated", userCreated);
@@ -241,4 +249,3 @@ class CreateUserUseCase {
 }
 
 export { CreateUserUseCase };
-

@@ -153,6 +153,9 @@ class User {
     @ManyToMany(() => Mentoring, (mentoring) => mentoring.usersMentoring)
     mentoring: Mentoring[];
 
+    @Column()
+    companyNameSignIn: string;
+
     constructor(
         name: string,
         username: string,
@@ -174,7 +177,8 @@ class User {
         laborRiskAlert: UserLaborRiskAlertEnum,
         expiresDate: Date,
         periodTest: Date,
-        subscribeToken: string
+        subscribeToken: string,
+        companyNameSignIn: string
     ) {
         if (id) {
             this.id = id;
@@ -207,8 +211,8 @@ class User {
         this.expiresDate = expiresDate;
         this.periodTest = periodTest;
         this.subscribeToken = subscribeToken;
+        this.companyNameSignIn = companyNameSignIn;
     }
 }
 
 export { User };
-

@@ -25,7 +25,7 @@ interface IUserResponseDTO {
     expiryDateFormated?: string;
     periodTest: Date;
     subscribeToken: string;
+    companyNameSignIn: string;
 }
 
 export { IUserResponseDTO };
-
