@@ -20,6 +20,9 @@ class SchedulesUseCase {
             "Pesquisa Desligamento Realizada",
             "Pedido de Ajuda Processo Trabalhista (apertou o botão vermelho)",
             "Serviço",
+            "Mentoria Trocada",
+            "Mentoria Inclusa",
+            "Data Troca",
             "Data Agendamento",
             "Data Serviço",
             "Especialista",
@@ -31,6 +34,7 @@ class SchedulesUseCase {
             element.data_agendamento = formatDate(element.data_agendamento);
             element.data_servico = formatDate(element.data_servico);
             element.primeiro_login = formatDate(element.primeiro_login);
+            element.data_troca = formatDate(element.data_troca);
         });
 
         const excel = await geradorExcelTools.geradorExcel(
@@ -44,4 +48,3 @@ class SchedulesUseCase {
 }
 
 export { SchedulesUseCase };
-

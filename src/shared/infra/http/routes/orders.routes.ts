@@ -24,4 +24,3 @@ const listOrderController = new ListOrderController();
 ordersRoutes.get("/", listOrderController.handle);
 
 export { ordersRoutes };
-

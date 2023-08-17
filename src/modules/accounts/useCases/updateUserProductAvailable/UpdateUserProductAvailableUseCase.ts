@@ -5,19 +5,18 @@ import { AppError } from "@shared/errors/AppError";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
-class CreateUserProductAvailableUseCase {
+class UpdateUserProductAvailableUseCase {
     constructor(
         @inject("UserProductsAvailableRepository")
         private userProductsAvailableRepository: IUserProductsAvailableRepository
     ) {}
 
-    async execute({
-        userId,
-        productId,
-        availableQuantity,
-    }: ICreateUserProductAvailableDTO): Promise<UserProductAvailable> {
-        if (!userId) {
-            throw new AppError("User can't be null");
+    async execute(
+        id: string,
+        productId: string
+    ): Promise<UserProductAvailable> {
+        if (!id) {
+            throw new AppError("Id can't be null");
         }
 
         if (!productId) {
@@ -25,14 +24,10 @@ class CreateUserProductAvailableUseCase {
         }
 
         const userProductAvailable =
-            await this.userProductsAvailableRepository.create({
-                userId,
-                productId,
-                availableQuantity,
-            });
+            await this.userProductsAvailableRepository.update(id, productId);
 
         return userProductAvailable;
     }
 }
 
-export { CreateUserProductAvailableUseCase };
+export { UpdateUserProductAvailableUseCase };

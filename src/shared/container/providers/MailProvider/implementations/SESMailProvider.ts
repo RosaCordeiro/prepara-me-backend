@@ -56,4 +56,3 @@ class SESMailProvider implements IMailProvider {
 }
 
 export { SESMailProvider };
-

@@ -14,7 +14,7 @@ interface IUserProductsAvailableRepository {
     find(data: IRequestFind): Promise<IUserProductAvailableResponseDTO[]>;
     findById(id: string): Promise<UserProductAvailable>;
     findByUser(userId: string): Promise<UserProductAvailable[]>;
+    update(id: string, productId: string): Promise<UserProductAvailable>;
 }
 
 export { IUserProductsAvailableRepository };
-

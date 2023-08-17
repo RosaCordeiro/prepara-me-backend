@@ -30,7 +30,7 @@ class Schedules {
         }
 
         const data: ISchedulesReport[] = await this.repository.query(`
-            select * from (
+           select * from (
                 select 
                     u."name" as name,
                     case
@@ -79,6 +79,9 @@ class Schedules {
                             'Não'
                     end as botao_vermelho,
                     'Conteúdo Livre' as servico,
+                    null as mentoria_trocada,
+                    null as mentoria_incluida,
+                   	null as data_troca,
                     null as data_agendamento,
                     null as data_servico,
                     '-' as especialista ,
@@ -136,7 +139,25 @@ class Schedules {
                         else 
                             'Não'
                     end as botao_vermelho,
-                    p."name" as servico,
+                    case
+                        when upal.id is not	null then
+                            (select p2."name" from products p2 where id = upal."productIdOld") 
+                        else 
+                            p."name"
+                    end as servico,
+            		case
+                        when upal.id is not	null then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as mentoria_trocada,
+                    case
+                        when upal."productIdNew" is not	null then
+                            (select p."name" from products where id = upal."productIdNew") 
+                        else 
+                            null
+                    end as mentoria_incluida,
+                   	upal.created_at as data_troca,
                     null as data_agendamento,
                     null as data_servico,
                     '-' as especialista ,
@@ -146,6 +167,7 @@ class Schedules {
                 from "userProductsAvailable" upa 
                 inner join users u on u.id = upa."userId"  
                 inner join products p on p.id = upa."productId" 
+                left join "userProductsAvailableLog" upal on upal."userProductsAvailableId" = upa.id	
                 where upa."availableQuantity" > 0	
                 
                 union 
@@ -197,7 +219,10 @@ class Schedules {
                         else 
                             'Não'
                     end as botao_vermelho,
-                    p."name" as servico,
+                    p."name" as servico,                    
+                    null as mentoria_trocada,
+                    null as mentoria_incluida,
+                   	null as data_troca,
                     TO_CHAR(ss."dateSchedule", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
                     TO_CHAR(ss."dateSchedule", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
                     s."name" as especialista ,
@@ -263,7 +288,10 @@ class Schedules {
                     else 
                         'Não'
                 end as botao_vermelho,
-                'Mentoria Coletiva' as servico,
+                'Mentoria Coletiva' as servico,                
+	            null as mentoria_trocada,
+	            null as mentoria_incluida,
+	           	null as data_troca,
                 TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
                 TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
                 CAST(m."mentorId" as text) as especialista,
@@ -278,7 +306,7 @@ class Schedules {
                 from "mentoringUsers" mu 
                 inner join users u on u.id = mu."userId" 
                 inner join mentoring m on m.id = mu."mentoringId" 
-            ) as row
+            ) as row 
             ${where}
             order by row.name, row.order            
         `);
@@ -299,6 +327,9 @@ export interface ISchedulesReport {
     pesquisa_desligamento: string;
     botao_vermelho: string;
     servico: string;
+    mentoria_trocada: string;
+    mentoria_incluida: string;
+    data_troca: string;
     data_agendamento: string;
     data_servico: string;
     especialista: string;
@@ -308,4 +339,3 @@ export interface ISchedulesReport {
 }
 
 export { Schedules };
-

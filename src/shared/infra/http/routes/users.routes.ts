@@ -12,6 +12,7 @@ import { CreateSubscriptionNewsletterController } from "@modules/accounts/useCas
 import { UpdateUserSurveyFieldsController } from "@modules/accounts/useCases/updateUserSurveyFields/UpdateUserSurveyFieldsController";
 import { UpdateUserLaborRiskAlertController } from "@modules/accounts/useCases/updateUserLaborRiskAlert/UpdateUserLaborRiskAlertController";
 import { RemoveUserController } from "@modules/accounts/useCases/removeUser/RemoveUserController";
+import { UpdateUserProductAvailableController } from "@modules/accounts/useCases/updateUserProductAvailable/UpdateUserProductAvailableController";
 
 const usersRoutes = Router();
 
@@ -36,6 +37,15 @@ usersRoutes.get(
     "/products",
     ensuredAuthenticated,
     listUserProductsAvailableController.handle
+);
+
+const updateUserProductAvailableController =
+    new UpdateUserProductAvailableController();
+
+usersRoutes.patch(
+    "/products",
+    ensuredAuthenticated,
+    updateUserProductAvailableController.handle
 );
 
 const updateUserAvatarController = new UpdateUserAvatarController();
@@ -91,4 +101,3 @@ usersRoutes.delete(
 );
 
 export { usersRoutes };
-

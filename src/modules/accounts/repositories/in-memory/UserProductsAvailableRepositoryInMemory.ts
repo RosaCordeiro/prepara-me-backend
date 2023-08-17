@@ -1,4 +1,4 @@
-import { ICreateUserProductAvailableDTO } from "@modules/accounts/dtos/ICreateUserProductAvailableDTO";
+import { ICreateUserProductAvailableDTO } from "@modules/accounts/dtos/ICreateUserProductAvailableLogDTO";
 import { IUserProductAvailableResponseDTO } from "@modules/accounts/dtos/IUserProductAvailableResponseDTO";
 import { UserProductAvailable } from "@modules/accounts/infra/typeorm/entities/UserProductAvailable";
 import { UserProductsAvailableMap } from "@modules/accounts/mapper/UserProductsAvailable";
@@ -13,7 +13,7 @@ class UserProductsAvailableRepositoryInMemory
         userId,
         productId,
         availableQuantity,
-        id
+        id,
     }: ICreateUserProductAvailableDTO): Promise<UserProductAvailable> {
         const userProductAvailable = new UserProductAvailable(
             userId,
@@ -39,7 +39,11 @@ class UserProductsAvailableRepositoryInMemory
         });
     }
 
-    async find({ id, userId, productId }): Promise<IUserProductAvailableResponseDTO[]> {
+    async find({
+        id,
+        userId,
+        productId,
+    }): Promise<IUserProductAvailableResponseDTO[]> {
         let userProductsAvailable = this.userProductsAvailable;
 
         if (id) {
@@ -66,13 +70,14 @@ class UserProductsAvailableRepositoryInMemory
             }
         }
 
-        const userProductsAvailableMapped = userProductsAvailable.map((userProductAvailable) => {
-            return UserProductsAvailableMap.toDTO(userProductAvailable);
-        });
+        const userProductsAvailableMapped = userProductsAvailable.map(
+            (userProductAvailable) => {
+                return UserProductsAvailableMap.toDTO(userProductAvailable);
+            }
+        );
 
         return userProductsAvailableMapped;
     }
 }
 
 export { UserProductsAvailableRepositoryInMemory };
-
