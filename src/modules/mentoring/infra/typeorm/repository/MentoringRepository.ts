@@ -89,7 +89,7 @@ class MentoringRepository implements IMentoringRepository {
             take: perPage,
             relations: ["usersMentoring", "mentor"],
             order: {
-                date: "ASC",
+                date: "DESC",
             },
         });
 
@@ -203,4 +203,3 @@ export interface Pagination {
 }
 
 export { MentoringRepository };
-
