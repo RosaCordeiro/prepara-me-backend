@@ -21,19 +21,34 @@ class ProductsRepository implements IProductsRepository {
         `);
     }
 
-    async findByUserId(userId: string, productId?: string): Promise<any> {
+    async findByUserId(
+        userId: string,
+        onlyAvailables: boolean,
+        productId?: string
+    ): Promise<any> {
         let where = `where upa."userId" = '${userId}' `;
 
         if (productId !== "undefined" && productId !== undefined) {
             where += ` and upa."productId" = '${productId}' `;
         }
 
+        if (onlyAvailables) {
+            where += ` and upa."availableQuantity" > 0`;
+        }
+
         return await this.repository.query(`
             select 
             upa.*,
-            p."name" 
+            p."name",
+            case
+                when upal.id is null then
+                    false
+                else
+                    true
+            end as isChanged
             from "userProductsAvailable" upa 
             inner join products p on p.id = upa."productId"
+            left join "userProductsAvailableLog" upal on upal."userProductsAvailableId" = upa.id	
             ${where}
         `);
     }
@@ -160,4 +175,3 @@ class ProductsRepository implements IProductsRepository {
 }
 
 export { ProductsRepository };
-

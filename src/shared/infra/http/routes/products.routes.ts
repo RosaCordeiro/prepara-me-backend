@@ -26,7 +26,6 @@ const listProductByUserController = new ListProductByUserController();
 productsRoutes.get(
     "/listProductByUser",
     ensuredAuthenticated,
-    ensureAdmin,
     listProductByUserController.handle
 );
 
@@ -144,4 +143,3 @@ productsRoutes.post(
 );
 
 export { productsRoutes };
-

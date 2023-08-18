@@ -21,9 +21,12 @@ interface IProductsRepository {
     findAvailableBestSellers(): Promise<Product[]>;
     find(data: IRequestFind): Promise<IResponseProductDTO[]>;
     remove(id: string): Promise<void>;
-    findByUserId(userId: string, productId?: string): Promise<any>;
+    findByUserId(
+        userId: string,
+        onlyAvailables: boolean,
+        productId?: string
+    ): Promise<any>;
     removeByProductAvailableId(id: string): Promise<void>;
 }
 
 export { IProductsRepository };
-

@@ -9,7 +9,7 @@ class ListProductByUserUseCase {
         private productsRepository: IProductsRepository
     ) {}
 
-    async execute(userId: string, productId?: string) {
+    async execute(userId: string, onlyAvailables: boolean, productId?: string) {
         if (
             userId === null ||
             userId === undefined ||
@@ -19,9 +19,12 @@ class ListProductByUserUseCase {
             throw new AppError("User id is required");
         }
 
-        return await this.productsRepository.findByUserId(userId, productId);
+        return await this.productsRepository.findByUserId(
+            userId,
+            onlyAvailables,
+            productId
+        );
     }
 }
 
 export { ListProductByUserUseCase };
-
