@@ -16,6 +16,7 @@ import { RemoveSimulatorVideosController } from "@modules/products/useCases/remo
 import { ListProductByUserController } from "@modules/products/useCases/listProductByUser/ListProductByUserController";
 import { RemoveProductUserUseCase } from "@modules/products/useCases/removeProductUser/RemoveProductUserUseCase";
 import { RemoveProductUserController } from "@modules/products/useCases/removeProductUser/RemoveProductUserController";
+import { ListProductByPriceController } from "@modules/products/useCases/listProductByPrice/ListProductByPriceController";
 
 const productsRoutes = Router();
 
@@ -117,6 +118,13 @@ productsRoutes.delete(
 const listProductController = new ListProductController();
 productsRoutes.get("/", listProductController.handle);
 productsRoutes.get("/:id", listProductController.handle);
+
+const listProductByPriceController = new ListProductByPriceController();
+productsRoutes.get(
+    "/price/:id",
+    ensuredAuthenticated,
+    listProductByPriceController.handle
+);
 
 const removeProductController = new RemoveProductController();
 productsRoutes.delete(

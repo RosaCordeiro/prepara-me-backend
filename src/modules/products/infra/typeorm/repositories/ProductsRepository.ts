@@ -4,9 +4,10 @@ import { ProductBestSellerEnum } from "@modules/products/enums/ProductBestSeller
 import { ProductStatusEnum } from "@modules/products/enums/ProductStatusEnum";
 import { ProductMap } from "@modules/products/mapper/ProductMap";
 import { IProductsRepository } from "@modules/products/repositories/IProductsRepository";
-import { getRepository, Repository } from "typeorm";
+import { getRepository, LessThanOrEqual, Not, Repository } from "typeorm";
 
 import { Product } from "../entities/Product";
+import { AppError } from "@shared/errors/AppError";
 
 class ProductsRepository implements IProductsRepository {
     private repository: Repository<Product>;
@@ -51,6 +52,22 @@ class ProductsRepository implements IProductsRepository {
             left join "userProductsAvailableLog" upal on upal."userProductsAvailableId" = upa.id	
             ${where}
         `);
+    }
+
+    async findLassThanPrice(id: string): Promise<Product[]> {
+        const product = await this.repository.findOne(id);
+
+        if (!product) {
+            throw new AppError("Product not found");
+        }
+
+        return await this.repository.find({
+            where: {
+                price: LessThanOrEqual(product.price),
+                status: ProductStatusEnum.ACTIVE,
+                id: Not(id),
+            },
+        });
     }
 
     findById(id: string): Promise<Product> {

@@ -19,6 +19,7 @@ interface IProductsRepository {
     findById(id: string): Promise<Product>;
     findAvailable(): Promise<Product[]>;
     findAvailableBestSellers(): Promise<Product[]>;
+    findLassThanPrice(id: string): Promise<Product[]>;
     find(data: IRequestFind): Promise<IResponseProductDTO[]>;
     remove(id: string): Promise<void>;
     findByUserId(
