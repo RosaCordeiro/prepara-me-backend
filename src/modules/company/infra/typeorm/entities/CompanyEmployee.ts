@@ -47,9 +47,11 @@ class CompanyEmployee {
     @Column()
     easyRegister: string;
 
-    /* acolhido */
     @Column()
     accepted: boolean;
+
+    @Column()
+    realocate: boolean;
 
     constructor(
         name: string,
@@ -61,7 +63,8 @@ class CompanyEmployee {
         userId: string,
         id: string,
         easyRegister: string,
-        accepted: boolean
+        accepted: boolean,
+        realocate: boolean
     ) {
         if (id) {
             this.id = id;
@@ -73,6 +76,8 @@ class CompanyEmployee {
 
         if (!this.accepted) {
             this.accepted = false;
+        } else {
+            this.accepted = accepted;
         }
 
         this.name = name;
@@ -83,8 +88,8 @@ class CompanyEmployee {
         this.phone = phone;
         this.email = email;
         this.easyRegister = easyRegister;
+        this.realocate = realocate;
     }
 }
 
 export { CompanyEmployee };
-

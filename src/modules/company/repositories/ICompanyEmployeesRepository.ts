@@ -18,7 +18,7 @@ interface ICompanyEmployeesRepository {
     find(data: IRequestFind): Promise<ICompanyEmployeeResponseDTO[]>;
     remove(id: string): Promise<string>;
     accept(id: string): Promise<boolean>;
+    realocate(id: string): Promise<boolean>;
 }
 
 export { ICompanyEmployeesRepository };
-

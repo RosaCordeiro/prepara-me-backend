@@ -11,8 +11,17 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
     constructor() {
         this.repository = getRepository(CompanyEmployee);
     }
+
     async accept(id: string): Promise<boolean> {
         const response = await this.repository.update(id, { accepted: true });
+
+        return response.affected === 1;
+    }
+
+    async realocate(id: string): Promise<boolean> {
+        const response = await this.repository.update(id, {
+            realocate: true,
+        });
 
         return response.affected === 1;
     }
@@ -132,4 +141,3 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
 }
 
 export { CompanyEmployeesRepository };
-

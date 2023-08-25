@@ -18,6 +18,7 @@ import multer from "multer";
 import uploadConfig from "@config/upload";
 import { GetCompanyPageByNameController } from "@modules/company/useCases/getCompanyPageByName/GetCompanyPageByNameController";
 import { GetCompanyPageByIdController } from "@modules/company/useCases/getCompanyPageById/GetCompanyPageByIdController";
+import { RealocateCompanyEmployeeController } from "@modules/company/useCases/realocateCompanyEmployee/RealocateCompanyEmployeeController";
 
 const companiesRoutes = Router();
 const uploadImage = multer(uploadConfig);
@@ -85,6 +86,15 @@ companiesRoutes.put(
     ensuredAuthenticated,
     ensureAdmin,
     acceptCompanyEmployeeController.handle
+);
+
+const realocateCompanyEmployeeController =
+    new RealocateCompanyEmployeeController();
+companiesRoutes.put(
+    "/employees/:id/realocate",
+    ensuredAuthenticated,
+    ensureAdmin,
+    realocateCompanyEmployeeController.handle
 );
 
 const createCompanySubscriptionPlanController =

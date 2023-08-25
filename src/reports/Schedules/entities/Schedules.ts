@@ -89,7 +89,16 @@ class Schedules {
                     null as data_servico,
                     '-' as especialista ,
                     '-' as nota,
-                    '-' as recolocacao,
+                    case
+                        when u."companyId" is not null then
+                            case when (select ce.realocate from "companyEmployees" ce where ce."userId" = u.id) is true then 
+                                'Sim'
+                            else 
+                                'Não'
+                            end
+                        else 
+                            '-'
+                    end as recolocacao,
                     1 as order 
                 from users u 
                 
@@ -168,7 +177,16 @@ class Schedules {
                     null as data_servico,
                     '-' as especialista ,
                     '-' as nota,
-                    '-' as recolocacao,
+                    case
+                        when u."companyId" is not null then
+                            case when (select ce.realocate from "companyEmployees" ce where ce."userId" = u.id) is true then 
+                                'Sim'
+                            else 
+                                'Não'
+                            end
+                        else 
+                            '-'
+                    end as recolocacao,  
                     2 as order
                 from "userProductsAvailable" upa 
                 inner join users u on u.id = upa."userId"  
@@ -237,11 +255,15 @@ class Schedules {
                     s."name" as especialista ,
                     CAST(ss.rating as text) as nota,
                     case
-                        when u.realocated  = 'NOT_REALOCATED' then
-                            'Não'
+                        when u."companyId" is not null then
+                            case when (select ce.realocate from "companyEmployees" ce where ce."userId" = u.id) is true then 
+                                'Sim'
+                            else 
+                                'Não'
+                            end
                         else 
-                            'Sim'
-                    end as recolocacao,
+                            '-'
+                    end as recolocacao,                                        
                     3 as order
                 from users u 
                 inner join "specialistSchedule" ss on ss."userId" = u.id 
@@ -309,11 +331,15 @@ class Schedules {
                 CAST(m."mentorId" as text) as especialista,
                 CAST(mu.rating as text) as nota,
                 case
-                    when u.realocated  = 'NOT_REALOCATED' then
-                        'Não'
+                    when u."companyId" is not null then
+                        case when (select ce.realocate from "companyEmployees" ce where ce."userId" = u.id) is true then 
+                            'Sim'
+                        else 
+                            'Não'
+                        end
                     else 
-                        'Sim'
-                end as recolocacao,
+                        '-'
+                end as recolocacao,                                
                 4 as order
                 from "mentoringUsers" mu 
                 inner join users u on u.id = mu."userId" 
