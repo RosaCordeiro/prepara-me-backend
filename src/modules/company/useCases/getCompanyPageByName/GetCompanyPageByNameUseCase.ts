@@ -31,7 +31,7 @@ class GetCompanyPageByNameUseCase {
             ...company,
             logoUrl: `${process.env.AWS_BUCKET_URL}/company/${company.logo}`,
             remainingVacancies: company.vacancies - remainingVacancies,
-            expired: new Date() > company.expirationDate,
+            expired: new Date() > new Date(company.expirationDate),
         };
     }
 }

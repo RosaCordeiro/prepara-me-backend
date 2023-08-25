@@ -10,8 +10,6 @@ class GetCompanyPageByIdController {
             GetCompanyPageByIdUseCase
         );
 
-        console.log(id);
-
         const companies = await getCompanyPageByIdUseCase.execute(id);
 
         return response.status(200).send(companies);

@@ -10,6 +10,7 @@ interface ICreateCompanyPageDTO {
     containerColor?: string;
     clockColor?: string;
     textColor?: string;
+    active?: boolean;
 }
 
 export { ICreateCompanyPageDTO };

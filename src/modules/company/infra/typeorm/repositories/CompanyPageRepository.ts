@@ -27,6 +27,8 @@ class CompanyPageRepository implements ICompanyPageRepository {
         return companyPage;
     }
     create(data: ICreateCompanyPageDTO): Promise<CompanyPage> {
+        console.log(data);
+
         const companyPage = this.repository.create(data);
 
         return this.repository.save(companyPage);

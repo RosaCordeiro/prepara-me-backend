@@ -24,7 +24,7 @@ class GetCompanyPageByIdUseCase {
         }
 
         const remainingVacancies = await this.companiesRepository.listVacancies(
-            id
+            company.name
         );
 
         return {

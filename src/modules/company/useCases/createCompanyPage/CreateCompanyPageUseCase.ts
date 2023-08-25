@@ -33,9 +33,9 @@ class CreateCompanyPageUseCase {
             delete data.id;
         }
 
-        const company = await this.companyPageRepository.create(data);
+        const companyPage = await this.companyPageRepository.create(data);
 
-        return company;
+        return companyPage;
     }
 
     async validateCreate(data: ICreateCompanyPageDTO): Promise<void> {
@@ -72,10 +72,31 @@ class CreateCompanyPageUseCase {
             String(data.companyId)
         );
 
-        console.log("company", company);
-
         if (!company) {
             throw new AppError("Company not found");
+        }
+
+        if (data.active === undefined || data.active === null) {
+            throw new AppError("Active is required");
+        }
+
+        const companyPage = await this.companyPageRepository.findByCompanyId(
+            data.companyId
+        );
+
+        if (companyPage) {
+            if (companyPage.name !== data.name) {
+                const subscribers =
+                    await this.companiesRepository.listVacancies(
+                        companyPage.name
+                    );
+
+                if (subscribers > 0) {
+                    throw new AppError(
+                        "Não é possível alterar o nome da página com inscrições já realizadas"
+                    );
+                }
+            }
         }
     }
 }

@@ -31,7 +31,9 @@ class CreateCompanyPageController {
             body.logo = "";
         }
 
-        const company = await createCompanyPageUseCase.execute(request.body);
+        body.active = body.active === "true";
+
+        const company = await createCompanyPageUseCase.execute(body);
 
         return response.status(201).send(company);
     }

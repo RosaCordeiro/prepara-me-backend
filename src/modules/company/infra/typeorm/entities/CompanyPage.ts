@@ -41,6 +41,9 @@ class CompanyPage {
     @JoinColumn({ name: "companyId" })
     company: Company;
 
+    @Column()
+    active: boolean;
+
     constructor(
         id: string,
         name: string,
@@ -52,7 +55,8 @@ class CompanyPage {
         containerColor: string,
         clockColor: string,
         textColor: string,
-        companyId: string
+        companyId: string,
+        active: boolean
     ) {
         if (!this.id) {
             this.id = uuidV4();
@@ -72,6 +76,7 @@ class CompanyPage {
         this.clockColor = clockColor;
         this.textColor = textColor;
         this.companyId = companyId;
+        this.active = active;
     }
 }
 

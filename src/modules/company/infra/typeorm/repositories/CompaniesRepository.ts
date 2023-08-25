@@ -14,6 +14,8 @@ class CompaniesRepository implements ICompaniesRepository {
     }
 
     async listVacancies(companyName: string): Promise<number> {
+        console.log(companyName);
+
         const firstDay = new Date(
             new Date().getFullYear(),
             new Date().getMonth(),
@@ -31,6 +33,8 @@ class CompaniesRepository implements ICompaniesRepository {
                 created_at: Between(firstDay, lastDay),
             },
         });
+
+        console.log(response);
 
         return response;
     }
