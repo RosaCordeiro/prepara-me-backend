@@ -13,7 +13,7 @@ interface ICompanySubscriptionPlansRepository {
         data: ICreateCompanySubscriptionPlanDTO
     ): Promise<CompanySubscriptionPlan>;
     remove(id: string): Promise<string>;
-    find(data: IRequestFind): Promise<CompanySubscriptionPlan[]>
+    find(data: IRequestFind): Promise<CompanySubscriptionPlan[]>;
 }
 
 export { ICompanySubscriptionPlansRepository };

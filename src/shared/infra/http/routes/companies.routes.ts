@@ -13,8 +13,34 @@ import { RemoveCompanyEmployeeController } from "@modules/company/useCases/remov
 import { SendFreeMentorshipMailController } from "@modules/company/useCases/sendFreeMentorshipMail/SendFreeMentorshipMailController";
 import { AcceptCompanyEmployeeController } from "@modules/company/useCases/acceptCompanyEmployee/AcceptCompanyEmployeeController";
 import { ListVacanciesController } from "@modules/company/useCases/listVacancies/listVacanciesController";
+import { CreateCompanyPageController } from "@modules/company/useCases/createCompanyPage/CreateCompanyPageController";
+import multer from "multer";
+import uploadConfig from "@config/upload";
+import { GetCompanyPageByNameController } from "@modules/company/useCases/getCompanyPageByName/GetCompanyPageByNameController";
+import { GetCompanyPageByIdController } from "@modules/company/useCases/getCompanyPageById/GetCompanyPageByIdController";
 
 const companiesRoutes = Router();
+const uploadImage = multer(uploadConfig);
+
+const createCompanyPageController = new CreateCompanyPageController();
+companiesRoutes.post(
+    "/page",
+    ensuredAuthenticated,
+    ensureAdmin,
+    uploadImage.any(),
+    createCompanyPageController.handle
+);
+
+const getCompanyPageByNameController = new GetCompanyPageByNameController();
+companiesRoutes.get("/page/:name", getCompanyPageByNameController.handle);
+
+const getCompanyPageByIdController = new GetCompanyPageByIdController();
+companiesRoutes.get(
+    "/pageById/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
+    getCompanyPageByIdController.handle
+);
 
 const sendFreeMentorshipMailController = new SendFreeMentorshipMailController();
 companiesRoutes.post(

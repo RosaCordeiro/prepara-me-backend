@@ -1,6 +1,6 @@
 import { ICreateCompanyDTO } from "@modules/company/dtos/ICreateCompanyDTO";
 import { ICompaniesRepository } from "@modules/company/repositories/ICompaniesRepository";
-import { getRepository, Repository } from "typeorm";
+import { Between, getRepository, Repository } from "typeorm";
 import { Company } from "../entities/Company";
 import { User } from "@modules/accounts/infra/typeorm/entities/User";
 
@@ -14,9 +14,21 @@ class CompaniesRepository implements ICompaniesRepository {
     }
 
     async listVacancies(companyName: string): Promise<number> {
+        const firstDay = new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            1
+        );
+        const lastDay = new Date(
+            new Date().getFullYear(),
+            new Date().getMonth() + 1,
+            0
+        );
+
         const response = await this.repositoryUsers.count({
             where: {
                 companyNameSignIn: companyName,
+                created_at: Between(firstDay, lastDay),
             },
         });
 
