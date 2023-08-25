@@ -16,8 +16,16 @@ export class GeradorExcelTools {
 
             const ws = wb.addWorksheet("Agendamentos");
 
+            ws.row(1).filter();
+
             for (let i = 0; i < header.length; i++) {
-                ws.cell(indexRow, indexColumn++).string(header[i]);
+                ws.cell(indexRow, indexColumn++)
+                    .string(header[i])
+                    .style({
+                        font: {
+                            bold: true,
+                        },
+                    });
             }
 
             for (const v of data) {
@@ -54,4 +62,3 @@ export interface GenerateExcelToolResponse {
     success: boolean;
     path?: string;
 }
-
