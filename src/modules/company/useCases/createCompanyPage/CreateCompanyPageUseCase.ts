@@ -29,6 +29,21 @@ class CreateCompanyPageUseCase {
             delete data.logo;
         }
 
+        if (
+            data.logoInternal !== undefined &&
+            data.logoInternal !== null &&
+            data.logoInternal !== ""
+        ) {
+            const logoInternal = await this.storageProvider.save(
+                data.logoInternal,
+                "company"
+            );
+
+            data.logoInternal = logoInternal;
+        } else {
+            delete data.logoInternal;
+        }
+
         if (data.id === undefined || data.id === null || data.id === "") {
             delete data.id;
         }

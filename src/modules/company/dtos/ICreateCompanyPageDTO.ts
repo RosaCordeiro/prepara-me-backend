@@ -4,6 +4,7 @@ interface ICreateCompanyPageDTO {
     vacancies: number;
     expirationDate: Date;
     logo?: string;
+    logoInternal?: string;
     text: string;
     companyId: string;
     backgroundColor?: string;

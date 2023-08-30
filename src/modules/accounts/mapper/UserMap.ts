@@ -1,3 +1,4 @@
+import { CompanyPageRepository } from "@modules/company/infra/typeorm/repositories/CompanyPageRepository";
 import { DayjsDateProvider } from "@shared/container/providers/DateProvider/implementations/DayjsDateProvider";
 import { instanceToInstance } from "class-transformer";
 
@@ -101,6 +102,7 @@ class UserMap {
             periodTest,
             subscribeToken,
             companyNameSignIn,
+            companyNameSignInLogo: "",
         });
 
         return user;

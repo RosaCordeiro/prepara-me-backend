@@ -7,6 +7,12 @@ import { ICompanyEmployeesRepository } from "../ICompanyEmployeesRepository";
 class CompanyEmployeesRepositoryInMemory
     implements ICompanyEmployeesRepository
 {
+    accept(id: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    realocate(id: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
     companyEmployees: CompanyEmployee[] = [];
 
     async create({
@@ -19,6 +25,8 @@ class CompanyEmployeesRepositoryInMemory
         email,
         id,
         easyRegister,
+        accepted,
+        realocate,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         if (id) {
             let companyEmployees = this.companyEmployees;
@@ -38,7 +46,9 @@ class CompanyEmployeesRepositoryInMemory
                 email,
                 userId,
                 id,
-                easyRegister
+                easyRegister,
+                accepted,
+                realocate
             );
 
             this.companyEmployees[companyEmployeeIndex] = companyEmployee;
@@ -54,7 +64,9 @@ class CompanyEmployeesRepositoryInMemory
                 email,
                 userId,
                 id,
-                easyRegister
+                easyRegister,
+                accepted,
+                realocate
             );
 
             this.companyEmployees.push(companyEmployee);
@@ -156,4 +168,3 @@ class CompanyEmployeesRepositoryInMemory
 }
 
 export { CompanyEmployeesRepositoryInMemory };
-

@@ -8,7 +8,8 @@ interface ICreateCompanyEmployeeDTO {
     subscribeToken: string;
     id?: string;
     easyRegister?: string;
+    accepted?: boolean;
+    realocate?: boolean;
 }
 
 export { ICreateCompanyEmployeeDTO };
-

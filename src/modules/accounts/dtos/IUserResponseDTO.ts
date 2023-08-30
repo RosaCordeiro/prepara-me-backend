@@ -26,6 +26,7 @@ interface IUserResponseDTO {
     periodTest: Date;
     subscribeToken: string;
     companyNameSignIn: string;
+    companyNameSignInLogo?: string;
 }
 
 export { IUserResponseDTO };

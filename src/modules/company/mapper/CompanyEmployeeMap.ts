@@ -29,6 +29,11 @@ class CompanyEmployeeMap {
                 break;
         }
 
+        user = {
+            ...user,
+            avatarUrl: user?.avatarUrl,
+        };
+
         const companyEmployee = instanceToInstance({
             id,
             company,

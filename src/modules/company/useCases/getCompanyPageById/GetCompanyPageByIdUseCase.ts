@@ -30,6 +30,7 @@ class GetCompanyPageByIdUseCase {
         return {
             ...company,
             logo: `${process.env.AWS_BUCKET_URL}/company/${company.logo}`,
+            logoInternal: `${process.env.AWS_BUCKET_URL}/company/${company.logoInternal}`,
             remainingVacancies: company.vacancies - remainingVacancies,
             expired: new Date() > company.expirationDate,
             expirationDate: company.expirationDate

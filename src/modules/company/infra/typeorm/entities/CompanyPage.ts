@@ -20,6 +20,9 @@ class CompanyPage {
     logo: string;
 
     @Column()
+    logoInternal: string;
+
+    @Column()
     text?: string;
 
     @Column()
@@ -50,6 +53,7 @@ class CompanyPage {
         vacancies: number,
         expirationDate: Date,
         logo: string,
+        logoInternal: string,
         text: string,
         backgroundColor: string,
         containerColor: string,
@@ -70,6 +74,7 @@ class CompanyPage {
         this.vacancies = vacancies;
         this.expirationDate = expirationDate;
         this.logo = logo;
+        this.logoInternal = logoInternal;
         this.text = text;
         this.backgroundColor = backgroundColor;
         this.containerColor = containerColor;
