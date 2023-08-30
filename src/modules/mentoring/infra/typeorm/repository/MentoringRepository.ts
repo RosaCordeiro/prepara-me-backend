@@ -192,6 +192,12 @@ class MentoringRepository implements IMentoringRepository {
         });
         return mentoring;
     }
+
+    async removeUsers(id: string): Promise<void> {
+        await this.repository.query(
+            `delete from "mentoringUsers" where "mentoringId" = '${id}'`
+        );
+    }
 }
 
 export interface Pagination {

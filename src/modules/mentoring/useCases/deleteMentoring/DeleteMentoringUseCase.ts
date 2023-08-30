@@ -31,11 +31,16 @@ class DeleteMentoringUseCase {
             throw new AppError("Mentoring not found");
         }
 
-        await this.scheduleGoogle.cancelScheduledEvent(
-            "primary",
-            mentoringObj.eventId
-        );
+        try {
+            await this.scheduleGoogle.cancelScheduledEvent(
+                "primary",
+                mentoringObj.eventId
+            );
+        } catch (error) {
+            console.log(error);
+        }
 
+        await this.mentoringRepository.removeUsers(mentoringId);
         await this.mentoringRepository.delete(mentoringId);
     }
 
@@ -63,4 +68,3 @@ class DeleteMentoringUseCase {
 }
 
 export { DeleteMentoringUseCase };
-

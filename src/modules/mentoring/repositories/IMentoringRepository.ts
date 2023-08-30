@@ -17,7 +17,7 @@ interface IMentoringRepository {
         type: string
     ): Promise<any>;
     rateMentoring(id: string, idUser: string, rate: number): Promise<void>;
+    removeUsers(id: string): Promise<void>;
 }
 
 export { IMentoringRepository };
-
