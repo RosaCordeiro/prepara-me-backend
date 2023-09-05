@@ -69,7 +69,7 @@ class EditMentoringUseCase {
 
         await this.scheduleGoogle.updateScehduledEvent(
             mentoringObj.eventId,
-            `Mentoria coletiva com o(a) especialista ${mentoring.mentor.name}`,
+            `${content.title}`,
             "Online",
             "Estamos aguardando você",
             dateMasked,

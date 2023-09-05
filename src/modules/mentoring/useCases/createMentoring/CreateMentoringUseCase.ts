@@ -56,7 +56,7 @@ class CreateMentoringUseCase {
         );
 
         const event = await this.scheduleGoogle.scheduleEvent(
-            `Mentoria coletiva com o(a) especialista ${specialist.name}`,
+            `${content.title}`,
             "Online",
             "Estamos aguardando você",
             dateMasked,
