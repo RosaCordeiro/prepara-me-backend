@@ -69,11 +69,9 @@ class Specialist {
         id: string,
         image?: string
     ) {
-        if (!this.id) {
+        if (!this.id || id === undefined || id === null || id === "") {
             this.id = uuidV4();
-        }
-
-        if (id) {
+        } else {
             this.id = id;
         }
 
@@ -87,4 +85,3 @@ class Specialist {
 }
 
 export { Specialist };
-
