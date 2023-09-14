@@ -17,6 +17,8 @@ class NPSSurveyAnswersUseCase {
 
         console.log(this.getNps(result))
 
+        console.log(this.getRealocateds(result))
+
         
 
         return result;
@@ -83,7 +85,7 @@ class NPSSurveyAnswersUseCase {
         const result = users.reduce(
 
           (accumulators: any, companyEmployee: any) => {
-            console.log(companyEmployee.user?.NPSSurvey)
+            //console.log(companyEmployee.user?.NPSSurvey)
             //console.log('npsAnswer',npsAnswer)
             //aqui eu consigo pegar as respostas dos usuários
             //console.log(accumulators)
@@ -101,15 +103,15 @@ class NPSSurveyAnswersUseCase {
             }
             //accumulators.totalAwnswers = totalAwnswers
 
-            console.log(accumulators)
+            //console.log(accumulators)
             return accumulators;
           },
           { npsAnswersLassThanSeven: 0, npsAnswersMoreThanEight: 0 }
         );
-        console.log(users.length)
+        //console.log(users.length)
   //console.log(result)
   
- console.log(countUsersResponded)
+ //console.log(countUsersResponded)
   return (result.npsAnswersMoreThanEight / countUsersResponded -
            result.npsAnswersLassThanSeven / countUsersResponded)
            .toFixed(2);
@@ -122,8 +124,39 @@ class NPSSurveyAnswersUseCase {
         console.log(error)
       }
       */
+      getRealocateds(users: any){
+            
+        /* const realocateds = users.filter((user: any) => {
+            return user.user?.realocateds == "REALOCATED";
+          
+        })
 
+        const countRealocateds = realocateds.length;
+        console.log(countRealocateds)
+      } */
+
+      const filterUsers = users.filter((employee) => {
+        return employee.userId;
+      });
+
+      const realocateds = filterUsers.filter((user: any) => {
+        
+        //console.log(user.user.realocated)
+        return user.user?.realocated == 'REALOCATED'
+    })
+    /* console.log(realocateds.length)
+    console.log(users.length) */
+          console.log(realocateds.length)
+          console.log(filterUsers.length)
+          return ((realocateds.length / filterUsers.length) * 100).toFixed(2);
+
+    }
+
+
+    }
       
-}
+
+
+  
 
 export { NPSSurveyAnswersUseCase };
