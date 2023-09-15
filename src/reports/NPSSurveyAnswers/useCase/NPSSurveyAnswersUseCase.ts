@@ -4,128 +4,125 @@ import { NPSSurveyAnswers } from "../entities/NPSSurveyAnswers";
 
 @injectable()
 class NPSSurveyAnswersUseCase {
-    async execute({
-        companyId
-    }) {
-        const npsSurveyAnswers = new NPSSurveyAnswers()
+    async execute({ companyId }) {
+        const npsSurveyAnswers = new NPSSurveyAnswers();
 
-        const result = await npsSurveyAnswers.report(companyId)
+        const result = await npsSurveyAnswers.report(companyId);
 
-        console.log(this.getLaborRisk(result))
+        console.log(this.getLaborRisk(result));
 
-        console.log(this.getBrandRisk(result))
+        console.log(this.getBrandRisk(result));
 
-        console.log(this.getNps(result))
+        console.log(this.getNps(result));
 
-        console.log(this.getRealocateds(result))
+        console.log(this.getRealocateds(result));
 
-        
+        console.log(this.getWelcomed(result));
 
         return result;
     }
 
-    getLaborRisk(users: any){
-
+    getLaborRisk(users: any) {
         const npsSurveyAnswers = users.filter((npsSurvey) => {
             if (npsSurvey.user) {
-              return npsSurvey.user.surveyAnswered;
+                return npsSurvey.user.surveyAnswered;
             }
-          });
+        });
 
         let laborRisk: number = npsSurveyAnswers.reduce(
             (laborRisckTotal = 0, employee) => {
-              return laborRisckTotal + employee.user.laborRisk;
+                return laborRisckTotal + employee.user.laborRisk;
             },
             0
-          );
-    
-          return (10 - (laborRisk / npsSurveyAnswers.length)).toFixed(2);
+        );
 
+        return (10 - laborRisk / npsSurveyAnswers.length).toFixed(2);
     }
 
-    getBrandRisk(users: any){
-
+    getBrandRisk(users: any) {
         const npsSurveyAnswers = users.filter((npsSurvey) => {
             if (npsSurvey.user) {
-              return npsSurvey.user.surveyAnswered;
+                return npsSurvey.user.surveyAnswered;
             }
-          });
+        });
 
-        let brandRisk:number = npsSurveyAnswers.reduce(
+        let brandRisk: number = npsSurveyAnswers.reduce(
             (brandRisckTotal = 0, employee) => {
-              return brandRisckTotal + employee.user.brandRisk;
+                return brandRisckTotal + employee.user.brandRisk;
             },
             0
-          );
-    
-          return (10 - (brandRisk / npsSurveyAnswers.length)).toFixed(2);
-}
+        );
 
+        return (10 - brandRisk / npsSurveyAnswers.length).toFixed(2);
+    }
 
-      getNps(users: any){
-
-       /*  try { */
-       //fazer um if para verificar diferente de undefined e de zero 
+    getNps(users: any) {
+        /*  try { */
+        //fazer um if para verificar diferente de undefined e de zero
         const countUsersResponded = users.filter((user: any) => {
-          //console.log(user)
-          if(user.user?.surveyAnswered !== undefined && user.user?.surveyAnswered !== 0)
+            //console.log(user)
+            if (
+                user.user?.surveyAnswered !== undefined &&
+                user.user?.surveyAnswered !== 0
+            )
+                return user.user?.surveyAnswered;
 
-            return user.user?.surveyAnswered;
-          
-          //a interrogação eu falo que pode ser nulo e se for pega a propriedade
-          //se nao voce para aqui
+            //a interrogação eu falo que pode ser nulo e se for pega a propriedade
+            //se nao voce para aqui
         }).length;
 
         //return countUsersResponded
-        
+
         //console.log(countUsersResponded)
 
         //console.log('users', users)
-        
+
         const result = users.reduce(
+            (accumulators: any, companyEmployee: any) => {
+                //console.log(companyEmployee.user?.NPSSurvey)
+                //console.log('npsAnswer',npsAnswer)
+                //aqui eu consigo pegar as respostas dos usuários
+                //console.log(accumulators)
+                //let totalAwnswers = 0
 
-          (accumulators: any, companyEmployee: any) => {
-            //console.log(companyEmployee.user?.NPSSurvey)
-            //console.log('npsAnswer',npsAnswer)
-            //aqui eu consigo pegar as respostas dos usuários
-            //console.log(accumulators)
-            //let totalAwnswers = 0
-            
-            if (companyEmployee.user?.NPSSurvey < 7 && companyEmployee.user?.NPSSurvey !== undefined && companyEmployee.user?.NPSSurvey !== 0) {
-              accumulators.npsAnswersLassThanSeven += 1;
-              //totalAwnswers += 1
-              
-            }
-            if (companyEmployee.user?.NPSSurvey > 8 && companyEmployee.user?.NPSSurvey !== undefined && companyEmployee.user?.NPSSurvey !== 0) {
-              accumulators.npsAnswersMoreThanEight += 1;
-              //totalAwnswers += 1
-              
-            }
-            //accumulators.totalAwnswers = totalAwnswers
+                if (
+                    companyEmployee.user?.NPSSurvey < 7 &&
+                    companyEmployee.user?.NPSSurvey !== undefined &&
+                    companyEmployee.user?.NPSSurvey !== 0
+                ) {
+                    accumulators.npsAnswersLassThanSeven += 1;
+                    //totalAwnswers += 1
+                }
+                if (
+                    companyEmployee.user?.NPSSurvey > 8 &&
+                    companyEmployee.user?.NPSSurvey !== undefined &&
+                    companyEmployee.user?.NPSSurvey !== 0
+                ) {
+                    accumulators.npsAnswersMoreThanEight += 1;
+                    //totalAwnswers += 1
+                }
+                //accumulators.totalAwnswers = totalAwnswers
 
-            //console.log(accumulators)
-            return accumulators;
-          },
-          { npsAnswersLassThanSeven: 0, npsAnswersMoreThanEight: 0 }
+                //console.log(accumulators)
+                return accumulators;
+            },
+            { npsAnswersLassThanSeven: 0, npsAnswersMoreThanEight: 0 }
         );
         //console.log(users.length)
-  //console.log(result)
-  
- //console.log(countUsersResponded)
-  return (result.npsAnswersMoreThanEight / countUsersResponded -
-           result.npsAnswersLassThanSeven / countUsersResponded)
-           .toFixed(2);
+        //console.log(result)
 
-      
-          
-      }
+        //console.log(countUsersResponded)
+        return (
+            result.npsAnswersMoreThanEight / countUsersResponded -
+            result.npsAnswersLassThanSeven / countUsersResponded
+        ).toFixed(2);
+    }
 
-      /* catch (error) {
+    /* catch (error) {
         console.log(error)
       }
       */
-      getRealocateds(users: any){
-            
+    getRealocateds(users: any) {
         /* const realocateds = users.filter((user: any) => {
             return user.user?.realocateds == "REALOCATED";
           
@@ -135,28 +132,39 @@ class NPSSurveyAnswersUseCase {
         console.log(countRealocateds)
       } */
 
-      const filterUsers = users.filter((employee) => {
-        return employee.userId;
-      });
+        const filterUsers = users.filter((employee) => {
+            return employee.userId;
+        });
 
-      const realocateds = filterUsers.filter((user: any) => {
-        
-        //console.log(user.user.realocated)
-        return user.user?.realocated == 'REALOCATED'
-    })
-    /* console.log(realocateds.length)
+        const realocateds = filterUsers.filter((user: any) => {
+            //console.log(user.user.realocated);
+            return user.user?.realocated == "REALOCATED";
+        });
+        /* console.log(realocateds.length)
     console.log(users.length) */
-          console.log(realocateds.length)
-          console.log(filterUsers.length)
-          return ((realocateds.length / filterUsers.length) * 100).toFixed(2);
-
+        //console.log(realocateds.length);
+        //console.log(filterUsers.length);
+        return ((realocateds.length / filterUsers.length) * 100).toFixed(2);
     }
 
+    getWelcomed(users: any) {
+        /*  const filterUsers = users.filter((user: any) => {
+            return user.user?.surveyAnswered;
+        });
+ */
 
+        const filterUsers = users.length;
+        //console.log(filterUsers.length);
+
+        const countAccepted = users.filter((user: any) => {
+            if (user?.accepted != undefined)
+                //console.log(user.accepted);
+                return user.accepted;
+        }).length;
+        //console.log(filterUsers.length);
+        //console.log(countAccepted);
+        return `${countAccepted}/${filterUsers}`;
     }
-      
-
-
-  
-
+}
 export { NPSSurveyAnswersUseCase };
+
