@@ -19,6 +19,9 @@ class NPSSurveyAnswersUseCase {
 
         console.log(this.getWelcomed(result));
 
+        console.log(this.getFeelingMap(result));
+
+        console.log(this.getShutDown(result));
         return result;
     }
 
@@ -164,6 +167,95 @@ class NPSSurveyAnswersUseCase {
         //console.log(filterUsers.length);
         //console.log(countAccepted);
         return `${countAccepted}/${filterUsers}`;
+    }
+
+    getFeelingMap(users: any) {
+        const feelingsMapData = [];
+        for (const user of users) {
+            //of serve para desmembrar um array e listar direto em uma variável
+            //ele já tira o objeto e joga ele
+            //o in ele pega o index de cada objeto listado
+            if (user?.user?.feelingsMapJSON === undefined) {
+                continue;
+            }
+            const feelingsMap = JSON.parse(user?.user?.feelingsMapJSON);
+
+            if (Array.isArray(feelingsMap)) {
+                feelingsMap.forEach((feelingMapped) => {
+                    const findFeeling = feelingsMapData.findIndex(
+                        (feelingInserted) => {
+                            return (
+                                feelingMapped.feeling == feelingInserted.feeling
+                            );
+                        }
+                    );
+
+                    if (findFeeling >= 0) {
+                        feelingsMapData[findFeeling].count++;
+                    } else {
+                        feelingsMapData.push({ ...feelingMapped, count: 1 });
+                    }
+                    console.log(feelingMapped);
+                });
+            }
+        }
+        return feelingsMapData;
+    }
+
+    getShutDown(users: any) {
+        const laborRiskData = [];
+        const lastAnswers = [];
+
+        const countUsersResponded = users.filter((user: any) => {
+            return user.user?.surveyAnswered;
+        }).length;
+
+        for (const user of users) {
+            if (user?.user?.laborRiskJSON === undefined) {
+                continue;
+            }
+            const laborRisks = JSON.parse(user.user.laborRiskJSON);
+
+            if (Array.isArray(laborRisks)) {
+                for (const laborRiskMapped of laborRisks) {
+                    if (laborRiskMapped.index === 9) {
+                        lastAnswers.push(laborRiskMapped);
+                        continue;
+                    }
+
+                    const findLaborRisk = laborRiskData.findIndex(
+                        (laborRiskInserted) => {
+                            //console.log(laborRiskMapped);
+                            return (
+                                laborRiskMapped.question ==
+                                laborRiskInserted.question
+                            );
+                        }
+                    );
+
+                    if (findLaborRisk >= 0) {
+                        laborRiskData[findLaborRisk].count +=
+                            laborRiskMapped.answer * 1;
+                    } else {
+                        laborRiskData.push({
+                            ...laborRiskMapped,
+                            count: laborRiskMapped.answer * 1,
+                        });
+                        console.log(laborRiskMapped);
+                    }
+                }
+
+                /*  laborRiskData.forEach((laborRisk) => {
+                    laborRisk.count = (
+                        laborRisk.count / countUsersResponded
+                    ).toFixed(2);
+                    console.log(laborRisk.count);
+                    return laborRisk;
+                });
+ */
+                return laborRiskData;
+            }
+        }
     }
 }
 export { NPSSurveyAnswersUseCase };
