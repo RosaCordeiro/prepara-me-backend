@@ -8,7 +8,7 @@ class NPSSurveyAnswersUseCase {
         const npsSurveyAnswers = new NPSSurveyAnswers();
 
         const result = await npsSurveyAnswers.report(companyId);
-
+        /* 
         console.log(this.getLaborRisk(result));
 
         console.log(this.getBrandRisk(result));
@@ -21,8 +21,17 @@ class NPSSurveyAnswersUseCase {
 
         console.log(this.getFeelingMap(result));
 
-        console.log(this.getShutDown(result));
-        return result;
+        console.log(this.getShutDown(result)); */
+
+        return {
+            laborRisk: this.getLaborRisk(result),
+            brandRisk: this.getBrandRisk(result),
+            nps: this.getNps(result),
+            realocateds: this.getRealocateds(result),
+            welcomed: this.getWelcomed(result),
+            feelingMap: this.getFeelingMap(result),
+            shutDown: this.getShutDown(result),
+        };
     }
 
     getLaborRisk(users: any) {
