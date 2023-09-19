@@ -8,26 +8,28 @@ class NPSSurveyAnswersUseCase {
         const npsSurveyAnswers = new NPSSurveyAnswers();
 
         const result = await npsSurveyAnswers.report(companyId);
-        /* 
-        console.log(this.getLaborRisk(result));
 
-        console.log(this.getBrandRisk(result));
+        //console.log(this.getLaborRisk(result));
 
-        console.log(this.getNps(result));
+        //console.log(this.getBrandRisk(result));
 
-        console.log(this.getRealocateds(result));
+        //console.log(this.getNps(result));
 
-        console.log(this.getWelcomed(result));
+        //console.log(this.getRealocateds(result));
 
-        console.log(this.getFeelingMap(result));
+        //console.log(this.getWelcomed(result));
 
-        console.log(this.getShutDown(result)); */
+        //console.log(this.getFeelingMap(result));
+
+        //console.log(this.getShutDown(result)); */
 
         return {
             laborRisk: this.getLaborRisk(result),
             brandRisk: this.getBrandRisk(result),
             nps: this.getNps(result),
             realocateds: this.getRealocateds(result),
+            termination: this.getTermination(result),
+            laborIssues: this.getLaborIssues(result),
             welcomed: this.getWelcomed(result),
             feelingMap: this.getFeelingMap(result),
             shutDown: this.getShutDown(result),
@@ -40,6 +42,7 @@ class NPSSurveyAnswersUseCase {
                 return npsSurvey.user.surveyAnswered;
             }
         });
+        console.log(npsSurveyAnswers);
 
         let laborRisk: number = npsSurveyAnswers.reduce(
             (laborRisckTotal = 0, employee) => {
@@ -49,6 +52,61 @@ class NPSSurveyAnswersUseCase {
         );
 
         return (10 - laborRisk / npsSurveyAnswers.length).toFixed(2);
+    }
+
+    getTermination(users: any) {
+        const laborRiskData = [];
+        const lastAnswers = [];
+
+        const countUsersResponded = users.filter((user: any) => {
+            return user.user?.surveyAnswered;
+        }).length;
+
+        for (const user of users) {
+            //of serve para desmembrar um array e listar direto em uma variável
+            //ele já tira o objeto e joga ele
+            //o in ele pega o index de cada objeto listado
+            if (user?.user?.laborRiskJSON === undefined) {
+                continue;
+            }
+            const laborRisks = JSON.parse(user.user.laborRiskJSON);
+
+            if (Array.isArray(laborRisks)) {
+                for (const laborRiskMapped of laborRisks) {
+                    if (laborRiskMapped.index === 9) {
+                        lastAnswers.push(laborRiskMapped);
+
+                        continue;
+                    }
+                }
+            }
+            return (
+                (
+                    (1 -
+                        lastAnswers.reduce((acc, curr) => {
+                            if (curr.answer === 0) return acc + 1;
+                            return acc;
+                        }, 0) /
+                            users.length) *
+                    100
+                ).toFixed(2) + "%"
+            );
+        }
+    }
+
+    getLaborIssues(users: any) {
+        const filterUsers = users.filter((employee: any) => {
+            return employee.userId;
+        });
+
+        const laborRiskAlerts = filterUsers.filter((user: any) => {
+            //console.log(user.user.laborRiskAlert);
+            return user.user.laborRiskAlert == "ALERT";
+        });
+        return (
+            ((laborRiskAlerts.length / filterUsers.length) * 100).toFixed(2) +
+            "%"
+        );
     }
 
     getBrandRisk(users: any) {
@@ -72,7 +130,7 @@ class NPSSurveyAnswersUseCase {
         /*  try { */
         //fazer um if para verificar diferente de undefined e de zero
         const countUsersResponded = users.filter((user: any) => {
-            //console.log(user)
+            ////console.log(user)
             if (
                 user.user?.surveyAnswered !== undefined &&
                 user.user?.surveyAnswered !== 0
@@ -85,16 +143,16 @@ class NPSSurveyAnswersUseCase {
 
         //return countUsersResponded
 
-        //console.log(countUsersResponded)
+        ////console.log(countUsersResponded)
 
-        //console.log('users', users)
+        ////console.log('users', users)
 
         const result = users.reduce(
             (accumulators: any, companyEmployee: any) => {
-                //console.log(companyEmployee.user?.NPSSurvey)
-                //console.log('npsAnswer',npsAnswer)
+                ////console.log(companyEmployee.user?.NPSSurvey)
+                ////console.log('npsAnswer',npsAnswer)
                 //aqui eu consigo pegar as respostas dos usuários
-                //console.log(accumulators)
+                ////console.log(accumulators)
                 //let totalAwnswers = 0
 
                 if (
@@ -115,15 +173,15 @@ class NPSSurveyAnswersUseCase {
                 }
                 //accumulators.totalAwnswers = totalAwnswers
 
-                //console.log(accumulators)
+                ////console.log(accumulators)
                 return accumulators;
             },
             { npsAnswersLassThanSeven: 0, npsAnswersMoreThanEight: 0 }
         );
-        //console.log(users.length)
-        //console.log(result)
+        ////console.log(users.length)
+        ////console.log(result)
 
-        //console.log(countUsersResponded)
+        ////console.log(countUsersResponded)
         return (
             result.npsAnswersMoreThanEight / countUsersResponded -
             result.npsAnswersLassThanSeven / countUsersResponded
@@ -131,7 +189,7 @@ class NPSSurveyAnswersUseCase {
     }
 
     /* catch (error) {
-        console.log(error)
+        //console.log(error)
       }
       */
     getRealocateds(users: any) {
@@ -141,7 +199,7 @@ class NPSSurveyAnswersUseCase {
         })
 
         const countRealocateds = realocateds.length;
-        console.log(countRealocateds)
+        //console.log(countRealocateds)
       } */
 
         const filterUsers = users.filter((employee) => {
@@ -149,14 +207,16 @@ class NPSSurveyAnswersUseCase {
         });
 
         const realocateds = filterUsers.filter((user: any) => {
-            //console.log(user.user.realocated);
+            ////console.log(user.user.realocated);
             return user.user?.realocated == "REALOCATED";
         });
-        /* console.log(realocateds.length)
-    console.log(users.length) */
-        //console.log(realocateds.length);
-        //console.log(filterUsers.length);
-        return ((realocateds.length / filterUsers.length) * 100).toFixed(2);
+        /* //console.log(realocateds.length)
+    //console.log(users.length) */
+        ////console.log(realocateds.length);
+        ////console.log(filterUsers.length);
+        return (
+            ((realocateds.length / filterUsers.length) * 100).toFixed(2) + "%"
+        );
     }
 
     getWelcomed(users: any) {
@@ -166,15 +226,15 @@ class NPSSurveyAnswersUseCase {
  */
 
         const filterUsers = users.length;
-        //console.log(filterUsers.length);
+        ////console.log(filterUsers.length);
 
         const countAccepted = users.filter((user: any) => {
             if (user?.accepted != undefined)
-                //console.log(user.accepted);
+                ////console.log(user.accepted);
                 return user.accepted;
         }).length;
-        //console.log(filterUsers.length);
-        //console.log(countAccepted);
+        ////console.log(filterUsers.length);
+        ////console.log(countAccepted);
         return `${countAccepted}/${filterUsers}`;
     }
 
@@ -204,7 +264,7 @@ class NPSSurveyAnswersUseCase {
                     } else {
                         feelingsMapData.push({ ...feelingMapped, count: 1 });
                     }
-                    console.log(feelingMapped);
+                    //console.log(feelingMapped);
                 });
             }
         }
@@ -234,7 +294,7 @@ class NPSSurveyAnswersUseCase {
 
                     const findLaborRisk = laborRiskData.findIndex(
                         (laborRiskInserted) => {
-                            //console.log(laborRiskMapped);
+                            ////console.log(laborRiskMapped);
                             return (
                                 laborRiskMapped.question ==
                                 laborRiskInserted.question
@@ -250,7 +310,7 @@ class NPSSurveyAnswersUseCase {
                             ...laborRiskMapped,
                             count: laborRiskMapped.answer * 1,
                         });
-                        console.log(laborRiskMapped);
+                        //console.log(laborRiskMapped);
                     }
                 }
 
@@ -258,7 +318,7 @@ class NPSSurveyAnswersUseCase {
                     laborRisk.count = (
                         laborRisk.count / countUsersResponded
                     ).toFixed(2);
-                    console.log(laborRisk.count);
+                    //console.log(laborRisk.count);
                     return laborRisk;
                 });
  */
