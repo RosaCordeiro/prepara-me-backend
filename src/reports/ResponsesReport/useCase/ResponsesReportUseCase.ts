@@ -5,11 +5,11 @@ import { GeradorExcelTools } from "@utils/excel/excelConversor";
 
 @injectable()
 class ResponsesReportUseCase {
-    async execute() {
+    async execute(companyId?: string) {
         const responsesReport = new ResponsesReport();
         const geradorExcelTools = new GeradorExcelTools();
 
-        const result = await responsesReport.report();
+        const result = await responsesReport.report(companyId);
 
         const feelingsAnswers = {
             "Alíviado(a). Já queria sair da empresa.": null,
