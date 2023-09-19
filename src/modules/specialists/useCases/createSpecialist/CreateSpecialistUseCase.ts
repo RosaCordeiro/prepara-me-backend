@@ -46,7 +46,7 @@ class CreateSpecialistUseCase {
             image = await this.storageProvider.save(image, "specialists");
         }
 
-        const specialist = await this.specialistsRepository.create({
+        const data = {
             name,
             bio,
             status,
@@ -54,11 +54,16 @@ class CreateSpecialistUseCase {
             linkedinUrl,
             id,
             image,
-        });
+        };
+
+        if (data.id === undefined || data.id === null || data.id === "") {
+            delete data.id;
+        }
+
+        const specialist = await this.specialistsRepository.create(data);
 
         return specialist;
     }
 }
 
 export { CreateSpecialistUseCase };
-

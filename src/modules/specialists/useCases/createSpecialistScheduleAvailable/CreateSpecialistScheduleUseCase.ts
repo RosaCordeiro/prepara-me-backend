@@ -1,13 +1,17 @@
 import { IUserProductsAvailableRepository } from "@modules/accounts/repositories/IUserProductsAvailableRepository";
+import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { IProductsRepository } from "@modules/products/repositories/IProductsRepository";
 import { ICreateSpecialistScheduleDTO } from "@modules/specialists/dtos/ICreateSpecialistScheduleDTO";
 import { SpecialistScheduleStatusEnum } from "@modules/specialists/enums/SpecialistScheduleStatusEnum";
 import { SpecialistSchedule } from "@modules/specialists/infra/typeorm/entities/SpecialistSchedule";
 import { ISpecialistSchedulesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesRepository";
 import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
+import { IMailProvider } from "@shared/container/providers/MailProvider/IMailProvider";
 import { IScheduleProvider } from "@shared/container/providers/ScheduleProvider/IScheduleProvider";
 import { AppError } from "@shared/errors/AppError";
+import { formatDateToString } from "@utils/formatDate";
 import { inject, injectable } from "tsyringe";
+import { resolve } from "path";
 
 @injectable()
 class CreateSpecialistScheduleUseCase {
@@ -21,7 +25,11 @@ class CreateSpecialistScheduleUseCase {
         @inject("ScheduleGoogle")
         private scheduleGoogle: IScheduleProvider,
         @inject("DayjsDateProvider")
-        private dateProvider: IDateProvider
+        private dateProvider: IDateProvider,
+        @inject("UsersRepository")
+        private userRepository: IUsersRepository,
+        @inject("SESMailProvider")
+        private mailProvider: IMailProvider
     ) {}
 
     async execute({
@@ -35,11 +43,18 @@ class CreateSpecialistScheduleUseCase {
         scheduleEventId,
         id,
         createEvent,
-        rating
+        rating,
     }: ICreateSpecialistScheduleDTO): Promise<SpecialistSchedule> {
-        console.log('productId', productId)
-        console.log('userId', userId)
-        console.log('createEvent', createEvent)
+        console.log("productId", productId);
+        console.log("userId", userId);
+        console.log("createEvent", createEvent);
+
+        const user = await this.userRepository.findById(userId);
+
+        if (!user) {
+            throw new AppError("User not found!");
+        }
+
         if (productId && userId && createEvent) {
             const userProducts =
                 await this.userProductsAvailableRepository.find({
@@ -47,15 +62,17 @@ class CreateSpecialistScheduleUseCase {
                     userId,
                 });
 
-                console.log('userProducts', userProducts)
+            console.log("userProducts", userProducts);
 
             if (userProducts.length > 0) {
                 const availableQuantity = userProducts.findIndex(
                     (userProduct) => userProduct.availableQuantity >= 1
                 );
 
-                const userProduct = userProducts[availableQuantity === -1 ? 0 : availableQuantity];
-                
+                const userProduct =
+                    userProducts[
+                        availableQuantity === -1 ? 0 : availableQuantity
+                    ];
 
                 if (userProduct.availableQuantity >= 1) {
                     const specialistsSchedule =
@@ -64,7 +81,8 @@ class CreateSpecialistScheduleUseCase {
                         });
 
                     if (specialistsSchedule.length > 0) {
-                        const userSpecialistEmail = specialistsSchedule[0].specialist.user.email;
+                        const userSpecialistEmail =
+                            specialistsSchedule[0].specialist.user.email;
 
                         userProduct.availableQuantity =
                             userProduct.availableQuantity - 1;
@@ -85,19 +103,22 @@ class CreateSpecialistScheduleUseCase {
                             );
 
                         let products = await this.productsRepository.find({
-                            id: productId
-                        })
+                            id: productId,
+                        });
 
-                        let product = products[0]
+                        let product = products[0];
 
                         const dateScheduleEndMasked =
                             this.dateProvider.formatDateTime(
-                                this.dateProvider.addHours(product.duration, dateSchedule),
+                                this.dateProvider.addHours(
+                                    product.duration,
+                                    dateSchedule
+                                ),
                                 "YYYY-MM-DDThh:mm:ssfff:00"
                             );
 
                         if (userProductUpdated) {
-                            console.log('Chegou aqui no primeiro if')
+                            //console.log('Chegou aqui no primeiro if')
 
                             const eventScheduled =
                                 await this.scheduleGoogle.scheduleEvent(
@@ -121,6 +142,35 @@ class CreateSpecialistScheduleUseCase {
 
                             hangoutLink = eventScheduled.data.hangoutLink;
                             scheduleEventId = eventScheduled.data.id;
+
+                            try {
+                                const templatePath = resolve(
+                                    __dirname,
+                                    "..",
+                                    "..",
+                                    "views",
+                                    "emails",
+                                    "mentoringCreate.hbs"
+                                );
+
+                                const variables = {
+                                    name: user.name,
+                                    mentoring: userProduct.product.shortName,
+                                    specialist:
+                                        specialistsSchedule[0].specialist.name,
+                                    date: formatDateToString(dateSchedule),
+                                    link: hangoutLink,
+                                };
+
+                                void this.mailProvider.sendMail(
+                                    user.email,
+                                    "Confirmação de participação em mentoria",
+                                    variables,
+                                    templatePath
+                                );
+                            } catch (error) {
+                                console.log("error send email", error);
+                            }
                         }
                     } else {
                         throw new AppError("Schedule not found!");
@@ -158,7 +208,7 @@ class CreateSpecialistScheduleUseCase {
                 hangoutLink,
                 scheduleEventId,
                 id,
-                rating
+                rating,
             });
 
         return specialistSchedule;
@@ -166,4 +216,3 @@ class CreateSpecialistScheduleUseCase {
 }
 
 export { CreateSpecialistScheduleUseCase };
-

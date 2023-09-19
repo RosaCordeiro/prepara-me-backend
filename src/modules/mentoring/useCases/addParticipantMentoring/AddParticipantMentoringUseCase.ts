@@ -97,7 +97,7 @@ class AddParticipantMentoringUseCase {
                 templatePath
             );
         } catch (error) {
-            console.log(error);
+            console.log("error send email", error);
         }
     }
 
@@ -156,4 +156,3 @@ export { AddParticipantMentoringUseCase };
             variables,
             templatePath
         ); */
-

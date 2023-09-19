@@ -41,7 +41,7 @@ class Schedules {
                     end as origem,
                     case
                         when u."companyNameSignIn" != '' and u."companyNameSignIn" is not null then
-                            CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn"), ' - Patrocínio')
+                            CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn" limit 1), ' - Patrocínio')
                         else
                             case
                                 when u."companyId" is not null then
@@ -114,7 +114,7 @@ class Schedules {
                     end as origem,
                     case
                         when u."companyNameSignIn" != '' and u."companyNameSignIn" is not null then
-                            CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn"), ' - Patrocínio')
+                            CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn" limit 1), ' - Patrocínio')
                         else
                             case
                                 when u."companyId" is not null then
@@ -206,7 +206,7 @@ class Schedules {
                     end as origem,
                     case
                         when u."companyNameSignIn" != '' and u."companyNameSignIn" is not null then
-                            CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn"), ' - Patrocínio')
+                            CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn" limit 1), ' - Patrocínio')
                         else
                             case
                                 when u."companyId" is not null then
@@ -282,7 +282,7 @@ class Schedules {
                 end as origem,
                 case
                     when u."companyNameSignIn" != '' and u."companyNameSignIn" is not null then
-                        CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn"), ' - Patrocínio')
+                        CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn" limit 1), ' - Patrocínio')
                     else
                         case
                             when u."companyId" is not null then
