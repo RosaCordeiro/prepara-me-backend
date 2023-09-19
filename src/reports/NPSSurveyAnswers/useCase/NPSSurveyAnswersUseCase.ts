@@ -8,45 +8,47 @@ class NPSSurveyAnswersUseCase {
         const npsSurveyAnswers = new NPSSurveyAnswers();
 
         const result = await npsSurveyAnswers.report(companyId);
+        const usersAll = await npsSurveyAnswers.reportAllusers();
+        console.log(this.getBrandRisk(usersAll));
+        //console.log(result);
 
-        //console.log(this.getLaborRisk(result));
-
-        //console.log(this.getBrandRisk(result));
-
-        //console.log(this.getNps(result));
-
-        //console.log(this.getRealocateds(result));
-
-        //console.log(this.getWelcomed(result));
-
-        //console.log(this.getFeelingMap(result));
-
-        //console.log(this.getShutDown(result)); */
-
+        const users = result.map((r) => r.user);
         return {
-            laborRisk: this.getLaborRisk(result),
-            brandRisk: this.getBrandRisk(result),
-            nps: this.getNps(result),
+            laborRisk: this.getLaborRisk(users),
+            brandRisk: this.getBrandRisk(users),
+            nps: this.getNps(users),
             realocateds: this.getRealocateds(result),
-            termination: this.getTermination(result),
+            termination: this.getTermination(users),
             laborIssues: this.getLaborIssues(result),
-            welcomed: this.getWelcomed(result),
-            feelingMap: this.getFeelingMap(result),
-            shutDown: this.getShutDown(result),
+            welcomed: this.getWelcomed(users),
+            feelingMap: this.getFeelingMap(users),
+            shutDown: this.getShutDown(users),
+            general: {
+                laborRisk: this.getLaborRisk(usersAll),
+                brandRisk: this.getBrandRisk(usersAll),
+                nps: this.getNps(usersAll),
+                realocateds: `N/A`,
+                termination: this.getTermination(usersAll),
+                laborIssues: this.getLaborIssuesAllUsers(usersAll),
+                welcomed: this.getWelcomed(usersAll),
+                feelingMap: this.getFeelingMap(usersAll),
+                shutDown: this.getShutDown(usersAll),
+            },
         };
+        //return "test";
     }
 
     getLaborRisk(users: any) {
         const npsSurveyAnswers = users.filter((npsSurvey) => {
-            if (npsSurvey.user) {
-                return npsSurvey.user.surveyAnswered;
+            if (npsSurvey) {
+                return npsSurvey.surveyAnswered;
             }
         });
-        console.log(npsSurveyAnswers);
+        //console.log(npsSurveyAnswers);
 
         let laborRisk: number = npsSurveyAnswers.reduce(
-            (laborRisckTotal = 0, employee) => {
-                return laborRisckTotal + employee.user.laborRisk;
+            (laborRisckTotal = 0, user) => {
+                return laborRisckTotal + user.laborRisk * 1;
             },
             0
         );
@@ -59,17 +61,17 @@ class NPSSurveyAnswersUseCase {
         const lastAnswers = [];
 
         const countUsersResponded = users.filter((user: any) => {
-            return user.user?.surveyAnswered;
+            return user?.surveyAnswered;
         }).length;
 
         for (const user of users) {
             //of serve para desmembrar um array e listar direto em uma variável
             //ele já tira o objeto e joga ele
             //o in ele pega o index de cada objeto listado
-            if (user?.user?.laborRiskJSON === undefined) {
+            if (user?.laborRiskJSON === undefined) {
                 continue;
             }
-            const laborRisks = JSON.parse(user.user.laborRiskJSON);
+            const laborRisks = JSON.parse(user.laborRiskJSON);
 
             if (Array.isArray(laborRisks)) {
                 for (const laborRiskMapped of laborRisks) {
@@ -100,7 +102,6 @@ class NPSSurveyAnswersUseCase {
         });
 
         const laborRiskAlerts = filterUsers.filter((user: any) => {
-            //console.log(user.user.laborRiskAlert);
             return user.user.laborRiskAlert == "ALERT";
         });
         return (
@@ -109,16 +110,23 @@ class NPSSurveyAnswersUseCase {
         );
     }
 
+    getLaborIssuesAllUsers(users: any) {
+        const laborRiskAlerts = users.filter((user: any) => {
+            return user.laborRiskAlert == "ALERT";
+        });
+        return ((laborRiskAlerts.length / users.length) * 100).toFixed(2) + "%";
+    }
+
     getBrandRisk(users: any) {
         const npsSurveyAnswers = users.filter((npsSurvey) => {
-            if (npsSurvey.user) {
-                return npsSurvey.user.surveyAnswered;
+            if (npsSurvey) {
+                return npsSurvey.surveyAnswered;
             }
         });
 
         let brandRisk: number = npsSurveyAnswers.reduce(
-            (brandRisckTotal = 0, employee) => {
-                return brandRisckTotal + employee.user.brandRisk;
+            (brandRisckTotal = 0, user: any) => {
+                return brandRisckTotal + user.brandRisk * 1;
             },
             0
         );
@@ -132,10 +140,10 @@ class NPSSurveyAnswersUseCase {
         const countUsersResponded = users.filter((user: any) => {
             ////console.log(user)
             if (
-                user.user?.surveyAnswered !== undefined &&
-                user.user?.surveyAnswered !== 0
+                user?.surveyAnswered !== undefined &&
+                user?.surveyAnswered !== 0
             )
-                return user.user?.surveyAnswered;
+                return user?.surveyAnswered;
 
             //a interrogação eu falo que pode ser nulo e se for pega a propriedade
             //se nao voce para aqui
@@ -148,7 +156,7 @@ class NPSSurveyAnswersUseCase {
         ////console.log('users', users)
 
         const result = users.reduce(
-            (accumulators: any, companyEmployee: any) => {
+            (accumulators: any, user: any) => {
                 ////console.log(companyEmployee.user?.NPSSurvey)
                 ////console.log('npsAnswer',npsAnswer)
                 //aqui eu consigo pegar as respostas dos usuários
@@ -156,17 +164,17 @@ class NPSSurveyAnswersUseCase {
                 //let totalAwnswers = 0
 
                 if (
-                    companyEmployee.user?.NPSSurvey < 7 &&
-                    companyEmployee.user?.NPSSurvey !== undefined &&
-                    companyEmployee.user?.NPSSurvey !== 0
+                    user?.NPSSurvey < 7 &&
+                    user?.NPSSurvey !== undefined &&
+                    user?.NPSSurvey !== 0
                 ) {
                     accumulators.npsAnswersLassThanSeven += 1;
                     //totalAwnswers += 1
                 }
                 if (
-                    companyEmployee.user?.NPSSurvey > 8 &&
-                    companyEmployee.user?.NPSSurvey !== undefined &&
-                    companyEmployee.user?.NPSSurvey !== 0
+                    user?.NPSSurvey > 8 &&
+                    user?.NPSSurvey !== undefined &&
+                    user?.NPSSurvey !== 0
                 ) {
                     accumulators.npsAnswersMoreThanEight += 1;
                     //totalAwnswers += 1
@@ -244,10 +252,10 @@ class NPSSurveyAnswersUseCase {
             //of serve para desmembrar um array e listar direto em uma variável
             //ele já tira o objeto e joga ele
             //o in ele pega o index de cada objeto listado
-            if (user?.user?.feelingsMapJSON === undefined) {
+            if (user?.feelingsMapJSON === undefined) {
                 continue;
             }
-            const feelingsMap = JSON.parse(user?.user?.feelingsMapJSON);
+            const feelingsMap = JSON.parse(user?.feelingsMapJSON);
 
             if (Array.isArray(feelingsMap)) {
                 feelingsMap.forEach((feelingMapped) => {
@@ -276,14 +284,14 @@ class NPSSurveyAnswersUseCase {
         const lastAnswers = [];
 
         const countUsersResponded = users.filter((user: any) => {
-            return user.user?.surveyAnswered;
+            return user?.surveyAnswered;
         }).length;
 
         for (const user of users) {
-            if (user?.user?.laborRiskJSON === undefined) {
+            if (user?.laborRiskJSON === undefined) {
                 continue;
             }
-            const laborRisks = JSON.parse(user.user.laborRiskJSON);
+            const laborRisks = JSON.parse(user.laborRiskJSON);
 
             if (Array.isArray(laborRisks)) {
                 for (const laborRiskMapped of laborRisks) {

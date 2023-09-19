@@ -11,10 +11,7 @@ class NPSSurveyAnswers {
     async report(companyId) {
         const NPSSurveyAnswers = this.repository
             .createQueryBuilder("ce")
-            .leftJoinAndSelect(
-                "ce.user",
-                "u"
-            )
+            .leftJoinAndSelect("ce.user", "u")
             .where("ce.companyId = :companyId", {
                 companyId: companyId,
             });
@@ -22,6 +19,12 @@ class NPSSurveyAnswers {
         const companyUsers = await NPSSurveyAnswers.getMany();
 
         return companyUsers;
+    }
+
+    async reportAllusers() {
+        return await this.repository.query(`
+        select *from users where "surveyAnswered" is true 
+    `);
     }
 }
 
