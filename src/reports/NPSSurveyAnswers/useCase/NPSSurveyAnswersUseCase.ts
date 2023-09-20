@@ -321,18 +321,16 @@ class NPSSurveyAnswersUseCase {
                         //console.log(laborRiskMapped);
                     }
                 }
-
-                /*  laborRiskData.forEach((laborRisk) => {
-                    laborRisk.count = (
-                        laborRisk.count / countUsersResponded
-                    ).toFixed(2);
-                    //console.log(laborRisk.count);
-                    return laborRisk;
-                });
- */
-                return laborRiskData;
             }
         }
+        laborRiskData.forEach((laborRisk) => {
+            laborRisk.count = (laborRisk.count / countUsersResponded).toFixed(
+                2
+            );
+            //console.log(laborRisk.count);
+            return laborRisk;
+        });
+        return laborRiskData;
     }
 }
 export { NPSSurveyAnswersUseCase };
