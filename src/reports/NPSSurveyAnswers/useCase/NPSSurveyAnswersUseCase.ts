@@ -13,6 +13,7 @@ class NPSSurveyAnswersUseCase {
         //console.log(result);
 
         const users = result.map((r) => r.user);
+        //console.log(this.getTermination(users));
         return {
             laborRisk: this.getLaborRisk(users),
             brandRisk: this.getBrandRisk(users),
@@ -67,6 +68,10 @@ class NPSSurveyAnswersUseCase {
             return user?.surveyAnswered;
         }).length;
 
+        if (countUsersResponded === 0) {
+            return "N/A";
+        }
+
         for (const user of users) {
             //of serve para desmembrar um array e listar direto em uma variável
             //ele já tira o objeto e joga ele
@@ -85,25 +90,28 @@ class NPSSurveyAnswersUseCase {
                     }
                 }
             }
-
-            return (
-                (
-                    (1 -
-                        lastAnswers.reduce((acc, curr) => {
-                            if (curr.answer === 0) return acc + 1;
-                            return acc;
-                        }, 0) /
-                            users.length) *
-                    100
-                ).toFixed(2) + "%"
-            );
         }
+        return (
+            (
+                (1 -
+                    lastAnswers.reduce((acc, curr) => {
+                        if (curr.answer === 0) return acc + 1;
+                        return acc;
+                    }, 0) /
+                        users.length) *
+                100
+            ).toFixed(2) + "%"
+        );
     }
 
     getLaborIssues(users: any) {
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
+
+        if (filterUsers.length === 0) {
+            return "N/A";
+        }
 
         const laborRiskAlerts = filterUsers.filter((user: any) => {
             return user.user.laborRiskAlert == "ALERT";
@@ -118,6 +126,7 @@ class NPSSurveyAnswersUseCase {
         const laborRiskAlerts = users.filter((user: any) => {
             return user.laborRiskAlert == "ALERT";
         });
+
         return ((laborRiskAlerts.length / users.length) * 100).toFixed(2) + "%";
     }
 
@@ -229,6 +238,11 @@ class NPSSurveyAnswersUseCase {
             ////console.log(user.user.realocated);
             return user.user?.realocated == "REALOCATED";
         });
+
+        if (filterUsers.length === 0) {
+            return "N/A";
+        }
+
         /* //console.log(realocateds.length)
     //console.log(users.length) */
         ////console.log(realocateds.length);
