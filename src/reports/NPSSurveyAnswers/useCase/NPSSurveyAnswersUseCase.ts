@@ -23,7 +23,7 @@ class NPSSurveyAnswersUseCase {
             welcomed: this.getWelcomed(users),
             feelingMap: this.getFeelingMap(users),
             shutDown: this.getShutDown(users),
-            /* general: {
+            general: {
                 laborRisk: this.getLaborRisk(usersAll),
                 brandRisk: this.getBrandRisk(usersAll),
                 nps: this.getNps(usersAll),
@@ -33,7 +33,7 @@ class NPSSurveyAnswersUseCase {
                 welcomed: this.getWelcomed(usersAll),
                 feelingMap: this.getFeelingMap(usersAll),
                 shutDown: this.getShutDown(usersAll),
-            }, */
+            },
         };
         //return "test";
     }
