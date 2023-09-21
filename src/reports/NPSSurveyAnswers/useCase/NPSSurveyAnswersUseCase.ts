@@ -23,7 +23,7 @@ class NPSSurveyAnswersUseCase {
             welcomed: this.getWelcomed(users),
             feelingMap: this.getFeelingMap(users),
             shutDown: this.getShutDown(users),
-            general: {
+            /* general: {
                 laborRisk: this.getLaborRisk(usersAll),
                 brandRisk: this.getBrandRisk(usersAll),
                 nps: this.getNps(usersAll),
@@ -33,18 +33,21 @@ class NPSSurveyAnswersUseCase {
                 welcomed: this.getWelcomed(usersAll),
                 feelingMap: this.getFeelingMap(usersAll),
                 shutDown: this.getShutDown(usersAll),
-            },
+            }, */
         };
         //return "test";
     }
 
     getLaborRisk(users: any) {
+        //console.log(users);
         const npsSurveyAnswers = users.filter((npsSurvey) => {
             if (npsSurvey) {
                 return npsSurvey.surveyAnswered;
             }
         });
-        //console.log(npsSurveyAnswers);
+        if (npsSurveyAnswers.length === 0) {
+            return "N/A";
+        }
 
         let laborRisk: number = npsSurveyAnswers.reduce(
             (laborRisckTotal = 0, user) => {
@@ -82,6 +85,7 @@ class NPSSurveyAnswersUseCase {
                     }
                 }
             }
+
             return (
                 (
                     (1 -
@@ -123,6 +127,9 @@ class NPSSurveyAnswersUseCase {
                 return npsSurvey.surveyAnswered;
             }
         });
+        if (npsSurveyAnswers.length === 0) {
+            return "N/A";
+        }
 
         let brandRisk: number = npsSurveyAnswers.reduce(
             (brandRisckTotal = 0, user: any) => {
@@ -148,6 +155,10 @@ class NPSSurveyAnswersUseCase {
             //a interrogação eu falo que pode ser nulo e se for pega a propriedade
             //se nao voce para aqui
         }).length;
+
+        if (countUsersResponded === 0) {
+            return "N/A";
+        }
 
         //return countUsersResponded
 
