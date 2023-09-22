@@ -6,21 +6,37 @@ import { NPSSurveyAnswers } from "../entities/NPSSurveyAnswers";
 class NPSSurveyAnswersUseCase {
     async execute({ companyId }) {
         const npsSurveyAnswers = new NPSSurveyAnswers();
+        let users;
+        let result;
+        console.log(companyId.user);
 
-        const result = await npsSurveyAnswers.report(companyId);
-        const usersAll = await npsSurveyAnswers.reportAllusers();
-        console.log(this.getBrandRisk(usersAll));
+        if (companyId === "TUDO") {
+            users = await npsSurveyAnswers.reportAllusers();
+            //console.log(users);
+        } else if (companyId === "B2B") {
+            users = await npsSurveyAnswers.reportAllUsersB2b();
+            //console.log(users);
+        } else if (companyId === "B2C") {
+            users = await npsSurveyAnswers.reportAllUsersB2c();
+            //console.log(users);
+        } else {
+            result = await npsSurveyAnswers.report(companyId);
+            users = result.map((r) => r.user);
+            //console.log(users);
+            //console.log(result);
+        }
+        let usersAll = await npsSurveyAnswers.reportAllusers();
+        //console.log(this.getBrandRisk(usersAll));
         //console.log(result);
 
-        const users = result.map((r) => r.user);
         //console.log(this.getTermination(users));
         return {
             laborRisk: this.getLaborRisk(users),
             brandRisk: this.getBrandRisk(users),
             nps: this.getNps(users),
-            realocateds: this.getRealocateds(result),
+            realocateds: result ? this.getRealocateds(result) : "N/A",
             termination: this.getTermination(users),
-            laborIssues: this.getLaborIssues(result),
+            laborIssues: result ? this.getLaborIssues(result) : "N/A",
             welcomed: this.getWelcomed(users),
             feelingMap: this.getFeelingMap(users),
             shutDown: this.getShutDown(users),
@@ -230,7 +246,7 @@ class NPSSurveyAnswersUseCase {
         //console.log(countRealocateds)
       } */
 
-        const filterUsers = users.filter((employee) => {
+        const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
 
