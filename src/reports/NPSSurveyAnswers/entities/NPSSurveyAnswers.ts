@@ -26,6 +26,18 @@ class NPSSurveyAnswers {
         select *from users where "surveyAnswered" is true 
     `);
     }
+
+    async reportAllUsersB2b() {
+        return await this.repository.query(`
+        select *from users where "surveyAnswered" is true and "companyId" is not null
+        `);
+    }
+
+    async reportAllUsersB2c() {
+        return await this.repository.query(`
+        select *from users where "surveyAnswered" is true and "companyId" is null
+        `);
+    }
 }
 
 export { NPSSurveyAnswers };

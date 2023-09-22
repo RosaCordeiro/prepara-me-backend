@@ -6,13 +6,29 @@ import { NPSSurveyAnswers } from "../entities/NPSSurveyAnswers";
 class NPSSurveyAnswersUseCase {
     async execute({ companyId }) {
         const npsSurveyAnswers = new NPSSurveyAnswers();
+        let users;
+        let result;
 
-        const result = await npsSurveyAnswers.report(companyId);
-        const usersAll = await npsSurveyAnswers.reportAllusers();
-        console.log(this.getBrandRisk(usersAll));
+        if (companyId === "TUDO") {
+            users = await npsSurveyAnswers.reportAllusers();
+            //console.log(users);
+        } else if (companyId === "B2B") {
+            users = await npsSurveyAnswers.reportAllUsersB2b();
+            //console.log(users);
+        } else if (companyId === "B2C") {
+            users = await npsSurveyAnswers.reportAllUsersB2c();
+            //console.log(users);
+        } else {
+            result = await npsSurveyAnswers.report(companyId);
+            users = result.map((r) => r.user);
+            //console.log(users);
+            //console.log(result);
+        }
+        let usersAll = await npsSurveyAnswers.reportAllusers();
+        //console.log(this.getBrandRisk(usersAll));
         //console.log(result);
+        //console.log(users);
 
-        const users = result.map((r) => r.user);
         //console.log(this.getTermination(users));
         return {
             laborRisk: this.getLaborRisk(users),
@@ -41,7 +57,10 @@ class NPSSurveyAnswersUseCase {
 
     getLaborRisk(users: any) {
         //console.log(users);
-        const npsSurveyAnswers = users.filter((npsSurvey) => {
+        /* if (users === undefined) {
+            return "deu undefined";
+        } */
+        const npsSurveyAnswers = users.filter((npsSurvey: any) => {
             if (npsSurvey) {
                 return npsSurvey.surveyAnswered;
             }
@@ -230,7 +249,7 @@ class NPSSurveyAnswersUseCase {
         //console.log(countRealocateds)
       } */
 
-        const filterUsers = users.filter((employee) => {
+        const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
 
