@@ -8,6 +8,7 @@ class NPSSurveyAnswersUseCase {
         const npsSurveyAnswers = new NPSSurveyAnswers();
         let users;
         let result;
+        console.log(companyId.user);
 
         if (companyId === "TUDO") {
             users = await npsSurveyAnswers.reportAllusers();
@@ -27,16 +28,15 @@ class NPSSurveyAnswersUseCase {
         let usersAll = await npsSurveyAnswers.reportAllusers();
         //console.log(this.getBrandRisk(usersAll));
         //console.log(result);
-        //console.log(users);
 
         //console.log(this.getTermination(users));
         return {
             laborRisk: this.getLaborRisk(users),
             brandRisk: this.getBrandRisk(users),
             nps: this.getNps(users),
-            realocateds: this.getRealocateds(result),
+            realocateds: result ? this.getRealocateds(result) : "N/A",
             termination: this.getTermination(users),
-            laborIssues: this.getLaborIssues(result),
+            laborIssues: result ? this.getLaborIssues(result) : "N/A",
             welcomed: this.getWelcomed(users),
             feelingMap: this.getFeelingMap(users),
             shutDown: this.getShutDown(users),
@@ -57,10 +57,7 @@ class NPSSurveyAnswersUseCase {
 
     getLaborRisk(users: any) {
         //console.log(users);
-        /* if (users === undefined) {
-            return "deu undefined";
-        } */
-        const npsSurveyAnswers = users.filter((npsSurvey: any) => {
+        const npsSurveyAnswers = users.filter((npsSurvey) => {
             if (npsSurvey) {
                 return npsSurvey.surveyAnswered;
             }
