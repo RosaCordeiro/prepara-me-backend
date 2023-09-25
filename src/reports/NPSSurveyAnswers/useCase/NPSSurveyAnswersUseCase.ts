@@ -139,11 +139,15 @@ class NPSSurveyAnswersUseCase {
     }
 
     getLaborIssuesAllUsers(users: any) {
+        const filteredUsers = users.filter((user: any) => {
+            return user.companyId !== null && user.companyId !== undefined;
+        });
+
         const laborRiskAlerts = users.filter((user: any) => {
             return user.laborRiskAlert == "ALERT";
         });
 
-        return ((laborRiskAlerts.length / users.length) * 100).toFixed(2) + "%";
+        return ((filteredUsers.length / users.length) * 100).toFixed(2) + "%";
     }
 
     getBrandRisk(users: any) {
