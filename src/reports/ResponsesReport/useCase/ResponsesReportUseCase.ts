@@ -93,10 +93,14 @@ class ResponsesReportUseCase {
                 }
             }
 
+            console.log(r);
+
             return {
                 id: r.id,
                 name: r.name,
                 email: r.email,
+                origin: r.origem,
+                company: r.empresa,
                 ...copyFeelingsAnswers,
                 ...copyQuestions,
             };
@@ -106,6 +110,8 @@ class ResponsesReportUseCase {
             "ID",
             "Nome",
             "Email",
+            "Origem",
+            "Empresa",
             "Alíviado(a). Já queria sair da empresa.",
             "Surpreso(a). Não esperava pela demissão.",
             "Injustiçado(a). Minha demissão foi injusta.",

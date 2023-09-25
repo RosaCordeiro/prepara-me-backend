@@ -227,8 +227,9 @@ class NPSSurveyAnswersUseCase {
 
         ////console.log(countUsersResponded)
         return (
-            result.npsAnswersMoreThanEight / countUsersResponded -
-            result.npsAnswersLassThanSeven / countUsersResponded
+            (result.npsAnswersMoreThanEight / countUsersResponded -
+                result.npsAnswersLassThanSeven / countUsersResponded) *
+            100
         ).toFixed(2);
     }
 
@@ -375,4 +376,3 @@ class NPSSurveyAnswersUseCase {
     }
 }
 export { NPSSurveyAnswersUseCase };
-
