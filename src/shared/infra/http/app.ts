@@ -1,4 +1,3 @@
-import { validateMentoringSchedules } from "./../../../config/schedule";
 import * as dotenv from "dotenv";
 import upload from "@config/upload";
 import cors from "cors";
@@ -48,8 +47,6 @@ app.use("/mentoring", express.static(`${upload.tmpFolder}/mentoring`));
 app.use(router);
 
 app.use(errorReturn);
-
-validateMentoringSchedules();
 
 //jobs();
 
