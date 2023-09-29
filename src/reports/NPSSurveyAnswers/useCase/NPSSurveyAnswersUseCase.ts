@@ -245,7 +245,12 @@ class NPSSurveyAnswersUseCase {
 
     getFeelingMap(users: any) {
         const feelingsMapData = [];
-        for (const user of users) {
+
+        const usersResponded = users.filter((user: any) => {
+            return user?.surveyAnswered === true;
+        });
+
+        for (const user of usersResponded) {
             //of serve para desmembrar um array e listar direto em uma variável
             //ele já tira o objeto e joga ele
             //o in ele pega o index de cada objeto listado
@@ -272,6 +277,14 @@ class NPSSurveyAnswersUseCase {
                 });
             }
         }
+
+        feelingsMapData.forEach((feeling) => {
+            feeling.count = (
+                (feeling.count / usersResponded.length) *
+                100
+            ).toFixed(2);
+        });
+
         return feelingsMapData;
     }
 
