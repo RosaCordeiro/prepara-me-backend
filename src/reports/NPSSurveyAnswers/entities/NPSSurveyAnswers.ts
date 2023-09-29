@@ -41,4 +41,3 @@ class NPSSurveyAnswers {
 }
 
 export { NPSSurveyAnswers };
-
