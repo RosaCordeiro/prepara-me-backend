@@ -17,6 +17,7 @@ interface IRequestFind {
 interface IProductsRepository {
     create(data: ICreateProductDTO): Promise<Product>;
     findById(id: string): Promise<Product>;
+    findBySlug(slug: string): Promise<Product>;
     findAvailable(): Promise<Product[]>;
     findAvailableBestSellers(): Promise<Product[]>;
     findLassThanPrice(id: string): Promise<Product[]>;

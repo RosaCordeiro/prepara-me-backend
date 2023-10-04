@@ -8,12 +8,17 @@ import { getRepository, LessThanOrEqual, Not, Repository } from "typeorm";
 
 import { Product } from "../entities/Product";
 import { AppError } from "@shared/errors/AppError";
+import { isUUID } from "@utils/isUUID";
 
 class ProductsRepository implements IProductsRepository {
     private repository: Repository<Product>;
 
     constructor() {
         this.repository = getRepository(Product);
+    }
+
+    findBySlug(slug: string): Promise<Product> {
+        return this.repository.findOne({ slug });
     }
 
     async removeByProductAvailableId(id: string): Promise<void> {
@@ -83,6 +88,7 @@ class ProductsRepository implements IProductsRepository {
         type,
         bestSeller,
         id,
+        slug,
     }: ICreateProductDTO): Promise<Product> {
         const product = this.repository.create({
             name,
@@ -93,6 +99,7 @@ class ProductsRepository implements IProductsRepository {
             type,
             bestSeller,
             id,
+            slug,
         });
 
         await this.repository.save(product);
@@ -138,9 +145,15 @@ class ProductsRepository implements IProductsRepository {
             .leftJoinAndSelect("p.productContent", "productContent");
 
         if (id) {
-            productsQuery.andWhere("p.id = :id", {
-                id: id,
-            });
+            if (isUUID(id)) {
+                productsQuery.andWhere("p.id = :id", {
+                    id: id,
+                });
+            } else {
+                productsQuery.andWhere("p.slug = :id", {
+                    id: id,
+                });
+            }
         } else {
             if (status) {
                 productsQuery.andWhere("p.status = :status", {

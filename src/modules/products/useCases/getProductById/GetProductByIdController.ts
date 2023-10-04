@@ -6,13 +6,14 @@ class GetProductByIdController {
     async handle(request: Request, response: Response): Promise<Response> {
         const { productId } = request.params;
 
-        const getProductByIdUseCase = container.resolve(GetProductByIdUseCase)
+        console.log(productId);
 
-        const product = await getProductByIdUseCase.execute(productId)
+        const getProductByIdUseCase = container.resolve(GetProductByIdUseCase);
 
-        return response.status(200).json(product)
+        const product = await getProductByIdUseCase.execute(productId);
+
+        return response.status(200).json(product);
     }
 }
 
 export { GetProductByIdController };
-

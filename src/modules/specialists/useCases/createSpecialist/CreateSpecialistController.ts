@@ -21,8 +21,6 @@ class CreateSpecialistController {
             image = request.files[0].filename;
         }
 
-        console.log("teste", image);
-
         const specialist = await createSpecialistUseCase.execute({
             name,
             bio,
@@ -38,4 +36,3 @@ class CreateSpecialistController {
 }
 
 export { CreateSpecialistController };
-

@@ -22,6 +22,9 @@ class Product {
     shortName: string;
 
     @Column()
+    slug: string;
+
+    @Column()
     price: number;
 
     @Column()
@@ -50,16 +53,19 @@ class Product {
     @OneToMany(() => ProductContent, (productContent) => productContent.product)
     productContent: ProductContent[];
 
-    @OneToMany(
-        () => OrderItem,
-        (orderItem) => orderItem.product
-    )
+    @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
     orderItem: OrderItem[];
 
-    @OneToMany(() => ProductSpecialist, productSpecialist => productSpecialist.product)
+    @OneToMany(
+        () => ProductSpecialist,
+        (productSpecialist) => productSpecialist.product
+    )
     public productSpecialist!: ProductSpecialist[];
 
-    @OneToMany(() => SubscriptionPlanProduct, (subscriptionPlanProduct) => subscriptionPlanProduct.product)
+    @OneToMany(
+        () => SubscriptionPlanProduct,
+        (subscriptionPlanProduct) => subscriptionPlanProduct.product
+    )
     public subscriptionPlanProduct!: SubscriptionPlanProduct[];
 
     @OneToMany(
@@ -71,6 +77,7 @@ class Product {
     constructor(
         name: string,
         shortName: string,
+        slug: string,
         price: number,
         duration: number,
         status: ProductStatusEnum,
@@ -79,9 +86,9 @@ class Product {
         id: string
     ) {
         if (id) {
-            this.id = id
+            this.id = id;
         }
-        
+
         if (!this.id) {
             this.id = uuidV4();
         }
@@ -93,6 +100,7 @@ class Product {
         this.status = status;
         this.type = type;
         this.bestSeller = bestSeller;
+        this.slug = slug;
     }
 }
 

@@ -14,6 +14,7 @@ class CreateProductController {
             type,
             id,
             bestSeller,
+            slug,
         } = request.body;
 
         const createProductUseCase = container.resolve(CreateProductUseCase);
@@ -27,6 +28,7 @@ class CreateProductController {
             type,
             bestSeller,
             id,
+            slug,
         });
 
         return response.status(201).json(product);
@@ -34,4 +36,3 @@ class CreateProductController {
 }
 
 export { CreateProductController };
-
