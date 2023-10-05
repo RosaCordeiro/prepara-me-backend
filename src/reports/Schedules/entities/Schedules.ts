@@ -328,7 +328,7 @@ class Schedules {
                 null as data_troca,
                 TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
                 TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
-                CAST(m."mentorId" as text) as especialista,
+                s."name" as especialista,
                 CAST(mu.rating as text) as nota,
                 case
                     when u."companyId" is not null then
@@ -343,7 +343,8 @@ class Schedules {
                 4 as order
                 from "mentoringUsers" mu 
                 inner join users u on u.id = mu."userId" 
-                inner join mentoring m on m.id = mu."mentoringId" 
+                inner join mentoring m on m.id = mu."mentoringId"
+                inner join specialists s on s.id = m."mentorId" 
             ) as row 
             ${where}
             order by row.name, row.order            
