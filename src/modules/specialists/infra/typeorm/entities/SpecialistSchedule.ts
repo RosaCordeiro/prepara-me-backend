@@ -4,6 +4,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { Specialist } from "./Specialist";
 import { User } from "@modules/accounts/infra/typeorm/entities/User";
 import { Product } from "@modules/products/infra/typeorm/entities/Product";
+import { SpecialistScheduleFiles } from "./SpecialistScheduleFiles";
 
 @Entity("specialistSchedule")
 class SpecialistSchedule {
@@ -47,6 +48,12 @@ class SpecialistSchedule {
     @Column()
     rating: number;
 
+    @OneToMany(
+        () => SpecialistScheduleFiles,
+        (specialistScheduleFiles) => specialistScheduleFiles.specialistSchedule
+    )
+    specialistScheduleFiles: SpecialistScheduleFiles[];
+
     constructor(
         dateSchedule: Date,
         specialistId: string,
@@ -80,4 +87,3 @@ class SpecialistSchedule {
 }
 
 export { SpecialistSchedule };
-
