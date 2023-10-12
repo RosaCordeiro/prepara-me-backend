@@ -4,7 +4,7 @@ import { ensureAdmin } from "../middlewares/ensureAdmin";
 import multer from "multer";
 import uploadConfig from "@config/upload";
 
-import { CreateMentoringController } from "@modules/mentoring/useCases/createMentoring/CreateMentoringController";
+import { CreateSpecialistScheduleFilesController } from "@modules/specialists/useCases/createSpecialistScheduleFiles/CreateSpecialistScheduleFilesController";
 import { ListMentoringController } from "@modules/mentoring/useCases/listMentoring/ListMentoringController";
 import { AddParticipantMentoringController } from "@modules/mentoring/useCases/addParticipantMentoring/AddParticipantMentoringController";
 import { EditMentoringController } from "@modules/mentoring/useCases/editMentoring/EditMentoringController";
@@ -14,6 +14,8 @@ import { ListMentoringScheduleController } from "@modules/mentoring/useCases/lis
 import { RateMentoringController } from "@modules/mentoring/useCases/rateMentoring/RateMentoringController";
 import { RemoveParticipantMentoringUseCase } from "@modules/mentoring/useCases/removeParticipantMentoring/RemoveParticipantMentoringUseCase";
 import { RemoveParticipantMentoringController } from "@modules/mentoring/useCases/removeParticipantMentoring/RemoveParticipantMentoringController";
+import { CreateMentoringController } from "@modules/mentoring/useCases/createMentoring/CreateMentoringController";
+import upload from "@config/upload";
 
 const mentoringRoutes = Router();
 const uploadImage = multer(uploadConfig);

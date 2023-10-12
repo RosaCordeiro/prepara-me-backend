@@ -18,6 +18,7 @@ import {
 } from "@modules/specialists/dtos/ICreateSpecialistScheduleFileDTO";
 import { SpecialistScheduleFiles } from "@modules/specialists/infra/typeorm/entities/SpecialistScheduleFiles";
 import { ISpecialistSchedulesFilesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesFilesRepository";
+import { SpecialistScheduleFileTypeEnum } from "@modules/specialists/enums/SpecialistScheduleFileTypeEnum";
 
 @injectable()
 class CreateSpecialistScheduleFilesUseCase {
@@ -41,8 +42,44 @@ class CreateSpecialistScheduleFilesUseCase {
             );
         }
 
+        const specialistScheduleFilesFind = await this.specialistSchedulesFilesRepository.find(
+            data.specialistScheduleId
+        );
+
+        if (specialistScheduleFilesFind.length === 0) {
+            throw new AppError("Files not found");
+        }
+
         return specialistScheduleFile;
     }
+
+    async remove(id: string): Promise<string> {
+        const specialistScheduleFile = await this.specialistSchedulesFilesRepository.remove(
+            id
+        );
+
+        return specialistScheduleFile;
+    }
+
+    async countFilesBySpecialistScheduleIdAndType(
+        specialistScheduleId: string,
+        fileType: SpecialistScheduleFileTypeEnum
+    ): Promise<number> {
+        const count = await this.specialistSchedulesFilesRepository.countFilesBySpecialistScheduleIdAndType(
+            specialistScheduleId,
+            fileType 
+            //se eu colocar como any ele retorna qualquer tipo de arquivo?
+        );
+    
+        return count;
+    }
+
+    
+        
+
+    
+    
+    
 }
 
 export { CreateSpecialistScheduleFilesUseCase };
