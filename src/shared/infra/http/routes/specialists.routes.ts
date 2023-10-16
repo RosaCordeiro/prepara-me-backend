@@ -18,10 +18,13 @@ import { CreateSpecialistScheduleFilesController } from "@modules/specialists/us
 const specialistsRoutes = Router();
 const uploadImage = multer(uploadConfig);
 
-const createSpecialistScheduleFilesController = new CreateSpecialistScheduleFilesController();
+const createSpecialistScheduleFilesController =
+    new CreateSpecialistScheduleFilesController();
 specialistsRoutes.post(
     "/schedule-files",
     ensuredAuthenticated,
+    uploadImage.any(),
+    //aqui eu passo pelo multer e ele coloca arquivo que poderia receber
     createSpecialistScheduleFilesController.handle
 );
 
