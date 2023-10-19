@@ -68,12 +68,7 @@ const createUserController = new CreateUserController();
 usersRoutes.post("/", createUserController.handle);
 
 const listUserController = new ListUserController();
-usersRoutes.get(
-    "/",
-    ensuredAuthenticated,
-    ensureAdmin,
-    listUserController.handle
-);
+usersRoutes.get("/", ensuredAuthenticated, listUserController.handle);
 
 usersRoutes.get("/:id", ensuredAuthenticated, listUserController.handle);
 

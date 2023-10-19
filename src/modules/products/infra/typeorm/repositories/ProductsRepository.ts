@@ -59,6 +59,55 @@ class ProductsRepository implements IProductsRepository {
         `);
     }
 
+    async findByUserIdWithSpecialist(
+        userId: string,
+        productId?: string
+    ): Promise<any> {
+        console.log("userId", userId);
+        console.log("productId", productId);
+
+        let rows = await this.repository.query(`
+            select * from (
+                select 
+                    upa.id, "userId", "productId", "availableQuantity", p."name", null as "specialist", null as "schedule"
+                from "userProductsAvailable" upa 
+                inner join products p on p.id = upa."productId"
+                where upa."userId" = '${userId}' 
+                and upa."availableQuantity" > 0
+                ${
+                    productId !== "undefined"
+                        ? `and upa."productId" = '${productId}'`
+                        : ""
+                }
+                
+                union 
+                    
+                select 
+                    ss.id, ss."userId", "productId", 0 as availableQuantity, p."name", to_jsonb((array[s.*])[1]) as "specialist", to_jsonb((array[ss.*])[1]) as "schedule"
+                from "specialistSchedule" ss 
+                inner join products p on p.id = ss."productId"
+                inner join specialists s on s.id = ss."specialistId"    
+                where ss."userId" = '${userId}'	
+                ${
+                    productId !== "undefined"
+                        ? `and ss."productId" = '${productId}'`
+                        : ""
+                }
+            ) as "schedule" 	            
+            
+        `);
+
+        rows = rows.map((row) => {
+            if (row.specialist?.image) {
+                row.specialist.image = `${process.env.AWS_BUCKET_URL}/specialists/${row.specialist.image}`;
+            }
+
+            return row;
+        });
+
+        return rows;
+    }
+
     async findLassThanPrice(id: string): Promise<Product[]> {
         const product = await this.repository.findOne(id);
 
