@@ -13,9 +13,39 @@ import { ListProductSpecialistController } from "@modules/specialists/useCases/l
 import { CancelSpecialistScheduleController } from "@modules/specialists/useCases/cancelSpecilaistSchedule/CancelSpecialistScheduleController";
 import uploadConfig from "@config/upload";
 import multer from "multer";
+import { CreateSpecialistScheduleFilesController } from "@modules/specialists/useCases/createSpecialistScheduleFiles/CreateSpecialistScheduleFilesController";
+import { ListSpecialistScheduleFilesController } from "@modules/specialists/useCases/listSpecialistScheduleFiles/ListSpecialistScheduleFilesController";
+import { RemoveSpecialistScheduleFilesController } from "@modules/specialists/useCases/removeSpeecialistScheduleFiles/removeSpecialistScheduleFilesController";
 
 const specialistsRoutes = Router();
 const uploadImage = multer(uploadConfig);
+
+const listSpecialistScheduleFilesController =
+    new ListSpecialistScheduleFilesController();
+
+const removeSpecialistScheduleFilesController =
+    new RemoveSpecialistScheduleFilesController();
+
+specialistsRoutes.get(
+    "/schedule/:id/schedule-files",
+    ensuredAuthenticated,
+    listSpecialistScheduleFilesController.handle
+);
+const createSpecialistScheduleFilesController =
+    new CreateSpecialistScheduleFilesController();
+specialistsRoutes.post(
+    "/schedule-files",
+    ensuredAuthenticated,
+    uploadImage.any(),
+    //aqui eu passo pelo multer e ele coloca arquivo que poderia receber
+    createSpecialistScheduleFilesController.handle
+);
+
+specialistsRoutes.delete(
+    "/schedule/:id/schedule-files-delete",
+    ensuredAuthenticated,
+    removeSpecialistScheduleFilesController.handle
+);
 
 const createSpecialistScheduleController =
     new CreateSpecialistScheduleController();

@@ -17,8 +17,10 @@ class SpecialistScheduleMap {
         product,
         scheduleEventId,
         specialist,
-        rating
-    }: SpecialistSchedule): ISpecialistScheduleResponseDTO {
+        rating,
+        filesCountUser,
+        filesCountSpecialist,
+    }: any): ISpecialistScheduleResponseDTO {
         const statusMapped =
             status === SpecialistScheduleStatusEnum.AVAILABLE
                 ? "Disponível"
@@ -41,7 +43,9 @@ class SpecialistScheduleMap {
             userId: user ? user.id : null,
             specialist: specialist ? SpecialistMap.toDTO(specialist) : null,
             specialistId: specialist ? specialist.id : null,
-            rating
+            rating,
+            filesCountUser,
+            filesCountSpecialist,
         });
 
         return specialistSchedule;
@@ -49,4 +53,3 @@ class SpecialistScheduleMap {
 }
 
 export { SpecialistScheduleMap };
-

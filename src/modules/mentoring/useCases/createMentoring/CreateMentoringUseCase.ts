@@ -12,39 +12,56 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 class CreateMentoringUseCase {
+    //aqui ele declara o constructor com os parametros que serao injetados no service
     constructor(
         @inject("MentoringRepository")
         private mentoringRepository: MentoringRepository,
+        //resitorio de mentoria
         @inject("StorageProvider")
         private storageProvider: IStorageProvider,
+        //provedor de armazenamento
         @inject("ScheduleGoogle")
         private scheduleGoogle: IScheduleProvider,
+        //provedor de agendamento
         @inject("DayjsDateProvider")
         private dateProvider: IDateProvider,
+        //provedor de data
         @inject("SpecialistsRepository")
         private specialistRepository: ISpecialistsRepository
-    ) {}
+    ) //repositorio de especialistas
+    {}
 
     async execute(
+        //principal metodo do service que aceita dois argumentos
+        //content que e do tipo ICreateMentoringDTO e file que e do tipo string
+        //(que talvez seja uma imagem eu acho)
         content: ICreateMentoringDTO,
         file: string
     ): Promise<Mentoring> {
         this.validInput(content);
 
+        //aqui o validInput e chamado para verificar se os dados estao corretos
+        //que seriam o titulo, a data e o mentorId, se nao o error e lancado no console
+
         const specialist = await this.specialistRepository.findById(
             content.mentorId
+            //aqui ele obtem o especialista pelo mentorId que esta no content
         );
 
         if (specialist === null || specialist === undefined) {
             throw new AppError("Specialist not found");
+            //caso o especialista nao seja encontrado ele retorna um erro
         }
 
         await this.storageProvider.save(file, "mentoring");
+        //aqui ele salva o arquivo no storageProvider, passando o file e o nome da pasta
         content.image = file;
 
         const dateMasked = this.dateProvider.formatDateTime(
             content.date,
             "YYYY-MM-DDThh:mm:ssfff:00"
+            //aqui ele formata a data para o formato que o google calendar aceita porque
+            //se nao acredito que daria alguma forma de conflito
         );
 
         const newDate = new Date(dateMasked);
@@ -64,6 +81,9 @@ class CreateMentoringUseCase {
             "America/Sao_Paulo",
             [{ email: specialist.user.email }]
         );
+        //nessa parte ele chama o metodo scheduleEvent do scheduleGoogle
+        //que como retorno ele passa as informacoes do evento que foi criado
+        //que sao o link do meet e o id do evento
 
         console.log("event", event);
 
@@ -72,6 +92,7 @@ class CreateMentoringUseCase {
         delete content.id;
         delete content.users;
 
+        //mentoria criada usando o repositorio de mentoria
         const mentoring = await this.mentoringRepository.create({
             ...content,
         });
@@ -79,6 +100,7 @@ class CreateMentoringUseCase {
         return mentoring;
     }
 
+    //chamado la em cima no execute e aqui ele verifica se os dados estao corretos
     validInput(content: ICreateMentoringDTO): void {
         if (
             content.title === null ||

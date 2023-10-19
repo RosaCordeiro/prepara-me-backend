@@ -5,6 +5,8 @@ import { IProductsSpecialistsRepository } from "@modules/specialists/repositorie
 import { ISpecialistSchedulesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesRepository";
 import { container } from "tsyringe";
 import { SpecialistSchedulesRepository } from "@modules/specialists/infra/typeorm/repositories/SpecialistSchedulesRepository";
+import { SpecialistSchedulesFilesRepository } from "@modules/specialists/infra/typeorm/repositories/SpecialistSchedulesFilesRepository";
+import { ISpecialistSchedulesFilesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesFilesRepository";
 
 container.registerSingleton<ISpecialistsRepository>(
     "SpecialistsRepository",
@@ -20,3 +22,9 @@ container.registerSingleton<IProductsSpecialistsRepository>(
     "ProductsSpecialistsRepository",
     ProductsSpecialistsRepository
 );
+
+container.registerSingleton<ISpecialistSchedulesFilesRepository>(
+    "SpecialistSchedulesFilesRepository",
+    SpecialistSchedulesFilesRepository
+);
+
