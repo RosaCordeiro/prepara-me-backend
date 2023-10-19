@@ -11,6 +11,7 @@ class ListSpecialistScheduleFilesController {
         );
 
         const { id } = request.params;
+        console.log(id);
         const type: any = request.query.type;
 
         if (!id) {
@@ -34,3 +35,4 @@ class ListSpecialistScheduleFilesController {
 }
 
 export { ListSpecialistScheduleFilesController };
+

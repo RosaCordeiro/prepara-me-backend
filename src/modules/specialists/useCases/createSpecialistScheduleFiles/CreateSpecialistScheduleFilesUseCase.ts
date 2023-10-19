@@ -59,27 +59,6 @@ class CreateSpecialistScheduleFilesUseCase {
         }
         return specialistScheduleFile;
     }
-
-    async remove(id: string): Promise<string> {
-        const specialistScheduleFile =
-            await this.specialistSchedulesFilesRepository.remove(id);
-
-        return specialistScheduleFile;
-    }
-
-    async countFilesBySpecialistScheduleIdAndType(
-        specialistScheduleId: string,
-        fileType: SpecialistScheduleFileTypeEnum
-    ): Promise<number> {
-        const count =
-            await this.specialistSchedulesFilesRepository.countFilesBySpecialistScheduleIdAndType(
-                specialistScheduleId,
-                fileType
-                //se eu colocar como any ele retorna qualquer tipo de arquivo?
-            );
-
-        return count;
-    }
 }
 
 export { CreateSpecialistScheduleFilesUseCase };
