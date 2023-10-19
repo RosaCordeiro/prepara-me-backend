@@ -29,9 +29,10 @@ class SpecialistSchedulesFilesRepository
     }
 
     async create(
-        data: SpecialistScheduleFiles
+        data: ICreateSpecialistScheduleFileDTO
     ): Promise<SpecialistScheduleFiles> {
         const specialistScheduleFile = this.repository.create(data);
+        console.log(specialistScheduleFile);
 
         await this.repository.save(specialistScheduleFile);
 
@@ -39,14 +40,19 @@ class SpecialistSchedulesFilesRepository
     }
 
     async find(
-        specialistScheduleId: string
+        specialistScheduleId: string,
+        fileType?: SpecialistScheduleFileTypeEnum
     ): Promise<ISpecialistScheduleFileResponseDTO[]> {
         const specialistScheduleFilesQuery = this.repository
             .createQueryBuilder("ssf")
             .where("ssf.specialistScheduleId = :specialistScheduleId", {
                 specialistScheduleId,
             });
-
+        if (fileType) {
+            specialistScheduleFilesQuery.andWhere("ssf.fileType = :fileType", {
+                fileType,
+            });
+        }
         const specialistScheduleFiles =
             await specialistScheduleFilesQuery.getMany();
 

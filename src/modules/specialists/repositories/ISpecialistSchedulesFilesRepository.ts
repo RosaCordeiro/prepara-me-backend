@@ -8,7 +8,8 @@ interface ISpecialistSchedulesFilesRepository {
         data: ICreateSpecialistScheduleFileDTO
     ): Promise<SpecialistScheduleFiles>;
     find(
-        specialistScheduleId: string
+        specialistScheduleId: string,
+        fileType?: SpecialistScheduleFileTypeEnum
     ): Promise<ISpecialistScheduleFileResponseDTO[]>;
     remove(id: string): Promise<string>;
     countFilesBySpecialistScheduleIdAndType(

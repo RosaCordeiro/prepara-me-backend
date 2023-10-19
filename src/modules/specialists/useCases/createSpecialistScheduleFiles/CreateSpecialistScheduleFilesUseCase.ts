@@ -19,44 +19,50 @@ import {
 import { SpecialistScheduleFiles } from "@modules/specialists/infra/typeorm/entities/SpecialistScheduleFiles";
 import { ISpecialistSchedulesFilesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesFilesRepository";
 import { SpecialistScheduleFileTypeEnum } from "@modules/specialists/enums/SpecialistScheduleFileTypeEnum";
+import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
 
 @injectable()
 class CreateSpecialistScheduleFilesUseCase {
     constructor(
         @inject("SpecialistSchedulesFilesRepository")
-        private specialistSchedulesFilesRepository: ISpecialistSchedulesFilesRepository
+        private specialistSchedulesFilesRepository: ISpecialistSchedulesFilesRepository,
+
+        @inject("StorageProvider")
+        private storageProvider: IStorageProvider //provedor de armazenamento
     ) {}
 
     async execute(
         data: ICreateSpecialistScheduleFileRequestDTO
     ): Promise<SpecialistScheduleFiles[]> {
         const specialistScheduleFile: SpecialistScheduleFiles[] = [];
-
+        let fileFolder = "specialistschedulesfiles";
         for (const file of data.files) {
+            const resultUpload = await this.storageProvider.save(
+                file.fileName,
+                fileFolder
+            );
+            file.fileLink = `${process.env.AWS_BUCKET_URL}/${fileFolder}/${resultUpload}`;
             specialistScheduleFile.push(
                 await this.specialistSchedulesFilesRepository.create({
-                    id: data.id || undefined,
                     specialistScheduleId: data.specialistScheduleId,
                     ...file,
                 })
             );
         }
-
-        const specialistScheduleFilesFind = await this.specialistSchedulesFilesRepository.find(
-            data.specialistScheduleId
-        );
+        const specialistScheduleFilesFind =
+            await this.specialistSchedulesFilesRepository.find(
+                data.specialistScheduleId
+            );
 
         if (specialistScheduleFilesFind.length === 0) {
             throw new AppError("Files not found");
         }
-
         return specialistScheduleFile;
     }
 
     async remove(id: string): Promise<string> {
-        const specialistScheduleFile = await this.specialistSchedulesFilesRepository.remove(
-            id
-        );
+        const specialistScheduleFile =
+            await this.specialistSchedulesFilesRepository.remove(id);
 
         return specialistScheduleFile;
     }
@@ -65,21 +71,15 @@ class CreateSpecialistScheduleFilesUseCase {
         specialistScheduleId: string,
         fileType: SpecialistScheduleFileTypeEnum
     ): Promise<number> {
-        const count = await this.specialistSchedulesFilesRepository.countFilesBySpecialistScheduleIdAndType(
-            specialistScheduleId,
-            fileType 
-            //se eu colocar como any ele retorna qualquer tipo de arquivo?
-        );
-    
+        const count =
+            await this.specialistSchedulesFilesRepository.countFilesBySpecialistScheduleIdAndType(
+                specialistScheduleId,
+                fileType
+                //se eu colocar como any ele retorna qualquer tipo de arquivo?
+            );
+
         return count;
     }
-
-    
-        
-
-    
-    
-    
 }
 
 export { CreateSpecialistScheduleFilesUseCase };

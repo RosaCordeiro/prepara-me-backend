@@ -12,7 +12,7 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 class CreateMentoringUseCase {
-    //aqui ele declara o constructor com os parametros que serao injetados no service 
+    //aqui ele declara o constructor com os parametros que serao injetados no service
     constructor(
         @inject("MentoringRepository")
         private mentoringRepository: MentoringRepository,
@@ -28,8 +28,8 @@ class CreateMentoringUseCase {
         //provedor de data
         @inject("SpecialistsRepository")
         private specialistRepository: ISpecialistsRepository
-        //repositorio de especialistas
-    ) {}
+    ) //repositorio de especialistas
+    {}
 
     async execute(
         //principal metodo do service que aceita dois argumentos
@@ -60,7 +60,7 @@ class CreateMentoringUseCase {
         const dateMasked = this.dateProvider.formatDateTime(
             content.date,
             "YYYY-MM-DDThh:mm:ssfff:00"
-            //aqui ele formata a data para o formato que o google calendar aceita porque 
+            //aqui ele formata a data para o formato que o google calendar aceita porque
             //se nao acredito que daria alguma forma de conflito
         );
 

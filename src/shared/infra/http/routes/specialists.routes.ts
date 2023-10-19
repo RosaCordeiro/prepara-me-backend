@@ -14,10 +14,19 @@ import { CancelSpecialistScheduleController } from "@modules/specialists/useCase
 import uploadConfig from "@config/upload";
 import multer from "multer";
 import { CreateSpecialistScheduleFilesController } from "@modules/specialists/useCases/createSpecialistScheduleFiles/CreateSpecialistScheduleFilesController";
+import { ListSpecialistScheduleFilesController } from "@modules/specialists/useCases/listSpecialistScheduleFiles/ListSpecialistScheduleFilesController";
 
 const specialistsRoutes = Router();
 const uploadImage = multer(uploadConfig);
 
+const listSpecialistScheduleFilesController =
+    new ListSpecialistScheduleFilesController();
+
+specialistsRoutes.get(
+    "/schedule/:id/schedule-files",
+    ensuredAuthenticated,
+    listSpecialistScheduleFilesController.handle
+);
 const createSpecialistScheduleFilesController =
     new CreateSpecialistScheduleFilesController();
 specialistsRoutes.post(
