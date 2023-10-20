@@ -11,23 +11,19 @@ class ListSpecialistScheduleFilesController {
         );
 
         const { id } = request.params;
-        console.log(id);
         const type: any = request.query.type;
 
         if (!id) {
             throw new AppError("Specialist Schedule ID is required");
         }
 
-        if (!type) {
-            throw new AppError("File type is required");
-        }
-        if (type !== "USER" && type !== "SPECIALIST") {
+        if (type && type !== "USER" && type !== "SPECIALIST") {
             throw new AppError("Invalid file type. USER or SPECIALIST");
         }
 
         const resultFind = await listSpecialistShechuleFilesUseCase.execute({
             specialistScheduleId: request.params.id,
-            fileType: type,
+            fileType: type ?? undefined,
         });
 
         return response.status(200).json(resultFind);
@@ -35,4 +31,3 @@ class ListSpecialistScheduleFilesController {
 }
 
 export { ListSpecialistScheduleFilesController };
-
