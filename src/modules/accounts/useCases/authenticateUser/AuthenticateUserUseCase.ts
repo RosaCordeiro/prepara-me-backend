@@ -34,6 +34,8 @@ class AuthenticateUserUseCase {
     ) {}
 
     async execute({ login, password }: IRequest): Promise<ITokenResponse> {
+        console.log(login, password);
+
         let user = await this.userRepository.findByEmail(login);
 
         console.log(user);
