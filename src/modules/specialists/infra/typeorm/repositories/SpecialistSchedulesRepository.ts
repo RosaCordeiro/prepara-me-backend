@@ -22,7 +22,7 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
         hangoutLink,
         scheduleEventId,
         id,
-        rating
+        rating,
     }: ICreateSpecialistScheduleDTO): Promise<SpecialistSchedule> {
         const specialistSchedule = this.repository.create({
             dateSchedule,
@@ -34,7 +34,7 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
             hangoutLink,
             scheduleEventId,
             id,
-            rating
+            rating,
         });
 
         await this.repository.save(specialistSchedule);
@@ -54,12 +54,26 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
     }): Promise<ISpecialistScheduleResponseDTO[]> {
         const specialistSchedulesQuery = this.repository
             .createQueryBuilder("ss")
+            /* count  specialistScheduleFiles where type is user*/
+            .loadRelationCountAndMap(
+                "ss.filesCountUser",
+                "ss.specialistScheduleFiles",
+                "ssf",
+                (qb) => qb.where("ssf.fileType = 'USER'")
+            )
+            /* count  specialistScheduleFiles where type is SPECIALIST*/
+            .loadRelationCountAndMap(
+                "ss.filesCountSpecialist",
+                "ss.specialistScheduleFiles",
+                "ssf",
+                (qb) => qb.where("ssf.fileType = 'SPECIALIST'")
+            )
             .leftJoinAndSelect("ss.user", "u")
             .leftJoinAndSelect("ss.specialist", "s")
             .leftJoinAndSelect("s.user", "su")
             .leftJoinAndSelect("ss.product", "p")
             .orderBy("ss.dateSchedule", "ASC");
-        
+
         if (id) {
             specialistSchedulesQuery.andWhere("ss.id = :id", {
                 id: id,
@@ -111,6 +125,8 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
 
         const specialistSchedules = await specialistSchedulesQuery.getMany();
 
+        console.log(specialistSchedules);
+
         const specialistSchedulesMapped = specialistSchedules.map(
             (specialistSchedule) => {
                 return SpecialistScheduleMap.toDTO(specialistSchedule);
@@ -128,4 +144,3 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
 }
 
 export { SpecialistSchedulesRepository };
-

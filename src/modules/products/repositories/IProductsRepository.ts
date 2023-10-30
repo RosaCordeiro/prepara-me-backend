@@ -29,6 +29,10 @@ interface IProductsRepository {
         productId?: string
     ): Promise<any>;
     removeByProductAvailableId(id: string): Promise<void>;
+    findByUserIdWithSpecialist(
+        userId: string,
+        productId?: string
+    ): Promise<any>;
 }
 
 export { IProductsRepository };

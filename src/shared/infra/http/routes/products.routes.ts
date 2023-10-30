@@ -17,6 +17,7 @@ import { ListProductByUserController } from "@modules/products/useCases/listProd
 import { RemoveProductUserUseCase } from "@modules/products/useCases/removeProductUser/RemoveProductUserUseCase";
 import { RemoveProductUserController } from "@modules/products/useCases/removeProductUser/RemoveProductUserController";
 import { ListProductByPriceController } from "@modules/products/useCases/listProductByPrice/ListProductByPriceController";
+import { ListProductByUserWithSpecialistController } from "@modules/products/useCases/listProductByUserWithSpecialist/ListProductByUserWithSpecialistController";
 
 const productsRoutes = Router();
 
@@ -28,6 +29,14 @@ productsRoutes.get(
     "/listProductByUser",
     ensuredAuthenticated,
     listProductByUserController.handle
+);
+
+const listProductByUserWithSpecialistController =
+    new ListProductByUserWithSpecialistController();
+productsRoutes.get(
+    "/listProductByUserWithSpecialist",
+    ensuredAuthenticated,
+    listProductByUserWithSpecialistController.handle
 );
 
 const listRequestScheduleController = new ListProductController();

@@ -10,8 +10,6 @@ class ListProductByUserController {
             ListProductByUserUseCase
         );
 
-        console.log(typeof onlyAvailables);
-
         const res = await listProductByUserUseCase.execute(
             String(userId),
             onlyAvailables === "true",

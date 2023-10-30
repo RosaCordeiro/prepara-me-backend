@@ -16,7 +16,8 @@ interface ISpecialistScheduleResponseDTO {
     user: IUserResponseDTO;
     userId: string;
     rating: number;
+    filesCountUser: number;
+    filesCountSpecialist: number;
 }
 
 export { ISpecialistScheduleResponseDTO };
-

@@ -18,10 +18,10 @@ export async function ensuredAuthenticated(
     if (!authHeader) {
         throw new AppError("Token Missing", 401);
     }
-    
+
     const [, token] = authHeader.split(" ");
-    
-    try {        
+
+    try {
         const { sub: user_id } = verify(token, auth.secret_token) as IPayload;
 
         request.user = {
@@ -33,3 +33,4 @@ export async function ensuredAuthenticated(
         throw new AppError("Invalid token", 401);
     }
 }
+
