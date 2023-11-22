@@ -1,5 +1,4 @@
 import "./providers";
-
 import "./repositories/users";
 import "./repositories/resumes";
 import "./repositories/products";
@@ -10,3 +9,4 @@ import "./repositories/clicks";
 import "./repositories/mentoring";
 import "./repositories/orders";
 import "./repositories/interview";
+import "./repositories/materials";
