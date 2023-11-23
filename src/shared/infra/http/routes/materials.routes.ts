@@ -10,6 +10,7 @@ import { FindAllMaterialController } from "@modules/materials/useCases/findAllMa
 import { GetMaterialByIdController } from "@modules/materials/useCases/getMaterialById/GetMaterialByIdController";
 import { CreateMaterialDownloadController } from "@modules/materials/useCases/createMaterialDownload/CreateMaterialDownloadController";
 import { FindAllMaterialDownloadController } from "@modules/materials/useCases/findAllMaterialDownload/FindAllMaterialDownloadController";
+import { DeleteMaterialController } from "@modules/materials/useCases/deleteMaterial/DeleteMaterialController";
 
 const materialRoutes = Router();
 const uploadFile = multer(uploadConfig);
@@ -45,6 +46,15 @@ const createMaterialDownloadController = new CreateMaterialDownloadController();
 materialRoutes.post(
     "/:material_id/download",
     createMaterialDownloadController.handle
+);
+
+/* DeleteMaterialController */
+const deleteMaterialController = new DeleteMaterialController();
+materialRoutes.delete(
+    "/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
+    deleteMaterialController.handle
 );
 
 export { materialRoutes };

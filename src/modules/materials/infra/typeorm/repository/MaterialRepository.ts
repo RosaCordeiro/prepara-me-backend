@@ -19,8 +19,8 @@ class MaterialRepository implements IMaterialRepository {
         return this.repository.save(material);
     }
 
-    delete(id: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async delete(id: string): Promise<void> {
+        this.repository.delete(id);
     }
 
     findById(id: string): Promise<Material> {
