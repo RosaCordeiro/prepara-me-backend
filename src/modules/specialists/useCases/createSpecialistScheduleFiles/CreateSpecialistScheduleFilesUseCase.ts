@@ -20,7 +20,6 @@ import { SpecialistScheduleFiles } from "@modules/specialists/infra/typeorm/enti
 import { ISpecialistSchedulesFilesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesFilesRepository";
 import { SpecialistScheduleFileTypeEnum } from "@modules/specialists/enums/SpecialistScheduleFileTypeEnum";
 import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
-import { formatString } from "@utils/formatString";
 
 @injectable()
 class CreateSpecialistScheduleFilesUseCase {
@@ -39,7 +38,7 @@ class CreateSpecialistScheduleFilesUseCase {
         let fileFolder = "specialistschedulesfiles";
         for (const file of data.files) {
             const resultUpload = await this.storageProvider.save(
-                formatString(file.fileName),
+                file.fileName,
                 fileFolder
             );
             file.fileLink = `${process.env.AWS_BUCKET_URL}/${fileFolder}/${resultUpload}`;

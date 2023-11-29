@@ -5,6 +5,7 @@ import mime from "mime";
 import { resolve } from "path";
 
 import { IStorageProvider } from "../IStorageProvider";
+import { formatString } from "@utils/formatString";
 
 class S3StorageProvider implements IStorageProvider {
     private client: S3;
@@ -25,7 +26,7 @@ class S3StorageProvider implements IStorageProvider {
         await this.client
             .putObject({
                 Bucket: `${process.env.AWS_BUCKET}/${folder}`,
-                Key: file,
+                Key: formatString(file),
                 ACL: "public-read",
                 Body: fileContent,
                 ContentType,
@@ -35,7 +36,7 @@ class S3StorageProvider implements IStorageProvider {
 
         await fs.promises.unlink(originalName);
 
-        return file;
+        return formatString(file);
     }
 
     async delete(file: string, folder: string): Promise<void> {
