@@ -21,12 +21,27 @@ class CreateSpecialistScheduleFilesController {
         if (files.length === 0) {
             throw new AppError("This request must have files");
         }
-        console.log("Chamando o usuário ", request.user.id);
-        const user = await getUserByIdUseCase.execute({ id: request.user.id });
-        if (user.length === 0) {
-            throw new AppError("User not found");
+
+        let typeUser: any;
+
+        if (
+            body.fileType === undefined ||
+            body.fileType === null ||
+            body.fileType === ""
+        ) {
+            const user = await getUserByIdUseCase.execute({
+                id: request.user.id,
+            });
+            if (user.length === 0) {
+                throw new AppError("User not found");
+            }
+
+            typeUser = user[0].type;
+        } else {
+            typeUser = {
+                value: body.fileType,
+            };
         }
-        const typeUser: any = user[0].type;
 
         const specialistScheduleFiles =
             await createSpecialistScheduleFilesUseCase.execute({
