@@ -43,6 +43,8 @@ class CreateSpecialistScheduleFilesController {
             };
         }
 
+        console.log(typeUser);
+
         const specialistScheduleFiles =
             await createSpecialistScheduleFilesUseCase.execute({
                 specialistScheduleId: body.specialistScheduleId,
