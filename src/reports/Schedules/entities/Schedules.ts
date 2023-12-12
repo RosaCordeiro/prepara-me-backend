@@ -98,7 +98,8 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,
+                    end as recolocacao,  
+                    null as data_envio_relatorio,           
                     1 as order 
                 from users u 
                 
@@ -186,7 +187,8 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,  
+                    end as recolocacao,   
+                    null as data_envio_relatorio,                   
                     2 as order
                 from "userProductsAvailable" upa 
                 inner join users u on u.id = upa."userId"  
@@ -263,7 +265,13 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,                                        
+                    end as recolocacao,   
+                    TO_CHAR((
+                        select 
+                            MAX(ssf."createdAt") as data_envio_relatorio
+                        from "specialistScheduleFiles" ssf 
+                        where "specialistScheduleId" = ss.id
+                    ), 'YYYY-MM-DD HH24:MI:SS') as data_envio_relatorio,                                                  
                     3 as order
                 from users u 
                 inner join "specialistSchedule" ss on ss."userId" = u.id 
@@ -273,74 +281,75 @@ class Schedules {
                 UNION
 
                 select 
-                u."name" as name,
-                case
-                    when u."companyId" is not null then
-                        'B2B'
-                    else 
-                        'B2C'
-                end as origem,
-                case
-                    when u."companyNameSignIn" != '' and u."companyNameSignIn" is not null then
-                        CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn" limit 1), ' - Patrocínio')
-                    else
-                        case
-                            when u."companyId" is not null then
-                                (select c.name from companies c where c.id = u."companyId")
-                            else 
-                                '-'
-                        end           
-                end as empresa,
-                case
-                    when (
-                        select 
-                        accepted 
-                        from "companyEmployees" ce 
-                        where "userId" = U.id                        
-                    ) is true then
-                        'Sim'
-                    else 
-                        'Não'
-                end as acolhimento_realizado,
-                (
-                    select 
-                    created_at  
-                    from user_tokens ut 
-                    where ut.user_id = U.id  
-                    order by created_at 
-                    limit 1 
-                ) as primeiro_login,
-                case
-                    when u."surveyAnswered" then
-                        'Sim'
-                    else 
-                        'Não'
-                end as pesquisa_desligamento,
-                case
-                    when u."laborRiskAlert" = 'ALERT' then
-                        'Sim'
-                    else 
-                        'Não'
-                end as botao_vermelho,
-                'Mentoria Coletiva' as servico,                
-                null as mentoria_trocada,
-                null as mentoria_incluida,
-                null as data_troca,
-                TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
-                TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
-                s."name" as especialista,
-                CAST(mu.rating as text) as nota,
-                case
-                    when u."companyId" is not null then
-                        case when (select ce.realocate from "companyEmployees" ce where ce."userId" = u.id) is true then 
+                    u."name" as name,
+                    case
+                        when u."companyId" is not null then
+                            'B2B'
+                        else 
+                            'B2C'
+                    end as origem,
+                    case
+                        when u."companyNameSignIn" != '' and u."companyNameSignIn" is not null then
+                            CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn" limit 1), ' - Patrocínio')
+                        else
+                            case
+                                when u."companyId" is not null then
+                                    (select c.name from companies c where c.id = u."companyId")
+                                else 
+                                    '-'
+                            end           
+                    end as empresa,
+                    case
+                        when (
+                            select 
+                            accepted 
+                            from "companyEmployees" ce 
+                            where "userId" = U.id                        
+                        ) is true then
                             'Sim'
                         else 
                             'Não'
-                        end
-                    else 
-                        '-'
-                end as recolocacao,                                
-                4 as order
+                    end as acolhimento_realizado,
+                    (
+                        select 
+                        created_at  
+                        from user_tokens ut 
+                        where ut.user_id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as primeiro_login,
+                    case
+                        when u."surveyAnswered" then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as pesquisa_desligamento,
+                    case
+                        when u."laborRiskAlert" = 'ALERT' then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as botao_vermelho,
+                    'Mentoria Coletiva' as servico,                
+                    null as mentoria_trocada,
+                    null as mentoria_incluida,
+                    null as data_troca,
+                    TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
+                    TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
+                    s."name" as especialista,
+                    CAST(mu.rating as text) as nota,
+                    case
+                        when u."companyId" is not null then
+                            case when (select ce.realocate from "companyEmployees" ce where ce."userId" = u.id) is true then 
+                                'Sim'
+                            else 
+                                'Não'
+                            end
+                        else 
+                            '-'
+                    end as recolocacao,      
+                    null as data_envio_relatorio,                          
+                    4 as order
                 from "mentoringUsers" mu 
                 inner join users u on u.id = mu."userId" 
                 inner join mentoring m on m.id = mu."mentoringId"
@@ -375,6 +384,7 @@ export interface ISchedulesReport {
     nota: number;
     recolocacao: string;
     order: number;
+    data_envio_relatorio: string;
 }
 
 export { Schedules };

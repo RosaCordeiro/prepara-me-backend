@@ -28,6 +28,7 @@ class SchedulesUseCase {
             "Especialista",
             "Nota Especialista",
             "Recolocação",
+            "Data Envio Relatório",
         ];
 
         result.forEach((element) => {
@@ -35,6 +36,9 @@ class SchedulesUseCase {
             element.data_servico = formatDate(element.data_servico);
             element.primeiro_login = formatDate(element.primeiro_login);
             element.data_troca = formatDate(element.data_troca);
+            element.data_envio_relatorio = formatDate(
+                element.data_envio_relatorio
+            );
         });
 
         const excel = await geradorExcelTools.geradorExcel(
