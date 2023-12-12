@@ -66,51 +66,54 @@ class ProductsRepository implements IProductsRepository {
         console.log("userId", userId);
         console.log("productId", productId);
 
-        let rows = await this.repository.query(`
-            select * from (
-                select 
-                    upa.id, 
-                    "userId", 
-                    "productId", 
-                    "availableQuantity", 
-                    p."name", 
-                    null as "specialist", 
-                    null as "schedule",
-                    NULL as countFilesUser,
-                    NULL as countFilesSpecialist
-                from "userProductsAvailable" upa 
-                inner join products p on p.id = upa."productId"
-                where upa."userId" = '${userId}' 
-                and upa."availableQuantity" > 0
-                ${
-                    productId !== "undefined"
-                        ? `and upa."productId" = '${productId}'`
-                        : ""
-                }
-                
-                union 
-               
-                select 
-                    ss.id, 
-                    ss."userId", 
-                    "productId", 
-                    0 as availableQuantity, 
-                    p."name", to_jsonb((array[s.*])[1]) as "specialist", 
-                    to_jsonb((array[ss.*])[1]) as "schedule",
-                    CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'USER' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesUser,
-                    CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'SPECIALIST' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesSpecialist
-                from "specialistSchedule" ss 
-                inner join products p on p.id = ss."productId"
-                inner join specialists s on s.id = ss."specialistId"  
-                where ss."userId" = '${userId}'	
-                ${
-                    productId !== "undefined"
-                        ? `and ss."productId" = '${productId}'`
-                        : ""
-                }
-            ) as "schedule" 	            
+        const query = `
+        select * from (
+            select 
+                upa.id, 
+                "userId", 
+                "productId", 
+                "availableQuantity", 
+                p."name", 
+                null as "specialist", 
+                null as "schedule",
+                NULL as countFilesUser,
+                NULL as countFilesSpecialist
+            from "userProductsAvailable" upa 
+            inner join products p on p.id = upa."productId"
+            where upa."userId" = '${userId}' 
+            and upa."availableQuantity" > 0
+            ${
+                productId !== "undefined"
+                    ? `and upa."productId" = '${productId}'`
+                    : ""
+            }
             
-        `);
+            union 
+           
+            select 
+                ss.id, 
+                ss."userId", 
+                "productId", 
+                0 as availableQuantity, 
+                p."name", to_jsonb((array[s.*])[1]) as "specialist", 
+                to_jsonb((array[ss.*])[1]) as "schedule",
+                CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'USER' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesUser,
+                CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'SPECIALIST' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesSpecialist
+            from "specialistSchedule" ss 
+            inner join products p on p.id = ss."productId"
+            inner join specialists s on s.id = ss."specialistId"  
+            where ss."userId" = '${userId}'	
+            ${
+                productId !== "undefined"
+                    ? `and ss."productId" = '${productId}'`
+                    : ""
+            }
+        ) AS "schedule"	ORDER BY "availableQuantity" asc, "schedule"->>'dateSchedule' DESC;
+    `;
+
+        console.log(query);
+
+        let rows = await this.repository.query(query);
 
         rows = rows.map((row) => {
             if (row.specialist?.image) {
