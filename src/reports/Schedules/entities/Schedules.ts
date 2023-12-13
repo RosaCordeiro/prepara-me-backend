@@ -87,6 +87,7 @@ class Schedules {
                     null as data_troca,
                     null as data_agendamento,
                     null as data_servico,
+                    null as mes_ano,
                     '-' as especialista ,
                     '-' as nota,
                     case
@@ -176,6 +177,7 @@ class Schedules {
                     upal.created_at as data_troca,
                     null as data_agendamento,
                     null as data_servico,
+                    null as mes_ano,
                     '-' as especialista ,
                     '-' as nota,
                     case
@@ -253,7 +255,8 @@ class Schedules {
                     null as mentoria_incluida,
                     null as data_troca,
                     TO_CHAR(ss."dateSchedule", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
-                    TO_CHAR(ss."dateSchedule", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
+                    TO_CHAR(ss."dateSchedule", 'YYYY-MM-DD HH24:MI:SS') as data_servico,
+                    TO_CHAR(ss."dateSchedule", 'YYYY-MM-DD HH24:MI:SS') as mes_ano,
                     s."name" as especialista ,
                     CAST(ss.rating as text) as nota,
                     case
@@ -336,6 +339,7 @@ class Schedules {
                     null as data_troca,
                     TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
                     TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS')  as data_servico,
+                    TO_CHAR(m."date", 'YYYY-MM-DD HH24:MI:SS') AS mes_ano,
                     s."name" as especialista,
                     CAST(mu.rating as text) as nota,
                     case
@@ -380,6 +384,7 @@ export interface ISchedulesReport {
     data_troca: string;
     data_agendamento: string;
     data_servico: string;
+    mes_ano: string;
     especialista: string;
     nota: number;
     recolocacao: string;

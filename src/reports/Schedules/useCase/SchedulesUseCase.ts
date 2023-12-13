@@ -1,7 +1,7 @@
 import { injectable } from "tsyringe";
 import { Schedules } from "../entities/Schedules";
 import { GeradorExcelTools } from "@utils/excel/excelConversor";
-import { formatDate } from "@utils/formatDate";
+import { dateToMonthYear, formatDate } from "@utils/formatDate";
 
 @injectable()
 class SchedulesUseCase {
@@ -25,6 +25,7 @@ class SchedulesUseCase {
             "Data Troca",
             "Data Agendamento",
             "Data Serviço",
+            "Mês / Ano - Data Serviço",
             "Especialista",
             "Nota Especialista",
             "Recolocação",
@@ -39,6 +40,7 @@ class SchedulesUseCase {
             element.data_envio_relatorio = formatDate(
                 element.data_envio_relatorio
             );
+            element.mes_ano = dateToMonthYear(element.mes_ano);
         });
 
         const excel = await geradorExcelTools.geradorExcel(
