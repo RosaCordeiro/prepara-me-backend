@@ -30,6 +30,7 @@ class SchedulesUseCase {
             "Nota Especialista",
             "Recolocação",
             "Data Envio Relatório",
+            "Data Cancelamento",
         ];
 
         result.forEach((element) => {
@@ -41,6 +42,7 @@ class SchedulesUseCase {
                 element.data_envio_relatorio
             );
             element.mes_ano = dateToMonthYear(element.mes_ano);
+            element.data_cancelamento = formatDate(element.data_cancelamento);
         });
 
         const excel = await geradorExcelTools.geradorExcel(

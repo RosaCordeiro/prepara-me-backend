@@ -100,7 +100,8 @@ class Schedules {
                         else 
                             '-'
                     end as recolocacao,  
-                    null as data_envio_relatorio,           
+                    null as data_envio_relatorio,     
+                    null as data_cancelamento,      
                     1 as order 
                 from users u 
                 
@@ -190,7 +191,8 @@ class Schedules {
                         else 
                             '-'
                     end as recolocacao,   
-                    null as data_envio_relatorio,                   
+                    null as data_envio_relatorio,        
+                    null as data_cancelamento,           
                     2 as order
                 from "userProductsAvailable" upa 
                 inner join users u on u.id = upa."userId"  
@@ -274,7 +276,8 @@ class Schedules {
                             MAX(ssf."createdAt") as data_envio_relatorio
                         from "specialistScheduleFiles" ssf 
                         where "specialistScheduleId" = ss.id
-                    ), 'YYYY-MM-DD HH24:MI:SS') as data_envio_relatorio,                                                  
+                    ), 'YYYY-MM-DD HH24:MI:SS') as data_envio_relatorio,    
+                    null as data_cancelamento,                                              
                     3 as order
                 from users u 
                 inner join "specialistSchedule" ss on ss."userId" = u.id 
@@ -352,12 +355,92 @@ class Schedules {
                         else 
                             '-'
                     end as recolocacao,      
-                    null as data_envio_relatorio,                          
+                    null as data_envio_relatorio,         
+                    null as data_cancelamento,                 
                     4 as order
                 from "mentoringUsers" mu 
                 inner join users u on u.id = mu."userId" 
                 inner join mentoring m on m.id = mu."mentoringId"
                 inner join specialists s on s.id = m."mentorId" 
+
+                UNION
+
+                select 
+                    u."name" as name,
+                    case
+                        when u."companyId" is not null then
+                            'B2B'
+                        else 
+                            'B2C'
+                    end as origem,
+                    case
+                        when u."companyNameSignIn" != '' and u."companyNameSignIn" is not null then
+                            CONCAT((select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn" limit 1), ' - Patrocínio')
+                        else
+                            case
+                                when u."companyId" is not null then
+                                    (select c.name from companies c where c.id = u."companyId")
+                                else 
+                                    '-'
+                            end           
+                    end as empresa,
+                    case
+                        when (
+                            select 
+                            accepted 
+                            from "companyEmployees" ce 
+                            where "userId" = U.id                        
+                        ) is true then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as acolhimento_realizado,
+                    (
+                        select 
+                        created_at  
+                        from user_tokens ut 
+                        where ut.user_id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as primeiro_login,
+                    case
+                        when u."surveyAnswered" then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as pesquisa_desligamento,
+                    case
+                        when u."laborRiskAlert" = 'ALERT' then
+                            'Sim'
+                        else 
+                            'Não'
+                    end as botao_vermelho,
+                    concat('CANCELADO - ', p."name") as servico,                
+                    null as mentoria_trocada,
+                    null as mentoria_incluida,
+                    null as data_troca,
+                    NULL as data_agendamento,
+                    NULL  as data_servico,
+                    NULL AS mes_ano,
+                    s."name" as especialista,
+                    NULL as nota,
+                    case
+                        when u."companyId" is not null then
+                            case when (select ce.realocate from "companyEmployees" ce where ce."userId" = u.id) is true then 
+                                'Sim'
+                            else 
+                                'Não'
+                            end
+                        else 
+                            '-'
+                    end as recolocacao,      
+                    null as data_envio_relatorio, 
+                    TO_CHAR(ssc."created_at", 'YYYY-MM-DD HH24:MI:SS') as data_cancelamento,                    
+                    5 as order
+                from "specialistScheduleCancel" ssc  
+                inner join users u on u.id = ssc."userId"    
+                inner join specialists s on s.id = ssc."specialistId"  
+                inner join products p on p.id = ssc."productId"
             ) as row 
             ${where}
             order by row.name, row.order            
@@ -390,6 +473,7 @@ export interface ISchedulesReport {
     recolocacao: string;
     order: number;
     data_envio_relatorio: string;
+    data_cancelamento: string;
 }
 
 export { Schedules };

@@ -13,6 +13,7 @@ import { v4 as uuidV4 } from "uuid";
 import { ProductSpecialist } from "./ProductSpecialist";
 import { SpecialistSchedule } from "./SpecialistSchedule";
 import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
+import { SpecialistScheduleCancel } from "./SpecialistScheduleCancel";
 
 @Entity("specialists")
 class Specialist {
@@ -53,6 +54,12 @@ class Specialist {
         (specialistSchedule) => specialistSchedule.specialist
     )
     specialistSchedule: SpecialistSchedule[];
+
+    @OneToMany(
+        () => SpecialistScheduleCancel,
+        (specialistScheduleCancel) => specialistScheduleCancel.id
+    )
+    specialistScheduleCancel: SpecialistScheduleCancel[];
 
     @OneToMany(() => Mentoring, (m) => m.mentor)
     mentoring: Mentoring[];

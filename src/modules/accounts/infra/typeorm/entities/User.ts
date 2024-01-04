@@ -6,6 +6,8 @@ import { Company } from "@modules/company/infra/typeorm/entities/Company";
 import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
 import { Order } from "@modules/orders/infra/typeorm/entities/Order";
 import { SpecialistSchedule } from "@modules/specialists/infra/typeorm/entities/SpecialistSchedule";
+import { SpecialistScheduleCancel } from "@modules/specialists/infra/typeorm/entities/SpecialistScheduleCancel";
+import { SpecialistScheduleFiles } from "@modules/specialists/infra/typeorm/entities/SpecialistScheduleFiles";
 import { ColumnNumericTransformer } from "@utils/ColumnNumericTransformer";
 import { Expose } from "class-transformer";
 import {
@@ -74,6 +76,12 @@ class User {
         (specialistSchedule) => specialistSchedule.id
     )
     specialistSchedule: SpecialistSchedule[];
+
+    @OneToMany(
+        () => SpecialistScheduleCancel,
+        (specialistScheduleCancel) => specialistScheduleCancel.id
+    )
+    specialistScheduleCancel: SpecialistScheduleCancel[];
 
     @OneToMany(() => Order, (order) => order.id)
     order: Order[];

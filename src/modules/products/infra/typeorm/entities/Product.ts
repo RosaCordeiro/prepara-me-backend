@@ -9,6 +9,7 @@ import { v4 as uuidV4 } from "uuid";
 
 import { ProductContent } from "./ProductContent";
 import { SubscriptionPlanProduct } from "./SubscriptionPlanProduct";
+import { SpecialistScheduleCancel } from "@modules/specialists/infra/typeorm/entities/SpecialistScheduleCancel";
 
 @Entity("products")
 class Product {
@@ -73,6 +74,12 @@ class Product {
         (specialistSchedule) => specialistSchedule.specialist
     )
     public specialistSchedule!: SpecialistSchedule[];
+
+    @OneToMany(
+        () => SpecialistScheduleCancel,
+        (specialistScheduleCancel) => specialistScheduleCancel.id
+    )
+    specialistScheduleCancel: SpecialistScheduleCancel[];
 
     constructor(
         name: string,
