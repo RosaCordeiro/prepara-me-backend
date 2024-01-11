@@ -7,6 +7,7 @@ export class addButtonColor1704999038944 implements MigrationInterface {
             new TableColumn({
                 name: "buttonColor",
                 type: "varchar",
+                isNullable: true,
             })
         );
     }
