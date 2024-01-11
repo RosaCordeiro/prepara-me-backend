@@ -1,6 +1,7 @@
 interface IResponseMaterialDTO {
     title: string;
     backgroundColor: string;
+    buttonColor: string;
     file: string;
     slug: string;
     id?: string;

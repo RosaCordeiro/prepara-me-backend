@@ -64,6 +64,14 @@ class CreateMaterialUseCase {
         ) {
             throw new AppError("Background color is required");
         }
+
+        if (
+            content.buttonColor === "" ||
+            content.buttonColor === undefined ||
+            content.buttonColor === null
+        ) {
+            throw new AppError("Button color is required");
+        }
     }
 }
 

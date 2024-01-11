@@ -17,6 +17,9 @@ class Material {
     backgroundColor: string;
 
     @Column()
+    buttonColor: string;
+
+    @Column()
     file: string;
 
     @CreateDateColumn()
@@ -25,12 +28,14 @@ class Material {
     constructor(
         title: string,
         backgroundColor: string,
+        buttonColor: string,
         file: string,
         slug: string,
         id?: string
     ) {
         this.title = title;
         this.backgroundColor = backgroundColor;
+        this.buttonColor = buttonColor;
         this.file = file;
         this.slug = slug;
 
