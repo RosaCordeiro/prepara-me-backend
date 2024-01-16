@@ -2,10 +2,12 @@ import { UserLaborRiskAlertEnum } from "@modules/accounts/enums/UserLaborRiskAle
 import { UserRealocatedEnum } from "@modules/accounts/enums/UserRealocatedEnum";
 import { UserStatusEnum } from "@modules/accounts/enums/UserStatusEnum";
 import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
+import { IUserProductsAvailableRepository } from "@modules/accounts/repositories/IUserProductsAvailableRepository";
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { ICompanyEmployeesRepository } from "@modules/company/repositories/ICompanyEmployeesRepository";
+import { ISubscriptionPlansRepository } from "@modules/products/repositories/ISubscriptionPlansRepository";
 import { AppError } from "@shared/errors/AppError";
 import { hash } from "bcryptjs";
 import { inject, injectable } from "tsyringe";
@@ -16,7 +18,11 @@ class CreateCompanyEmployeeUseCase {
         @inject("CompanyEmployeesRepository")
         private companyEmployeesRepository: ICompanyEmployeesRepository,
         @inject("UsersRepository")
-        private usersRepository: IUsersRepository
+        private usersRepository: IUsersRepository,
+        @inject("UserProductsAvailableRepository")
+        private userProductsAvailableRepository: IUserProductsAvailableRepository,
+        @inject("SubscriptionPlansRepository")
+        private subscriptionPlansRepository: ISubscriptionPlansRepository
     ) {}
 
     async execute({
@@ -29,6 +35,10 @@ class CreateCompanyEmployeeUseCase {
         email,
         id,
         easyRegister,
+        entryDate,
+        position,
+        department,
+        plan,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         if (!name) {
             throw new AppError("Name can't be null");
@@ -46,6 +56,14 @@ class CreateCompanyEmployeeUseCase {
             throw new AppError("easyRegister can't be null");
         }
 
+        const planModel = await this.subscriptionPlansRepository.findById(plan);
+
+        console.log("planModel", planModel);
+
+        if (!planModel) {
+            throw new AppError("Plan not found");
+        }
+
         let companyEmployeeCreated =
             await this.companyEmployeesRepository.create({
                 companyId,
@@ -57,6 +75,10 @@ class CreateCompanyEmployeeUseCase {
                 email,
                 id,
                 easyRegister,
+                entryDate,
+                position,
+                department,
+                plan: planModel.name,
             });
 
         if (!id && !userId && easyRegister) {
@@ -87,7 +109,9 @@ class CreateCompanyEmployeeUseCase {
                 companyId,
                 realocated: UserRealocatedEnum.NOT_REALOCATED,
                 laborRiskAlert: UserLaborRiskAlertEnum.NORMAL,
-                expiresDate: new Date(),
+                expiresDate: new Date(
+                    new Date().setMonth(new Date().getMonth() + 3)
+                ),
                 periodTest: new Date(),
                 subscribeToken: companyEmployeeCreated.subscribeToken,
             });
@@ -106,7 +130,9 @@ class CreateCompanyEmployeeUseCase {
                 companyId,
                 realocated: UserRealocatedEnum.NOT_REALOCATED,
                 laborRiskAlert: UserLaborRiskAlertEnum.NORMAL,
-                expiresDate: new Date(),
+                expiresDate: new Date(
+                    new Date().setMonth(new Date().getMonth() + 3)
+                ),
                 periodTest: new Date(),
                 subscribeToken: companyEmployeeCreated.subscribeToken,
             });
@@ -123,6 +149,17 @@ class CreateCompanyEmployeeUseCase {
                     id: companyEmployeeCreated.id,
                     easyRegister: companyEmployeeCreated.easyRegister,
                 });
+
+            if (!id && plan && planModel.subscriptionPlanProduct)
+                for (const product of planModel.subscriptionPlanProduct) {
+                    console.log("product", product);
+
+                    await this.userProductsAvailableRepository.create({
+                        userId: userCreated.id,
+                        productId: product.productId,
+                        availableQuantity: product.availableQuantity,
+                    });
+                }
         }
 
         return companyEmployeeCreated;
@@ -130,4 +167,3 @@ class CreateCompanyEmployeeUseCase {
 }
 
 export { CreateCompanyEmployeeUseCase };
-

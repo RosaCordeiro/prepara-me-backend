@@ -32,12 +32,20 @@ class CreateSubscriptionPlanUseCase {
             throw new AppError("Type entered wrong");
         }
 
+        const planAlreadyExists = await this.subscriptionPlansRepository.find({
+            name,
+        });
+
+        if (planAlreadyExists) {
+            throw new AppError("Plan already exists");
+        }
+
         const subscriptionPlan = await this.subscriptionPlansRepository.create({
             name,
             price,
             status,
             type,
-            id
+            id,
         });
 
         return subscriptionPlan;
@@ -45,4 +53,3 @@ class CreateSubscriptionPlanUseCase {
 }
 
 export { CreateSubscriptionPlanUseCase };
-

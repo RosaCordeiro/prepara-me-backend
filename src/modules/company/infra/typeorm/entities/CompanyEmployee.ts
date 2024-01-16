@@ -53,6 +53,18 @@ class CompanyEmployee {
     @Column()
     realocate: boolean;
 
+    @Column()
+    entryDate: Date;
+
+    @Column()
+    position: string;
+
+    @Column()
+    department: string;
+
+    @Column()
+    plan: string;
+
     constructor(
         name: string,
         subscribeToken: string,
@@ -64,7 +76,11 @@ class CompanyEmployee {
         id: string,
         easyRegister: string,
         accepted: boolean,
-        realocate: boolean
+        realocate: boolean,
+        entryDate: Date,
+        position: string,
+        department: string,
+        plan: string
     ) {
         if (id) {
             this.id = id;
@@ -89,6 +105,10 @@ class CompanyEmployee {
         this.email = email;
         this.easyRegister = easyRegister;
         this.realocate = realocate;
+        this.entryDate = entryDate;
+        this.position = position;
+        this.department = department;
+        this.plan = plan;
     }
 }
 

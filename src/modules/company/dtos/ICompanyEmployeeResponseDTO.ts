@@ -12,7 +12,10 @@ interface ICompanyEmployeeResponseDTO {
     user: IUserResponseDTO;
     easyRegister: Object;
     accepted: boolean;
+    entryDate: Date;
+    position: string;
+    department: string;
+    plan: string;
 }
 
 export { ICompanyEmployeeResponseDTO };
-

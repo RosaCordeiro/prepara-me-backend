@@ -4,8 +4,20 @@ import { CreateCompanyEmployeeUseCase } from "./CreateCompanyEmployeeUseCase";
 
 class CreateCompanyEmployeeController {
     async handle(request: Request, response: Response): Promise<Response> {
-        const { name, documentId, subscribeToken, userId, phone, email, id, easyRegister } =
-            request.body;
+        const {
+            name,
+            documentId,
+            subscribeToken,
+            userId,
+            phone,
+            email,
+            id,
+            easyRegister,
+            entryDate,
+            position,
+            department,
+            planId,
+        } = request.body;
 
         const { id: companyId } = request.params;
 
@@ -22,7 +34,11 @@ class CreateCompanyEmployeeController {
             phone,
             email,
             id,
-            easyRegister
+            easyRegister,
+            entryDate,
+            position,
+            department,
+            plan: planId,
         });
 
         return response.status(201).send(companyEmployee);
@@ -30,4 +46,3 @@ class CreateCompanyEmployeeController {
 }
 
 export { CreateCompanyEmployeeController };
-

@@ -19,6 +19,9 @@ import uploadConfig from "@config/upload";
 import { GetCompanyPageByNameController } from "@modules/company/useCases/getCompanyPageByName/GetCompanyPageByNameController";
 import { GetCompanyPageByIdController } from "@modules/company/useCases/getCompanyPageById/GetCompanyPageByIdController";
 import { RealocateCompanyEmployeeController } from "@modules/company/useCases/realocateCompanyEmployee/RealocateCompanyEmployeeController";
+import { CreateCompanyEmployeeBatchController } from "@modules/company/useCases/createCompanyEmployeeBatch/CreateCompanyEmployeeBatchController";
+import { uploadFileXlsx } from "../middlewares/uploadFileXlsx";
+import { DownloadCompanyExcelModelController } from "@modules/company/useCases/downloadCompanyExcelModel/DownloadCompanyExcelModel";
 
 const companiesRoutes = Router();
 const uploadImage = multer(uploadConfig);
@@ -55,6 +58,25 @@ companiesRoutes.post(
     ensuredAuthenticated,
     ensureAdmin,
     createCompanyEmployeeController.handle
+);
+
+const createCompanyEmployeeBatchController =
+    new CreateCompanyEmployeeBatchController();
+companiesRoutes.post(
+    "/employees/batch",
+    ensuredAuthenticated,
+    ensureAdmin,
+    uploadFileXlsx,
+    createCompanyEmployeeBatchController.handle
+);
+
+const downloadCompanyExcelModelController =
+    new DownloadCompanyExcelModelController();
+companiesRoutes.get(
+    "/employees/batch/download",
+    ensuredAuthenticated,
+    ensureAdmin,
+    downloadCompanyExcelModelController.handle
 );
 
 const listCompanyEmployeeController = new ListCompanyEmployeeController();
