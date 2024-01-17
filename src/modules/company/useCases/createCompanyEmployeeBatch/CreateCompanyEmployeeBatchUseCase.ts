@@ -35,6 +35,9 @@ class CreateCompanyEmployeeBatchUseCase {
             "Documento",
             "Telefone",
             "Email",
+            "Data de entrada do funcionário",
+            "Cargo",
+            "Área",
             "Empresa",
             "Plano",
         ];
