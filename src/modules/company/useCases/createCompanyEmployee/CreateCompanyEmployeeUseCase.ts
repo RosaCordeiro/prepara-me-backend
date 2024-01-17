@@ -40,6 +40,26 @@ class CreateCompanyEmployeeUseCase {
         department,
         plan,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
+        console.log({
+            companyId,
+            documentId,
+            name,
+            subscribeToken,
+            userId,
+            phone,
+            email,
+            id,
+            easyRegister,
+            entryDate,
+            position,
+            department,
+            plan,
+        });
+
+        /* if (1 === 1) {
+            throw new AppError("Teste");
+        } */
+
         if (!name) {
             throw new AppError("Name can't be null");
         }
@@ -148,6 +168,10 @@ class CreateCompanyEmployeeUseCase {
                     email: newEmail,
                     id: companyEmployeeCreated.id,
                     easyRegister: companyEmployeeCreated.easyRegister,
+                    entryDate: companyEmployeeCreated.entryDate,
+                    position: companyEmployeeCreated.position,
+                    department: companyEmployeeCreated.department,
+                    plan: companyEmployeeCreated.plan,
                 });
 
             if (!id && plan && planModel.subscriptionPlanProduct)
