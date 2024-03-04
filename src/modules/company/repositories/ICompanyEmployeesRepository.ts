@@ -16,6 +16,7 @@ interface IRequestFind {
 interface ICompanyEmployeesRepository {
     create(data: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee>;
     find(data: IRequestFind): Promise<ICompanyEmployeeResponseDTO[]>;
+    findById(id: string): Promise<CompanyEmployee>;
     remove(id: string): Promise<string>;
     accept(id: string): Promise<boolean>;
     realocate(id: string): Promise<boolean>;

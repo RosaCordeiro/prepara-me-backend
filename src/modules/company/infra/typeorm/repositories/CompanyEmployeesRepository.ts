@@ -15,6 +15,10 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         this.repository = getRepository(CompanyEmployee);
     }
 
+    findById(id: string): Promise<CompanyEmployee> {
+        return this.repository.findOne(id, { relations: ["user"] });
+    }
+
     async accept(id: string): Promise<boolean> {
         const response = await this.repository.update(id, { accepted: true });
 
