@@ -43,6 +43,8 @@ class SchedulesUseCase {
             );
             element.mes_ano = dateToMonthYear(element.mes_ano);
             element.data_cancelamento = formatDate(element.data_cancelamento);
+
+            delete element.data_criacao;
         });
 
         const excel = await geradorExcelTools.geradorExcel(

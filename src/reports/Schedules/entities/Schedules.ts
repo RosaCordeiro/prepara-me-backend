@@ -26,7 +26,7 @@ class Schedules {
             initialDate !== "undefined" &&
             finalDate !== "undefined"
         ) {
-            where = ` where row."data_servico" between '${initialDate}' and '${finalDate} 23:59:59'`;
+            where = ` where row."data_criacao" between '${initialDate}' and '${finalDate} 23:59:59'`;
         }
 
         const data: ISchedulesReport[] = await this.repository.query(`
@@ -89,7 +89,7 @@ class Schedules {
                     null as data_servico,
                     null as mes_ano,
                     '-' as especialista ,
-                    '-' as nota,
+                    '-' as nota,                 
                     case
                         when u."companyId" is not null then
                             case when (select ce.realocate from "companyEmployees" ce where ce."userId" = u.id) is true then 
@@ -102,7 +102,15 @@ class Schedules {
                     end as recolocacao,  
                     null as data_envio_relatorio,     
                     null as data_cancelamento,      
-                    1 as order 
+                    1 as order,
+                    (
+                        select 
+                            created_at  
+                        from users u 
+                        where u.id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as data_criacao
                 from users u 
                 
                 union
@@ -193,7 +201,15 @@ class Schedules {
                     end as recolocacao,   
                     null as data_envio_relatorio,        
                     null as data_cancelamento,           
-                    2 as order
+                    2 as order,
+                    (
+                        select 
+                            created_at  
+                        from users u 
+                        where u.id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as data_criacao
                 from "userProductsAvailable" upa 
                 inner join users u on u.id = upa."userId"  
                 inner join products p on p.id = upa."productId" 
@@ -278,7 +294,15 @@ class Schedules {
                         where "specialistScheduleId" = ss.id
                     ), 'YYYY-MM-DD HH24:MI:SS') as data_envio_relatorio,    
                     null as data_cancelamento,                                              
-                    3 as order
+                    3 as order,
+                    (
+                        select 
+                            created_at  
+                        from users u 
+                        where u.id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as data_criacao
                 from users u 
                 inner join "specialistSchedule" ss on ss."userId" = u.id 
                 inner join specialists s on s.id  = ss."specialistId" 
@@ -357,7 +381,15 @@ class Schedules {
                     end as recolocacao,      
                     null as data_envio_relatorio,         
                     null as data_cancelamento,                 
-                    4 as order
+                    4 as order,
+                    (
+                        select 
+                            created_at  
+                        from users u 
+                        where u.id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as data_criacao
                 from "mentoringUsers" mu 
                 inner join users u on u.id = mu."userId" 
                 inner join mentoring m on m.id = mu."mentoringId"
@@ -436,7 +468,15 @@ class Schedules {
                     end as recolocacao,      
                     null as data_envio_relatorio, 
                     TO_CHAR(ssc."created_at", 'YYYY-MM-DD HH24:MI:SS') as data_cancelamento,                    
-                    5 as order
+                    5 as order,
+                    (
+                        select 
+                            created_at  
+                        from users u 
+                        where u.id = U.id  
+                        order by created_at 
+                        limit 1 
+                    ) as data_criacao
                 from "specialistScheduleCancel" ssc  
                 inner join users u on u.id = ssc."userId"    
                 inner join specialists s on s.id = ssc."specialistId"  
@@ -474,6 +514,7 @@ export interface ISchedulesReport {
     order: number;
     data_envio_relatorio: string;
     data_cancelamento: string;
+    data_criacao: string;
 }
 
 export { Schedules };
