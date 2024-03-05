@@ -29,6 +29,7 @@ class SchedulesUseCase {
             "Especialista",
             "Nota Especialista",
             "Recolocação",
+            "Data Recolocação",
             "Data Envio Relatório",
             "Data Cancelamento",
         ];
@@ -41,6 +42,7 @@ class SchedulesUseCase {
             element.data_envio_relatorio = formatDate(
                 element.data_envio_relatorio
             );
+            element.data_realocacao = formatDate(element.data_realocacao);
             element.mes_ano = dateToMonthYear(element.mes_ano);
             element.data_cancelamento = formatDate(element.data_cancelamento);
 

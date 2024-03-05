@@ -100,6 +100,12 @@ class Schedules {
                         else 
                             '-'
                     end as recolocacao,  
+                    (
+                        select 
+                            created_at 
+                        from users_realocated_logs url 
+                        where url."userId" = U.id
+                    ) as data_realocacao,
                     null as data_envio_relatorio,     
                     null as data_cancelamento,      
                     1 as order,
@@ -199,6 +205,12 @@ class Schedules {
                         else 
                             '-'
                     end as recolocacao,   
+                    (
+                        select 
+                            created_at 
+                        from users_realocated_logs url 
+                        where url."userId" = U.id
+                    ) as data_realocacao,
                     null as data_envio_relatorio,        
                     null as data_cancelamento,           
                     2 as order,
@@ -287,6 +299,12 @@ class Schedules {
                         else 
                             '-'
                     end as recolocacao,   
+                    (
+                        select 
+                            created_at 
+                        from users_realocated_logs url 
+                        where url."userId" = U.id
+                    ) as data_realocacao,
                     TO_CHAR((
                         select 
                             MAX(ssf."createdAt") as data_envio_relatorio
@@ -378,7 +396,13 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,      
+                    end as recolocacao,    
+                    (
+                        select 
+                            created_at 
+                        from users_realocated_logs url 
+                        where url."userId" = U.id
+                    ) as data_realocacao,  
                     null as data_envio_relatorio,         
                     null as data_cancelamento,                 
                     4 as order,
@@ -465,7 +489,13 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,      
+                    end as recolocacao,    
+                    (
+                        select 
+                            created_at 
+                        from users_realocated_logs url 
+                        where url."userId" = U.id
+                    ) as data_realocacao,  
                     null as data_envio_relatorio, 
                     TO_CHAR(ssc."created_at", 'YYYY-MM-DD HH24:MI:SS') as data_cancelamento,                    
                     5 as order,
@@ -511,6 +541,7 @@ export interface ISchedulesReport {
     especialista: string;
     nota: number;
     recolocacao: string;
+    data_realocacao: string;
     order: number;
     data_envio_relatorio: string;
     data_cancelamento: string;

@@ -1,4 +1,5 @@
 import { UserRealocatedEnum } from "@modules/accounts/enums/UserRealocatedEnum";
+import { IUsersRealocatedLogRepository } from "@modules/accounts/repositories/IUsersRealocatedLogRepository";
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { ICreateCompanyDTO } from "@modules/company/dtos/ICreateCompanyDTO";
 import { Company } from "@modules/company/infra/typeorm/entities/Company";
@@ -13,7 +14,9 @@ class RealocateCompanyEmployeeUseCase {
         @inject("CompanyEmployeesRepository")
         private companyEmployeesRepository: ICompanyEmployeesRepository,
         @inject("UsersRepository")
-        private usersRepository: IUsersRepository
+        private usersRepository: IUsersRepository,
+        @inject("UsersRealocatedLogRepository")
+        private usersRealocatedLogRepository: IUsersRealocatedLogRepository
     ) {}
 
     async execute(id: string): Promise<boolean> {
@@ -29,6 +32,10 @@ class RealocateCompanyEmployeeUseCase {
             if (!companyEmployee) {
                 throw new AppError("Company employee not found!");
             }
+
+            await this.usersRealocatedLogRepository.create({
+                userId: companyEmployee.user.id,
+            });
 
             await this.usersRepository.create({
                 ...companyEmployee.user,
