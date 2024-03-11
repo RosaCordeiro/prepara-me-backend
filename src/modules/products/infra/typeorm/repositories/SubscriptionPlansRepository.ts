@@ -33,7 +33,12 @@ class SubscriptionPlansRepository implements ISubscriptionPlansRepository {
     }
 
     async findById(id: string): Promise<SubscriptionPlan> {
-        const subscriptionPlan = await this.repository.findOne(id);
+        const subscriptionPlan = await this.repository.findOne(id, {
+            relations: [
+                "subscriptionPlanProduct",
+                "subscriptionPlanProduct.product",
+            ],
+        });
         return subscriptionPlan;
     }
 
@@ -104,7 +109,14 @@ class SubscriptionPlansRepository implements ISubscriptionPlansRepository {
     }
 
     async findByID(id: string): Promise<SubscriptionPlan> {
-        const subscriptionPlan = await this.repository.findOne(id);
+        const subscriptionPlan = await this.repository.findOne(id, {
+            relations: [
+                "subscriptionPlanProduct",
+                "subscriptionPlanProduct.product",
+            ],
+        });
+
+        console.log("subscriptionPlan", subscriptionPlan);
 
         return subscriptionPlan;
     }

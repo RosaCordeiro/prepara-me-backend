@@ -84,6 +84,10 @@ class CreateCompanyEmployeeUseCase {
             throw new AppError("Plan not found");
         }
 
+        if (!planModel.subscriptionPlanProduct) {
+            throw new AppError("Plan Product not found");
+        }
+
         let companyEmployeeCreated =
             await this.companyEmployeesRepository.create({
                 companyId,
