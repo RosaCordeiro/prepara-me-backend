@@ -35,7 +35,6 @@ class SESMailProvider implements IMailProvider {
         variables: any,
         path: string
     ): Promise<void> {
-        console.log("chegou aqui");
         const templateFileContent = fs.readFileSync(path).toString("utf-8");
 
         const templateParse = handlebars.compile(templateFileContent);
@@ -44,12 +43,16 @@ class SESMailProvider implements IMailProvider {
 
         this.createBox();
 
-        await this.client.sendMail({
-            to,
-            from: "Prepara.me <contato@prepara.me>",
-            subject,
-            html: templateHTML,
-        });
+        if (process.env.SEND_EMAILS === "true") {
+            await this.client.sendMail({
+                to,
+                from: "Prepara.me <contato@prepara.me>",
+                subject,
+                html: templateHTML,
+            });
+        } else {
+            fs.writeFileSync(`template-${to}.html`, templateHTML);
+        }
 
         this.closeBox();
     }

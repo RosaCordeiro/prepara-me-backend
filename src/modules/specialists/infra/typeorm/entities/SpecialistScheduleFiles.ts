@@ -1,16 +1,12 @@
 import { v4 as uuidV4 } from "uuid";
-import { SpecialistScheduleStatusEnum } from "@modules/specialists/enums/SpecialistScheduleStatusEnum";
 import {
     Column,
     CreateDateColumn,
     Entity,
     ManyToOne,
-    OneToMany,
     PrimaryColumn,
 } from "typeorm";
-import { Specialist } from "./Specialist";
-import { User } from "@modules/accounts/infra/typeorm/entities/User";
-import { Product } from "@modules/products/infra/typeorm/entities/Product";
+
 import { SpecialistSchedule } from "./SpecialistSchedule";
 import { SpecialistScheduleFileTypeEnum } from "@modules/specialists/enums/SpecialistScheduleFileTypeEnum";
 

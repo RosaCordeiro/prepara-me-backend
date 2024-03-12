@@ -84,18 +84,6 @@ class CreateSpecialistScheduleUseCase {
                         const userSpecialistEmail =
                             specialistsSchedule[0].specialist.user.email;
 
-                        userProduct.availableQuantity =
-                            userProduct.availableQuantity - 1;
-
-                        const userProductUpdated =
-                            await this.userProductsAvailableRepository.create({
-                                availableQuantity:
-                                    userProduct.availableQuantity,
-                                productId: userProduct.product.id,
-                                userId: userProduct.user.id,
-                                id: userProduct.id,
-                            });
-
                         const dateScheduleStartMasked =
                             this.dateProvider.formatDateTime(
                                 dateSchedule,
@@ -117,9 +105,9 @@ class CreateSpecialistScheduleUseCase {
                                 "YYYY-MM-DDThh:mm:ssfff:00"
                             );
 
-                        if (userProductUpdated) {
-                            //console.log('Chegou aqui no primeiro if')
+                        //console.log('Chegou aqui no primeiro if')
 
+                        try {
                             const eventScheduled =
                                 await this.scheduleGoogle.scheduleEvent(
                                     `${userProduct.product.shortName} com o(a) especialista ${specialistsSchedule[0].specialist.name}`,
@@ -142,35 +130,66 @@ class CreateSpecialistScheduleUseCase {
 
                             hangoutLink = eventScheduled.data.hangoutLink;
                             scheduleEventId = eventScheduled.data.id;
+                        } catch (error) {
+                            console.log(
+                                "error create specialist schedule",
+                                error
+                            );
 
-                            try {
-                                const templatePath = resolve(
-                                    __dirname,
-                                    "..",
-                                    "..",
-                                    "views",
-                                    "emails",
-                                    "mentoringCreate.hbs"
-                                );
+                            throw new AppError(
+                                "Was not possible schedule your event!"
+                            );
+                        }
 
-                                const variables = {
-                                    name: user.name,
-                                    mentoring: userProduct.product.shortName,
-                                    specialist:
-                                        specialistsSchedule[0].specialist.name,
-                                    date: formatDateToString(dateSchedule),
-                                    link: hangoutLink,
-                                };
+                        userProduct.availableQuantity =
+                            userProduct.availableQuantity - 1;
 
-                                void this.mailProvider.sendMail(
-                                    user.email,
-                                    "Confirmação de participação em mentoria",
-                                    variables,
-                                    templatePath
-                                );
-                            } catch (error) {
-                                console.log("error send email", error);
-                            }
+                        try {
+                            await this.userProductsAvailableRepository.create({
+                                availableQuantity:
+                                    userProduct.availableQuantity,
+                                productId: userProduct.product.id,
+                                userId: userProduct.user.id,
+                                id: userProduct.id,
+                            });
+                        } catch (error) {
+                            await this.scheduleGoogle.cancelScheduledEvent(
+                                "primary",
+                                scheduleEventId
+                            );
+
+                            throw new AppError(
+                                "Was not possible schedule your event!"
+                            );
+                        }
+
+                        try {
+                            const templatePath = resolve(
+                                __dirname,
+                                "..",
+                                "..",
+                                "views",
+                                "emails",
+                                "mentoringCreate.hbs"
+                            );
+
+                            const variables = {
+                                name: user.name,
+                                mentoring: userProduct.product.shortName,
+                                specialist:
+                                    specialistsSchedule[0].specialist.name,
+                                date: formatDateToString(dateSchedule),
+                                link: hangoutLink,
+                            };
+
+                            void this.mailProvider.sendMail(
+                                user.email,
+                                "Confirmação de participação em mentoria",
+                                variables,
+                                templatePath
+                            );
+                        } catch (error) {
+                            console.log("error send email", error);
                         }
                     } else {
                         throw new AppError("Schedule not found!");

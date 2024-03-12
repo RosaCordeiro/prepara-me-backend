@@ -17,6 +17,10 @@ class CompanyEmployeeMap {
         easyRegister,
         accepted,
         realocate,
+        entryDate,
+        position,
+        department,
+        plan,
     }: CompanyEmployee): ICompanyEmployeeResponseDTO {
         let easyRegisterMapped = "";
 
@@ -50,6 +54,10 @@ class CompanyEmployeeMap {
             easyRegister: { label: easyRegisterMapped, value: easyRegister },
             accepted,
             realocate,
+            entryDate,
+            position,
+            department,
+            plan,
         });
 
         return companyEmployee;

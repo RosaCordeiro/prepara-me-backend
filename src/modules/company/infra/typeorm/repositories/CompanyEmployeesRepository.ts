@@ -5,11 +5,18 @@ import { ICompanyEmployeesRepository } from "@modules/company/repositories/IComp
 import { getRepository, Repository } from "typeorm";
 import { CompanyEmployee } from "../entities/CompanyEmployee";
 
+import { ISubscriptionPlansRepository } from "@modules/products/repositories/ISubscriptionPlansRepository";
+import { SubscriptionPlansRepository } from "@modules/products/infra/typeorm/repositories/SubscriptionPlansRepository";
+
 class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
     private repository: Repository<CompanyEmployee>;
 
     constructor() {
         this.repository = getRepository(CompanyEmployee);
+    }
+
+    findById(id: string): Promise<CompanyEmployee> {
+        return this.repository.findOne(id, { relations: ["user"] });
     }
 
     async accept(id: string): Promise<boolean> {
@@ -36,6 +43,10 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         email,
         id,
         easyRegister,
+        entryDate,
+        position,
+        department,
+        plan,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const companyEmployee = this.repository.create({
             companyId,
@@ -47,6 +58,10 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             email,
             id,
             easyRegister,
+            entryDate,
+            position,
+            department,
+            plan,
         });
 
         await this.repository.save(companyEmployee);
@@ -125,10 +140,30 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
 
         const companyEmployeesMapped = companyEmployees.map(
             (companyEmployee) => {
-                console.log(companyEmployee);
                 return CompanyEmployeeMap.toDTO(companyEmployee);
             }
         );
+
+        if (companyEmployeesMapped.length === 1) {
+            console.log(
+                "companyEmployeesMapped[0].plan",
+                companyEmployeesMapped[0].plan
+            );
+
+            const subscriptionPlansRepository: ISubscriptionPlansRepository =
+                new SubscriptionPlansRepository();
+
+            const plan = await subscriptionPlansRepository.find({
+                name: companyEmployeesMapped[0].plan,
+            });
+
+            console.log(`await plan`, plan[0]);
+
+            companyEmployeesMapped[0].planId = {
+                id: plan[0].id,
+                name: plan[0].name,
+            };
+        }
 
         return companyEmployeesMapped;
     }

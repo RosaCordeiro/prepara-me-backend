@@ -10,6 +10,10 @@ interface ICreateCompanyEmployeeDTO {
     easyRegister?: string;
     accepted?: boolean;
     realocate?: boolean;
+    entryDate?: Date;
+    position?: string;
+    department?: string;
+    plan?: string;
 }
 
 export { ICreateCompanyEmployeeDTO };

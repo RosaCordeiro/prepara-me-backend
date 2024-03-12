@@ -10,6 +10,7 @@ interface ICompaniesRepository {
     create(data: ICreateCompanyDTO): Promise<Company>;
     findById(id: string): Promise<Company>;
     find(data: IRequestFind): Promise<Company[]>;
+    findAll(): Promise<Company[]>;
     remove(id: string);
     listVacancies(companyName: string): Promise<number>;
 }

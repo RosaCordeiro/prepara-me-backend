@@ -13,6 +13,7 @@ import { resumesRoutes } from "./resumes.routes";
 import { clicksRoutes } from "./clicks.routes";
 import { mentoringRoutes } from "./mentoring.routes";
 import { interviewRoutes } from "./interview.route";
+import { materialRoutes } from "./materials.routes";
 
 const router = Router();
 
@@ -28,6 +29,8 @@ router.use("/resumes", resumesRoutes);
 router.use("/clicks", clicksRoutes);
 router.use("/mentoring", mentoringRoutes);
 router.use("/interview", interviewRoutes);
+router.use("/materials", materialRoutes);
+
 router.use(authenticateRoutes);
 
 export { router };

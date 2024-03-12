@@ -1,0 +1,95 @@
+import { CompaniesRepository } from "@modules/company/infra/typeorm/repositories/CompaniesRepository";
+import { SubscriptionPlansRepository } from "@modules/products/infra/typeorm/repositories/SubscriptionPlansRepository";
+import xl from "excel4node";
+
+import { join } from "path";
+
+export class GeradorExcelEmployeeTools {
+    async geradorExcel(): Promise<GenerateExcelToolResponse> {
+        return await new Promise(async (resolve, reject) => {
+            const companiesRepository = new CompaniesRepository();
+            const companies = await companiesRepository.findAll();
+
+            const subscriptionPlans = new SubscriptionPlansRepository();
+            const plans = await subscriptionPlans.findAll();
+
+            const header = [
+                "Nome",
+                "Documento",
+                "Telefone",
+                "Email",
+                "Data de entrada do funcionário",
+                "Cargo",
+                "Área",
+                "Empresa",
+                "Plano",
+            ];
+
+            const wb = new xl.Workbook();
+
+            let indexColumn = 1;
+            let indexRow = 1;
+
+            const ws = wb.addWorksheet("Funcionários");
+
+            for (let i = 0; i < header.length; i++) {
+                ws.cell(indexRow, indexColumn++)
+                    .string(header[i])
+                    .style({
+                        font: {
+                            bold: true,
+                        },
+                    });
+            }
+
+            ws.addDataValidation({
+                type: "list",
+                allowBlank: true,
+                prompt: "Escolha uma empresa",
+                errorTitle: "Empresa Inválida",
+                error: "Escolha uma empresa válida",
+                showDropDown: true,
+                sqref: "H1:H10000",
+                formulas: [
+                    `${companies.map((company) => company.name).sort()}`,
+                ],
+            });
+
+            ws.addDataValidation({
+                type: "list",
+                allowBlank: true,
+                prompt: "Escolha um plano",
+                errorTitle: "Plano Inválido",
+                error: "Escolha um plano válido",
+                showDropDown: true,
+                sqref: "I1:I10000",
+                formulas: [`${plans.map((p) => p.name).sort()}`],
+            });
+
+            const path = join(
+                __dirname,
+                "../../../tmp",
+                `Modelo Funcionários.xlsx`
+            );
+
+            wb.write(path, function (err: any, status: any) {
+                console.log("err", err);
+                if (err !== undefined && err !== null) {
+                    resolve({
+                        success: false,
+                    });
+                } else {
+                    resolve({
+                        success: true,
+                        path: path,
+                    });
+                }
+            });
+        });
+    }
+}
+
+export interface GenerateExcelToolResponse {
+    success: boolean;
+    path?: string;
+}

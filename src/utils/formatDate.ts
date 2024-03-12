@@ -57,3 +57,64 @@ export function formatDateToString(date: Date) {
     } ${day} ${month}. ${year} ${hour}:${minutes} – ${hourEnd}:${minutes}`;
 }
 
+export function dateToMonthYear(date: string) {
+    if (date === undefined || date === null || date === "") {
+        return "-";
+    }
+
+    const dateNow = new Date(date);
+    const newDate = new Date(
+        dateNow.setMinutes(dateNow.getMinutes() - -dateNow.getTimezoneOffset())
+    );
+
+    const month = newDate.toLocaleString("default", { month: "long" });
+
+    /* month to PT-Br */
+
+    let monthPtBr = "";
+
+    switch (month) {
+        case "January":
+            monthPtBr = "Janeiro";
+            break;
+        case "February":
+            monthPtBr = "Fevereiro";
+            break;
+        case "March":
+            monthPtBr = "Março";
+            break;
+        case "April":
+            monthPtBr = "Abril";
+            break;
+        case "May":
+            monthPtBr = "Maio";
+            break;
+        case "June":
+            monthPtBr = "Junho";
+            break;
+        case "July":
+            monthPtBr = "Julho";
+            break;
+        case "August":
+            monthPtBr = "Agosto";
+            break;
+        case "September":
+            monthPtBr = "Setembro";
+            break;
+        case "October":
+            monthPtBr = "Outubro";
+            break;
+        case "November":
+            monthPtBr = "Novembro";
+            break;
+        case "December":
+            monthPtBr = "Dezembro";
+            break;
+        default:
+            monthPtBr = "Mês inválido";
+    }
+
+    const year = newDate.getFullYear();
+
+    return `${monthPtBr} / ${year}`;
+}
