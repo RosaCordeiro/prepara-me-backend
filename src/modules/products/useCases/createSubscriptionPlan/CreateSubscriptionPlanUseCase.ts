@@ -32,9 +32,13 @@ class CreateSubscriptionPlanUseCase {
             throw new AppError("Type entered wrong");
         }
 
+        console.log("name", name);
+
         const planAlreadyExists = await this.subscriptionPlansRepository.find({
             name,
         });
+
+        console.log(planAlreadyExists);
 
         if (planAlreadyExists) {
             throw new AppError("Plan already exists");
