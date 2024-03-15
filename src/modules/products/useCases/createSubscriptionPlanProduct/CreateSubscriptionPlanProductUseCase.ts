@@ -14,6 +14,7 @@ class CreateSubscriptionPlanProductUseCase {
         subscriptionPlanId,
         productId,
         availableQuantity,
+        id,
     }: ICreateSubscriptionPlanProductDTO) {
         if (!subscriptionPlanId) {
             throw new AppError("Subscription Plan can't be null");
@@ -23,11 +24,19 @@ class CreateSubscriptionPlanProductUseCase {
             throw new AppError("Product can't be null");
         }
 
+        console.log("teste", {
+            subscriptionPlanId,
+            productId,
+            availableQuantity,
+            id,
+        });
+
         const subscriptionPlanProduct =
             await this.subscriptionPlanProductsRepository.create({
                 subscriptionPlanId,
                 productId,
                 availableQuantity,
+                id,
             });
 
         return subscriptionPlanProduct;
