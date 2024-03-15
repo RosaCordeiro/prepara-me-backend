@@ -38,9 +38,7 @@ class CreateSubscriptionPlanUseCase {
             name,
         });
 
-        console.log(planAlreadyExists);
-
-        if (planAlreadyExists.length > 0) {
+        if (!id && planAlreadyExists.length > 0) {
             throw new AppError("Plan already exists");
         }
 
