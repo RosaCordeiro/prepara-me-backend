@@ -42,8 +42,11 @@ class EditMentoringUseCase {
         }
 
         if (content.file !== undefined) {
-            await this.storageProvider.save(content.file, "mentoring");
-            content.image = content.file;
+            const newFileName = await this.storageProvider.save(
+                content.file,
+                "mentoring"
+            );
+            content.image = newFileName;
             delete content.file;
         }
 
@@ -108,4 +111,3 @@ class EditMentoringUseCase {
 }
 
 export { EditMentoringUseCase };
-

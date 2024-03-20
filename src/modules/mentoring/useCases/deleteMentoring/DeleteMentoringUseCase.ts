@@ -1,6 +1,7 @@
 import { ICreateMentoringDTO } from "@modules/mentoring/dtos/ICreateMentoring";
 import { MentoringRepository } from "@modules/mentoring/infra/typeorm/repository/MentoringRepository";
 import { IScheduleProvider } from "@shared/container/providers/ScheduleProvider/IScheduleProvider";
+import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
 import { AppError } from "@shared/errors/AppError";
 
 import { inject, injectable } from "tsyringe";
@@ -11,7 +12,9 @@ class DeleteMentoringUseCase {
         @inject("MentoringRepository")
         private mentoringRepository: MentoringRepository,
         @inject("ScheduleGoogle")
-        private scheduleGoogle: IScheduleProvider
+        private scheduleGoogle: IScheduleProvider,
+        @inject("StorageProvider")
+        private storageProvider: IStorageProvider
     ) {}
 
     async execute(mentoringId: string): Promise<void> {
@@ -42,6 +45,7 @@ class DeleteMentoringUseCase {
 
         await this.mentoringRepository.removeUsers(mentoringId);
         await this.mentoringRepository.delete(mentoringId);
+        await this.storageProvider.delete(mentoringObj.image, "mentoring");
     }
 
     validInput(content: ICreateMentoringDTO): void {

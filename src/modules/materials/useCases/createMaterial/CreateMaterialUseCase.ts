@@ -31,8 +31,11 @@ class CreateMaterialUseCase {
         this.validInput(content);
 
         if (file) {
-            await this.storageProvider.save(file, "material");
-            content.file = file;
+            const newFileName = await this.storageProvider.save(
+                file,
+                "material"
+            );
+            content.file = newFileName;
         } else {
             delete content.file;
         }

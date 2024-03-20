@@ -1,5 +1,6 @@
 import { IResponseMaterialDTO } from "@modules/materials/dtos/IResponseMaterialDTO";
 import { MaterialRepository } from "@modules/materials/infra/typeorm/repository/MaterialRepository";
+import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
 import { AppError } from "@shared/errors/AppError";
 
 import { inject, injectable } from "tsyringe";
@@ -8,11 +9,16 @@ import { inject, injectable } from "tsyringe";
 class DeleteMaterialUseCase {
     constructor(
         @inject("MaterialRepository")
-        private materialRepository: MaterialRepository
+        private materialRepository: MaterialRepository,
+        @inject("StorageProvider")
+        private storageProvider: IStorageProvider
     ) {}
 
     async execute(id: string): Promise<void> {
-        await this.materialRepository.delete(id);
+        const material = await this.materialRepository.findById(id);
+
+        await this.materialRepository.delete(material.id);
+        await this.storageProvider.delete(material.file, "material");
     }
 }
 

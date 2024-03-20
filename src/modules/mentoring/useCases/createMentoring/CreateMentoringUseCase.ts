@@ -27,9 +27,8 @@ class CreateMentoringUseCase {
         private dateProvider: IDateProvider,
         //provedor de data
         @inject("SpecialistsRepository")
-        private specialistRepository: ISpecialistsRepository
-    ) //repositorio de especialistas
-    {}
+        private specialistRepository: ISpecialistsRepository //repositorio de especialistas
+    ) {}
 
     async execute(
         //principal metodo do service que aceita dois argumentos
@@ -53,9 +52,9 @@ class CreateMentoringUseCase {
             //caso o especialista nao seja encontrado ele retorna um erro
         }
 
-        await this.storageProvider.save(file, "mentoring");
+        const newFileName = await this.storageProvider.save(file, "mentoring");
         //aqui ele salva o arquivo no storageProvider, passando o file e o nome da pasta
-        content.image = file;
+        content.image = newFileName;
 
         const dateMasked = this.dateProvider.formatDateTime(
             content.date,
@@ -129,4 +128,3 @@ class CreateMentoringUseCase {
 }
 
 export { CreateMentoringUseCase };
-
