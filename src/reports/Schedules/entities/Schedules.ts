@@ -112,8 +112,8 @@ class Schedules {
                     (
                         select 
                             created_at  
-                        from users u 
-                        where u.id = U.id  
+                        from users us 
+                        where us.id = U.id  
                         order by created_at 
                         limit 1 
                     ) as data_criacao
@@ -217,8 +217,8 @@ class Schedules {
                     (
                         select 
                             created_at  
-                        from users u 
-                        where u.id = U.id  
+                        from users us 
+                        where us.id = U.id  
                         order by created_at 
                         limit 1 
                     ) as data_criacao
@@ -316,8 +316,8 @@ class Schedules {
                     (
                         select 
                             created_at  
-                        from users u 
-                        where u.id = U.id  
+                        from users us 
+                        where us.id = U.id  
                         order by created_at 
                         limit 1 
                     ) as data_criacao
@@ -409,8 +409,8 @@ class Schedules {
                     (
                         select 
                             created_at  
-                        from users u 
-                        where u.id = U.id  
+                        from users us 
+                        where us.id = U.id  
                         order by created_at 
                         limit 1 
                     ) as data_criacao
@@ -502,8 +502,8 @@ class Schedules {
                     (
                         select 
                             created_at  
-                        from users u 
-                        where u.id = U.id  
+                        from users us 
+                        where us.id = U.id  
                         order by created_at 
                         limit 1 
                     ) as data_criacao
