@@ -26,7 +26,7 @@ class Schedules {
             initialDate !== "undefined" &&
             finalDate !== "undefined"
         ) {
-            where = ` where row."data_criacao" between '${initialDate}' and '${finalDate} 23:59:59'`;
+            where = ` where row."data_servico" between '${initialDate}' and '${finalDate} 23:59:59'`;
         }
 
         const data: ISchedulesReport[] = await this.repository.query(`
