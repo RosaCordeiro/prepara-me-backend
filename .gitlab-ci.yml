@@ -6,7 +6,7 @@ variables:
     projectType: prepara_api
     projetctFolder: preparame_api
     shouldRunCompose: "false"
-    projectPm2Name: api.preparame.homolog.inf.br
+    projectPm2Name: apipreparame
 
 deploy_job:
     stage: deploy
