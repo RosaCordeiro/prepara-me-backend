@@ -13,6 +13,7 @@ deploy_job:
     script:
         - echo "Deploying develop branch..."
         - cd /var/www/$projetctFolder
+        - git checkout .
         - git pull origin develop
         - echo "Publicando $projectName"
         - chmod +x ./scripts/deploy.sh
