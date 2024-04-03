@@ -1,0 +1,24 @@
+stages:
+    - deploy
+
+variables:
+    projectName: Prepara.Me - API
+    projectType: prepara_api
+    projetctFolder: app/preparame_api
+    shouldRunCompose: "false"
+    projectPm2Name: api.preparame.homolog.inf.br
+
+deploy_job:
+    stage: deploy
+    script:
+        - echo "Deploying develop branch..."
+        - cd /var/www/$projetctFolder
+        - git pull origin develop
+        - echo "Publicando $projectName"
+        - chmod +x ./scripts/deploy.sh
+        - ./scripts/deploy.sh $projetctFolder $projectPm2Name
+        - echo "Finalizando deploy..."
+    tags:
+        - homolog_sso
+    only:
+        - develop
