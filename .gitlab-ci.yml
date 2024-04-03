@@ -6,7 +6,7 @@ variables:
     projectType: prepara_api
     projetctFolder: preparame_api
     shouldRunCompose: "false"
-    projectPm2Name: apipreparame
+    projectPm2Name: api.preparame.homolog.inf.br
 
 deploy_job:
     stage: deploy
@@ -17,6 +17,7 @@ deploy_job:
         - git pull origin develop
         - echo "Publicando $projectName"
         - chmod +x ./scripts/deploy.sh
+        - sed -i '' -e 's/\r$//' ./scripts/deploy.sh $projetctFolder $projectPm2Name
         - ./scripts/deploy.sh $projetctFolder $projectPm2Name
         - echo "Finalizando deploy..."
     tags:
