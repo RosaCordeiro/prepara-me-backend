@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Acessando a pasta do projeto $2"
-cd /var/www/$1/code
+cd /var/www/$1
 echo "Apagando a instancia do pm2"
 pm2 delete $2
 echo "Instancia do pm2 apagada com sucesso"
