@@ -16,7 +16,7 @@ deploy_job:
         - git checkout .
         - git pull origin develop
         - echo "Publicando $projectName"
-        - sed -i '' -e 's/\r$//' /var/www/app/$projetctFolder/scripts/deploy.sh
+        - sed -i 's/\r$//' /var/www/app/$projetctFolder/scripts/deploy.sh
         - chmod +x ./scripts/deploy.sh
         - ./scripts/deploy.sh $projetctFolder $projectPm2Name
         - echo "Finalizando deploy..."
