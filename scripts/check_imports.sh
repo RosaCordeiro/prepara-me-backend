@@ -6,7 +6,8 @@ RED="\033[0;31m"
 NC="\033[0m"  # No Color
 
 # Diretório do seu projeto
-PROJECT_DIR="/var/www/$1"
+PROJECT_DIR="/var/www/app/$1"
+
 
 # Encontra arquivos TypeScript que contenham importações 'src/'
 found_files=$(find "$PROJECT_DIR/src" -type f -name "*.ts" -exec grep -l "import .* from 'src/" {} \;)
