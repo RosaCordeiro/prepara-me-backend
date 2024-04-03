@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Acessando a pasta do projeto $1"
-cd /var/www/$1/code
+cd /var/www/$1
 echo "Apagando o build anterior"
 rm -rf dist
 echo "Apagando o node_modules anterior"
