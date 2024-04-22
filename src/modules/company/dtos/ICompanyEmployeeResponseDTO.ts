@@ -16,6 +16,7 @@ interface ICompanyEmployeeResponseDTO {
     position: string;
     department: string;
     plan: string;
+    unity: string;
     planId?: any;
 }
 

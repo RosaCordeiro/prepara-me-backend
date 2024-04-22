@@ -13,7 +13,8 @@ class NPSSurveyAnswers {
         companyId: any,
         area: string[],
         role: string[],
-        period: Date[][]
+        period: Date[][],
+        unity: string[]
     ) {
         console.log(companyId, area, role, period);
 
@@ -55,6 +56,12 @@ class NPSSurveyAnswers {
                               .join(" ")
                         : ""
                 }`
+            );
+        }
+
+        if (unity.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.unity IN (${unity.map((u) => `'${u}'`).join(",")})`
             );
         }
 

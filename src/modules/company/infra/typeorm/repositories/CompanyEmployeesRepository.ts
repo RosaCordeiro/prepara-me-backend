@@ -17,13 +17,6 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         this.repository = getRepository(CompanyEmployee);
     }
     async getParameters(id: string): Promise<IGetParametersResponseDTO> {
-        /* interface IGetParametersResponseDTO {
-    period: string;
-    unity: string;
-    area: string;
-    role: string;
-} */
-
         const companyEmployee = await this.repository.find({
             where: {
                 companyId: id,
@@ -35,8 +28,6 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             .map((ce) => ce.department)
             .filter((c) => c !== null && c !== undefined && c !== "");
         const uniqueAreas = [...new Set(areas)];
-
-        console.log(uniqueAreas);
 
         const roles = companyEmployee
             .map((ce) => ce.position)
@@ -54,13 +45,17 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             const yearB = parseInt(b.split(" ")[2]);
             return yearA - yearB;
         });
-        console.log(`uniquePeriods`, uniquePeriods);
 
-        //console.log(`companyEmployee`, companyEmployee);
+        const unities = companyEmployee
+            .map((ce) => ce.unity)
+            .filter((c) => c !== null && c !== undefined && c !== "");
+        console.log("unities", unities);
+
+        const uniqueUnities = [...new Set(unities)];
 
         return {
             period: uniquePeriods,
-            unity: ["unity"],
+            unity: uniqueUnities,
             area: uniqueAreas,
             role: uniqueRoles,
         };
@@ -98,6 +93,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         position,
         department,
         plan,
+        unity,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const companyEmployee = this.repository.create({
             companyId,
@@ -113,6 +109,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             position,
             department,
             plan,
+            unity,
         });
 
         await this.repository.save(companyEmployee);

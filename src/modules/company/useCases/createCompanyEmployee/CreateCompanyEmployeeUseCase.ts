@@ -39,6 +39,7 @@ class CreateCompanyEmployeeUseCase {
         position,
         department,
         plan,
+        unity,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         console.log({
             companyId,
@@ -54,6 +55,7 @@ class CreateCompanyEmployeeUseCase {
             position,
             department,
             plan,
+            unity,
         });
 
         /* if (1 === 1) {
@@ -103,6 +105,7 @@ class CreateCompanyEmployeeUseCase {
                 position,
                 department,
                 plan: planModel.name,
+                unity,
             });
 
         if (!id && !userId && easyRegister) {
@@ -176,6 +179,7 @@ class CreateCompanyEmployeeUseCase {
                     position: companyEmployeeCreated.position,
                     department: companyEmployeeCreated.department,
                     plan: companyEmployeeCreated.plan,
+                    unity: companyEmployeeCreated.unity,
                 });
 
             if (!id && plan && planModel.subscriptionPlanProduct)

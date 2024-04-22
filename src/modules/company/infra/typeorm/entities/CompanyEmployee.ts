@@ -65,6 +65,9 @@ class CompanyEmployee {
     @Column()
     plan: string;
 
+    @Column()
+    unity: string;
+
     constructor(
         name: string,
         subscribeToken: string,
@@ -80,7 +83,8 @@ class CompanyEmployee {
         entryDate: Date,
         position: string,
         department: string,
-        plan: string
+        plan: string,
+        unity: string
     ) {
         if (id) {
             this.id = id;
@@ -109,6 +113,7 @@ class CompanyEmployee {
         this.position = position;
         this.department = department;
         this.plan = plan;
+        this.unity = unity;
     }
 }
 

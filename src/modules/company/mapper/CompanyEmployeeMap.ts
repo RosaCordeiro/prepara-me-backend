@@ -21,6 +21,7 @@ class CompanyEmployeeMap {
         position,
         department,
         plan,
+        unity,
     }: CompanyEmployee): ICompanyEmployeeResponseDTO {
         let easyRegisterMapped = "";
 
@@ -58,6 +59,7 @@ class CompanyEmployeeMap {
             position,
             department,
             plan,
+            unity,
         });
 
         return companyEmployee;

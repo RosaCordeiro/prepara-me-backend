@@ -14,6 +14,7 @@ interface ICreateCompanyEmployeeDTO {
     position?: string;
     department?: string;
     plan?: string;
+    unity?: string;
 }
 
 export { ICreateCompanyEmployeeDTO };
