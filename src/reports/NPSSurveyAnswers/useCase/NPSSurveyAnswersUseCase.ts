@@ -2,10 +2,15 @@ import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepositor
 import { inject, injectable } from "tsyringe";
 import { NPSSurveyAnswers } from "../entities/NPSSurveyAnswers";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
+import { getFirstAndLastDayOfMonth } from "@utils/formatDate";
 
 @injectable()
 class NPSSurveyAnswersUseCase {
-    async execute({ companyId }) {
+    async execute({ companyId, area, role, period }) {
+        const areaArray = area ? JSON.parse(area) : [];
+        const roleArray = role ? JSON.parse(role) : [];
+        const periodArray = period ? JSON.parse(period) : [];
+
         const npsSurveyAnswers = new NPSSurveyAnswers();
         let users;
         let result;
@@ -18,9 +23,16 @@ class NPSSurveyAnswersUseCase {
         } else if (companyId === "B2C") {
             users = await npsSurveyAnswers.reportAllUsersB2c();
         } else {
-            result = await npsSurveyAnswers.report(companyId);
+            result = await npsSurveyAnswers.report(
+                companyId,
+                areaArray,
+                roleArray,
+                periodArray.map((p) => getFirstAndLastDayOfMonth(p))
+            );
+
             users = result.map((r) => r.user);
         }
+
         let usersAll = await npsSurveyAnswers.reportAllusers();
 
         return {
@@ -122,7 +134,7 @@ class NPSSurveyAnswersUseCase {
         }
 
         const laborRiskAlerts = filterUsers.filter((user: any) => {
-            return user.user.laborRiskAlert == "ALERT";
+            return user?.user?.laborRiskAlert == "ALERT";
         });
         return (
             ((laborRiskAlerts.length / filterUsers.length) * 100).toFixed(2) +

@@ -22,9 +22,18 @@ import { RealocateCompanyEmployeeController } from "@modules/company/useCases/re
 import { CreateCompanyEmployeeBatchController } from "@modules/company/useCases/createCompanyEmployeeBatch/CreateCompanyEmployeeBatchController";
 import { uploadFileXlsx } from "../middlewares/uploadFileXlsx";
 import { DownloadCompanyExcelModelController } from "@modules/company/useCases/downloadCompanyExcelModel/DownloadCompanyExcelModel";
+import { GetCompanyParametersController } from "@modules/company/useCases/getCompanyParameters/GetCompanyParametersController";
 
 const companiesRoutes = Router();
 const uploadImage = multer(uploadConfig);
+
+const getCompanyParametersController = new GetCompanyParametersController();
+companiesRoutes.get(
+    "/config/:id",
+    ensuredAuthenticated,
+    uploadImage.any(),
+    getCompanyParametersController.handle
+);
 
 const createCompanyPageController = new CreateCompanyPageController();
 companiesRoutes.post(

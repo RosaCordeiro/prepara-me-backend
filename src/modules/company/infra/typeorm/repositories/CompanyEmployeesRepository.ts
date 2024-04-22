@@ -2,17 +2,68 @@ import { ICompanyEmployeeResponseDTO } from "@modules/company/dtos/ICompanyEmplo
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
 import { CompanyEmployeeMap } from "@modules/company/mapper/CompanyEmployeeMap";
 import { ICompanyEmployeesRepository } from "@modules/company/repositories/ICompanyEmployeesRepository";
-import { getRepository, Repository } from "typeorm";
+import { getRepository, IsNull, Not, Repository } from "typeorm";
 import { CompanyEmployee } from "../entities/CompanyEmployee";
 
 import { ISubscriptionPlansRepository } from "@modules/products/repositories/ISubscriptionPlansRepository";
 import { SubscriptionPlansRepository } from "@modules/products/infra/typeorm/repositories/SubscriptionPlansRepository";
+import { IGetParametersResponseDTO } from "@modules/company/dtos/IGetParametersResponseDTO";
+import { formatDate, formatDates } from "@utils/formatDate";
 
 class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
     private repository: Repository<CompanyEmployee>;
 
     constructor() {
         this.repository = getRepository(CompanyEmployee);
+    }
+    async getParameters(id: string): Promise<IGetParametersResponseDTO> {
+        /* interface IGetParametersResponseDTO {
+    period: string;
+    unity: string;
+    area: string;
+    role: string;
+} */
+
+        const companyEmployee = await this.repository.find({
+            where: {
+                companyId: id,
+                userId: Not(IsNull()),
+            },
+        });
+
+        const areas = companyEmployee
+            .map((ce) => ce.department)
+            .filter((c) => c !== null && c !== undefined && c !== "");
+        const uniqueAreas = [...new Set(areas)];
+
+        console.log(uniqueAreas);
+
+        const roles = companyEmployee
+            .map((ce) => ce.position)
+            .filter((c) => c !== null && c !== undefined && c !== "");
+        const uniqueRoles = [...new Set(roles)];
+
+        const periods = companyEmployee
+            .map((ce) => ce.entryDate)
+            .filter((c) => c !== null && c !== undefined);
+
+        const formattedDates = formatDates(periods);
+
+        const uniquePeriods = [...new Set(formattedDates)].sort((a, b) => {
+            const yearA = parseInt(a.split(" ")[2]);
+            const yearB = parseInt(b.split(" ")[2]);
+            return yearA - yearB;
+        });
+        console.log(`uniquePeriods`, uniquePeriods);
+
+        //console.log(`companyEmployee`, companyEmployee);
+
+        return {
+            period: uniquePeriods,
+            unity: ["unity"],
+            area: uniqueAreas,
+            role: uniqueRoles,
+        };
     }
 
     findById(id: string): Promise<CompanyEmployee> {

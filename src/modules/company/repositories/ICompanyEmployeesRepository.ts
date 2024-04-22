@@ -1,5 +1,6 @@
 import { ICompanyEmployeeResponseDTO } from "../dtos/ICompanyEmployeeResponseDTO";
 import { ICreateCompanyEmployeeDTO } from "../dtos/ICreateCompanyEmployeeDTO";
+import { IGetParametersResponseDTO } from "../dtos/IGetParametersResponseDTO";
 import { CompanyEmployee } from "../infra/typeorm/entities/CompanyEmployee";
 
 interface IRequestFind {
@@ -20,6 +21,7 @@ interface ICompanyEmployeesRepository {
     remove(id: string): Promise<string>;
     accept(id: string): Promise<boolean>;
     realocate(id: string): Promise<boolean>;
+    getParameters(id: string): Promise<IGetParametersResponseDTO>;
 }
 
 export { ICompanyEmployeesRepository };

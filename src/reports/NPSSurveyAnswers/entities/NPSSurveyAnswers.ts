@@ -1,4 +1,5 @@
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
+import { formatDate, formatDateTimeToISO } from "@utils/formatDate";
 import { getRepository, Repository } from "typeorm";
 
 class NPSSurveyAnswers {
@@ -8,13 +9,54 @@ class NPSSurveyAnswers {
         this.repository = getRepository(CompanyEmployee);
     }
 
-    async report(companyId) {
+    async report(
+        companyId: any,
+        area: string[],
+        role: string[],
+        period: Date[][]
+    ) {
+        console.log(companyId, area, role, period);
+
         const NPSSurveyAnswers = this.repository
             .createQueryBuilder("ce")
             .leftJoinAndSelect("ce.user", "u")
             .where("ce.companyId = :companyId", {
                 companyId: companyId,
             });
+
+        if (area.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.department IN (${area.map((a) => `'${a}'`).join(",")})`
+            );
+        }
+
+        if (role.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.position IN (${role.map((r) => `'${r}'`).join(",")})`
+            );
+        }
+
+        if (period.length > 0) {
+            formatDate;
+
+            NPSSurveyAnswers.andWhere(
+                `ce.entryDate BETWEEN ${formatDateTimeToISO(
+                    period[0][0]
+                )} AND ${formatDateTimeToISO(period[0][1])} ${
+                    period.length > 1
+                        ? period
+                              .slice(1)
+                              .map(
+                                  (p) =>
+                                      `OR ce.entryDate BETWEEN ${formatDateTimeToISO(
+                                          p[0]
+                                      )} AND ${formatDateTimeToISO(p[1])}`
+                              )
+                              .join(" ")
+                        : ""
+                }`
+            );
+        }
 
         const companyUsers = await NPSSurveyAnswers.getMany();
 

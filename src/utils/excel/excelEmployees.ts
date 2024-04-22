@@ -21,6 +21,8 @@ export class GeradorExcelEmployeeTools {
                 "Data de entrada do funcionário",
                 "Cargo",
                 "Área",
+                "Unidade",
+                "Período",
                 "Empresa",
                 "Plano",
             ];
