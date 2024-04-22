@@ -21,10 +21,9 @@ export class GeradorExcelEmployeeTools {
                 "Data de entrada do funcionário",
                 "Cargo",
                 "Área",
-                "Unidade",
-                "Período",
                 "Empresa",
                 "Plano",
+                "Unidade",
             ];
 
             const wb = new xl.Workbook();
