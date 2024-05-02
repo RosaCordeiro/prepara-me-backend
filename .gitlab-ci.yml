@@ -28,7 +28,7 @@ deploy_job:
 deploy_production:
     stage: deploy
     script:
-        - echo "Deploying master branch..."
+        - echo "Deploying master branch.."
         - cd /var/www/$projetctFolder
         - git checkout .
         - git pull origin master
