@@ -24,3 +24,20 @@ deploy_job:
         - homolog_sso
     only:
         - develop
+
+deploy_production:
+    stage: deploy
+    script:
+        - echo "Deploying develop branch..."
+        - cd /var/www/$projetctFolder
+        - git checkout .
+        - git pull origin develop
+        - echo "Publicando $projectName"
+        - sed -i 's/\r$//' /var/www/$projetctFolder/scripts/deploy.sh
+        - chmod +x ./scripts/deploy_prod.sh
+        - ./scripts/deploy.sh $projetctFolder $projectPm2Name
+        - echo "Finalizando deploy..."
+    tags:
+        - preparame_prod
+    only:
+        - main # Run on branches starting with ''
