@@ -7,6 +7,7 @@ variables:
     projetctFolder: preparame_api
     shouldRunCompose: "false"
     projectPm2Name: api.preparame.homolog.inf.br
+    projectPm2NameProd: api
 
 deploy_job:
     stage: deploy
@@ -35,7 +36,7 @@ deploy_production:
         - echo "Publicando $projectName"
         - sed -i 's/\r$//' /var/www/$projetctFolder/scripts/deploy.sh
         - chmod +x ./scripts/deploy_prod.sh
-        - ./scripts/deploy.sh $projetctFolder $projectPm2Name
+        - ./scripts/deploy.sh $projetctFolder $projectPm2NameProd
         - echo "Finalizando deploy..."
     tags:
         - preparame_prod
