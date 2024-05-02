@@ -28,10 +28,10 @@ deploy_job:
 deploy_production:
     stage: deploy
     script:
-        - echo "Deploying develop branch..."
+        - echo "Deploying master branch..."
         - cd /var/www/$projetctFolder
         - git checkout .
-        - git pull origin develop
+        - git pull origin master
         - echo "Publicando $projectName"
         - sed -i 's/\r$//' /var/www/$projetctFolder/scripts/deploy.sh
         - chmod +x ./scripts/deploy_prod.sh
