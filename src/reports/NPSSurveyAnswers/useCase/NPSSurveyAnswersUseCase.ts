@@ -298,6 +298,10 @@ class NPSSurveyAnswersUseCase {
             ).toFixed(2);
         });
 
+        feelingsMapData.sort((a, b) => {
+            return b.feeling - a.feeling;
+        });
+
         return feelingsMapData;
     }
 
