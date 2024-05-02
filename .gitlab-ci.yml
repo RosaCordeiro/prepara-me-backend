@@ -40,4 +40,4 @@ deploy_production:
     tags:
         - preparame_prod
     only:
-        - main # Run on branches starting with ''
+        - master # Run on branches starting with ''
