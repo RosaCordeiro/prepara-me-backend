@@ -82,31 +82,38 @@ class CreateCompanyEmployeeUseCase {
 
         console.log("planModel", planModel);
 
-        if (!planModel) {
-            throw new AppError("Plan not found");
+        if (!id) {
+            if (!planModel) {
+                throw new AppError("Plan not found");
+            }
+
+            if (!planModel.subscriptionPlanProduct) {
+                throw new AppError("Plan Product not found");
+            }
         }
 
-        if (!planModel.subscriptionPlanProduct) {
-            throw new AppError("Plan Product not found");
+        const cEmp = {
+            companyId,
+            documentId,
+            name,
+            userId,
+            subscribeToken,
+            phone,
+            email,
+            id,
+            easyRegister,
+            entryDate,
+            position,
+            department,
+            unity,
+        };
+
+        if (!id) {
+            cEmp["plan"] = planModel.name;
         }
 
         let companyEmployeeCreated =
-            await this.companyEmployeesRepository.create({
-                companyId,
-                documentId,
-                name,
-                userId,
-                subscribeToken,
-                phone,
-                email,
-                id,
-                easyRegister,
-                entryDate,
-                position,
-                department,
-                plan: planModel.name,
-                unity,
-            });
+            await this.companyEmployeesRepository.create(cEmp);
 
         if (!id && !userId && easyRegister) {
             const passwordHash = await hash(
