@@ -33,13 +33,9 @@ class SubscriptionPlansRepository implements ISubscriptionPlansRepository {
     }
 
     async findById(id: string): Promise<SubscriptionPlan> {
-        const subscriptionPlan = await this.repository.findOne(id, {
-            relations: [
-                "subscriptionPlanProduct",
-                "subscriptionPlanProduct.product",
-            ],
-        });
-        return subscriptionPlan;
+        if (id === undefined || id === null || id === "") {
+            return null;
+        }
     }
 
     async find({
