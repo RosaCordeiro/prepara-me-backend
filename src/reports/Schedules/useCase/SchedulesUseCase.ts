@@ -15,6 +15,10 @@ class SchedulesUseCase {
             "Nome",
             "Origem",
             "Empresa",
+            "Período",
+            "Unidade",
+            "Área",
+            "Cargo",
             "Acolhimento Realizado",
             "Data 1 login",
             "Pesquisa Desligamento Realizada",
@@ -35,6 +39,7 @@ class SchedulesUseCase {
         ];
 
         result.forEach((element) => {
+            element.periodo = formatDate(element.periodo);
             element.data_agendamento = formatDate(element.data_agendamento);
             element.data_servico = formatDate(element.data_servico);
             element.primeiro_login = formatDate(element.primeiro_login);

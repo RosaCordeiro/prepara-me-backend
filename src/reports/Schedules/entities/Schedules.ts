@@ -51,6 +51,51 @@ class Schedules {
                             end           
                     end as empresa,
                     case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."entryDate"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id   
+                            )
+                        else 
+                            null
+                    end as periodo,   
+                    case
+                        when u."companyId" is not null then
+                        (
+                            select 
+                                ce.unity  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id   
+                        
+                        )                
+                        else 
+                            '-'
+                    end as unidade,   
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce.department  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as area, 
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."position"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as cargo, 
+                    case
                         when (
                             select 
                             accepted 
@@ -140,6 +185,51 @@ class Schedules {
                                     '-'
                             end           
                     end as empresa,
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."entryDate"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id   
+                            )
+                        else 
+                            null
+                    end as periodo,   
+                    case
+                        when u."companyId" is not null then
+                        (
+                            select 
+                                ce.unity  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id   
+                        
+                        )                
+                        else 
+                            '-'
+                    end as unidade,   
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce.department  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as area, 
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."position"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as cargo, 
                     case
                         when (
                             select 
@@ -248,7 +338,52 @@ class Schedules {
                                 else 
                                     '-'
                             end           
-                    end as empresa,          
+                    end as empresa,  
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."entryDate"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id   
+                            )
+                        else 
+                            null
+                    end as periodo,   
+                    case
+                        when u."companyId" is not null then
+                        (
+                            select 
+                                ce.unity  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id   
+                        
+                        )                
+                        else 
+                            '-'
+                    end as unidade,   
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce.department  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as area, 
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."position"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as cargo, 
                     case
                         when (
                             select 
@@ -325,9 +460,9 @@ class Schedules {
                 inner join "specialistSchedule" ss on ss."userId" = u.id 
                 inner join specialists s on s.id  = ss."specialistId" 
                 inner join products p on p.id = ss."productId" 
-
+            
                 UNION
-
+            
                 select 
                     u."name" as name,
                     case
@@ -347,6 +482,51 @@ class Schedules {
                                     '-'
                             end           
                     end as empresa,
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."entryDate"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id   
+                            )
+                        else 
+                            null
+                    end as periodo,   
+                    case
+                        when u."companyId" is not null then
+                        (
+                            select 
+                                ce.unity  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id   
+                        
+                        )                
+                        else 
+                            '-'
+                    end as unidade,   
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce.department  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as area, 
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."position"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as cargo, 
                     case
                         when (
                             select 
@@ -418,9 +598,9 @@ class Schedules {
                 inner join users u on u.id = mu."userId" 
                 inner join mentoring m on m.id = mu."mentoringId"
                 inner join specialists s on s.id = m."mentorId" 
-
+            
                 UNION
-
+            
                 select 
                     u."name" as name,
                     case
@@ -440,6 +620,51 @@ class Schedules {
                                     '-'
                             end           
                     end as empresa,
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."entryDate"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id   
+                            )
+                        else 
+                            null
+                    end as periodo,   
+                    case
+                        when u."companyId" is not null then
+                        (
+                            select 
+                                ce.unity  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id   
+                        
+                        )                
+                        else 
+                            '-'
+                    end as unidade,   
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce.department  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as area, 
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."position"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as cargo, 
                     case
                         when (
                             select 
@@ -511,7 +736,7 @@ class Schedules {
                 inner join users u on u.id = ssc."userId"    
                 inner join specialists s on s.id = ssc."specialistId"  
                 inner join products p on p.id = ssc."productId"
-            ) as row 
+            ) as row            
             ${where}
             order by row.name, row.order            
         `);
@@ -528,6 +753,10 @@ export interface ISchedulesReport {
     name: string;
     origem: string;
     empresa: string;
+    periodo: string;
+    unidade: string;
+    area: string;
+    cargo: string;
     primeiro_login: string;
     pesquisa_desligamento: string;
     botao_vermelho: string;
