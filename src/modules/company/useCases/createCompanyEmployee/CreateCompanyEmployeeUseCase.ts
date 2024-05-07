@@ -40,6 +40,7 @@ class CreateCompanyEmployeeUseCase {
         department,
         plan,
         unity,
+        accepted,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         console.log({
             companyId,
@@ -56,6 +57,7 @@ class CreateCompanyEmployeeUseCase {
             department,
             plan,
             unity,
+            accepted,
         });
 
         /* if (1 === 1) {
@@ -106,6 +108,7 @@ class CreateCompanyEmployeeUseCase {
             position,
             department,
             unity,
+            accepted,
         };
 
         if (!id) {
