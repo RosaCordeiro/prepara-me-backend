@@ -16,8 +16,6 @@ class NPSSurveyAnswers {
         period: Date[][],
         unity: string[]
     ) {
-        console.log(companyId, area, role, period);
-
         const NPSSurveyAnswers = this.repository
             .createQueryBuilder("ce")
             .leftJoinAndSelect("ce.user", "u")
@@ -38,8 +36,6 @@ class NPSSurveyAnswers {
         }
 
         if (period.length > 0) {
-            formatDate;
-
             NPSSurveyAnswers.andWhere(
                 `ce.entryDate BETWEEN ${formatDateTimeToISO(
                     period[0][0]
@@ -72,13 +68,13 @@ class NPSSurveyAnswers {
 
     async reportAllusers() {
         return await this.repository.query(`
-        select *from users where "surveyAnswered" is true 
+        select * from users where "surveyAnswered" is true 
     `);
     }
 
     async reportAllUsersB2b() {
         return await this.repository.query(`
-        select *from users where "surveyAnswered" is true and "companyId" is not null
+            select * from users where "surveyAnswered" is true and "companyId" is not null
         `);
     }
 

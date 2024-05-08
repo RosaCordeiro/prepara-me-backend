@@ -6,11 +6,18 @@ class GetCompanyParametersController {
     async handle(request: Request, response: Response): Promise<Response> {
         const { id } = request.params;
 
+        const { period, unity, area } = request.query;
+
         const getCompanyParametersUseCase = container.resolve(
             GetCompanyParametersUseCase
         );
 
-        const companies = await getCompanyParametersUseCase.execute(id);
+        const companies = await getCompanyParametersUseCase.execute(
+            id,
+            period,
+            unity,
+            area
+        );
 
         return response.status(200).send(companies);
     }
