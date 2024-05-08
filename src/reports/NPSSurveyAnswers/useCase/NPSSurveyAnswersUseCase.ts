@@ -259,6 +259,10 @@ class NPSSurveyAnswersUseCase {
             (user: CompanyEmployee) => user.accepted
         ).length;
 
+        if (empployee.length <= 5) {
+            return "N/A";
+        }
+
         return `${countAccepted}/${empployee.length}`;
     }
 
