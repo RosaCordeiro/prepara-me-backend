@@ -21,7 +21,12 @@ interface ICompanyEmployeesRepository {
     remove(id: string): Promise<string>;
     accept(id: string): Promise<boolean>;
     realocate(id: string): Promise<boolean>;
-    getParameters(id: string): Promise<IGetParametersResponseDTO>;
+    getParameters(
+        id: string,
+        period?: any,
+        unity?: any,
+        area?: any
+    ): Promise<IGetParametersResponseDTO>;
 }
 
 export { ICompanyEmployeesRepository };

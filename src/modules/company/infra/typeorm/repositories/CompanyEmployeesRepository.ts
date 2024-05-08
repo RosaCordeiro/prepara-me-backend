@@ -2,13 +2,18 @@ import { ICompanyEmployeeResponseDTO } from "@modules/company/dtos/ICompanyEmplo
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
 import { CompanyEmployeeMap } from "@modules/company/mapper/CompanyEmployeeMap";
 import { ICompanyEmployeesRepository } from "@modules/company/repositories/ICompanyEmployeesRepository";
-import { getRepository, IsNull, Not, Repository } from "typeorm";
+import { getRepository, In, IsNull, Not, Repository } from "typeorm";
 import { CompanyEmployee } from "../entities/CompanyEmployee";
 
 import { ISubscriptionPlansRepository } from "@modules/products/repositories/ISubscriptionPlansRepository";
 import { SubscriptionPlansRepository } from "@modules/products/infra/typeorm/repositories/SubscriptionPlansRepository";
 import { IGetParametersResponseDTO } from "@modules/company/dtos/IGetParametersResponseDTO";
-import { formatDate, formatDates } from "@utils/formatDate";
+import {
+    formatDate,
+    formatDates,
+    formatDateTimeToISO,
+    getFirstAndLastDayOfMonth,
+} from "@utils/formatDate";
 
 class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
     private repository: Repository<CompanyEmployee>;
@@ -16,13 +21,74 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
     constructor() {
         this.repository = getRepository(CompanyEmployee);
     }
-    async getParameters(id: string): Promise<IGetParametersResponseDTO> {
-        const companyEmployee = await this.repository.find({
-            where: {
-                companyId: id,
-                userId: Not(IsNull()),
-            },
-        });
+    async getParameters(
+        id: string,
+        period?: any,
+        unity?: any,
+        area?: any
+    ): Promise<IGetParametersResponseDTO> {
+        console.log("id", id);
+
+        const query = this.repository
+            .createQueryBuilder("ce")
+            .leftJoinAndSelect("ce.user", "u")
+            .where("ce.userId is not null");
+
+        if (id && id !== "TUDO") {
+            if (id !== "B2B" && id !== "B2C") {
+                query.andWhere("ce.companyId = :companyId", {
+                    companyId: id,
+                });
+            }
+
+            if (id === "B2B") {
+                query.andWhere("ce.companyId is null");
+            }
+
+            if (id === "B2C") {
+                query.andWhere("ce.companyId is not null");
+            }
+        }
+
+        /* if (unity) {
+            unity = JSON.parse(unity);
+            query.andWhere(
+                `ce.unity IN (${unity.map((u) => `'${u}'`).join(",")})`
+            );
+        }
+
+        if (area) {
+            area = JSON.parse(area);
+            query.andWhere(
+                `ce.department IN (${area.map((a) => `'${a}'`).join(",")})`
+            );
+        }
+
+        if (period) {
+            period = JSON.parse(period).map((p) =>
+                getFirstAndLastDayOfMonth(p)
+            );
+
+            query.andWhere(
+                `ce.entryDate BETWEEN ${formatDateTimeToISO(
+                    period[0][0]
+                )} AND ${formatDateTimeToISO(period[0][1])} ${
+                    period.length > 1
+                        ? period
+                              .slice(1)
+                              .map(
+                                  (p) =>
+                                      `OR ce.entryDate BETWEEN ${formatDateTimeToISO(
+                                          p[0]
+                                      )} AND ${formatDateTimeToISO(p[1])}`
+                              )
+                              .join(" ")
+                        : ""
+                }`
+            );
+        } */
+
+        const companyEmployee = await query.getMany();
 
         const areas = companyEmployee
             .map((ce) => ce.department)

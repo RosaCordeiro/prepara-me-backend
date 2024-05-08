@@ -37,6 +37,7 @@ class NPSSurveyAnswersUseCase {
         let usersAll = await npsSurveyAnswers.reportAllusers();
 
         return {
+            lessThanFive: users.length <= 5,
             laborRisk: this.getLaborRisk(users),
             brandRisk: this.getBrandRisk(users),
             nps: this.getNps(users),
@@ -130,7 +131,7 @@ class NPSSurveyAnswersUseCase {
             return employee.userId;
         });
 
-        if (filterUsers.length === 0) {
+        if (filterUsers.length <= 5) {
             return "N/A";
         }
 
@@ -144,15 +145,19 @@ class NPSSurveyAnswersUseCase {
     }
 
     getLaborIssuesAllUsers(users: any) {
+        if (users.length <= 5) {
+            return "N/A";
+        }
+
         const filteredUsers = users.filter((user: any) => {
             return user.companyId !== null && user.companyId !== undefined;
         });
 
-        const laborRiskAlerts = users.filter((user: any) => {
+        const laborRiskAlerts = filteredUsers.filter((user: any) => {
             return user.laborRiskAlert == "ALERT";
         });
 
-        return ((filteredUsers.length / users.length) * 100).toFixed(2) + "%";
+        return ((laborRiskAlerts.length / users.length) * 100).toFixed(2) + "%";
     }
 
     getBrandRisk(users: any) {
@@ -161,7 +166,8 @@ class NPSSurveyAnswersUseCase {
                 return npsSurvey.surveyAnswered;
             }
         });
-        if (npsSurveyAnswers.length === 0) {
+
+        if (npsSurveyAnswers.length <= 5) {
             return "N/A";
         }
 
@@ -190,7 +196,7 @@ class NPSSurveyAnswersUseCase {
             //se nao voce para aqui
         }).length;
 
-        if (countUsersResponded === 0) {
+        if (countUsersResponded <= 5) {
             return "N/A";
         }
 
@@ -239,7 +245,7 @@ class NPSSurveyAnswersUseCase {
             return user.user?.realocated == "REALOCATED";
         });
 
-        if (filterUsers.length === 0) {
+        if (filterUsers.length <= 5) {
             return "N/A";
         }
 

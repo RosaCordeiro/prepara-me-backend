@@ -1,5 +1,6 @@
 import { CompaniesRepository } from "@modules/company/infra/typeorm/repositories/CompaniesRepository";
 import { SubscriptionPlansRepository } from "@modules/products/infra/typeorm/repositories/SubscriptionPlansRepository";
+import { removeDiacritics } from "@utils/removeDiacritcs";
 import xl from "excel4node";
 
 import { join } from "path";
@@ -54,17 +55,6 @@ export class GeradorExcelEmployeeTools {
                 formulas: [
                     `${companies.map((company) => company.name).sort()}`,
                 ],
-            });
-
-            ws.addDataValidation({
-                type: "list",
-                allowBlank: true,
-                prompt: "Escolha um plano",
-                errorTitle: "Plano Inválido",
-                error: "Escolha um plano válido",
-                showDropDown: true,
-                sqref: "I1:I10000",
-                formulas: [`${plans.map((p) => p.name).sort()}`],
             });
 
             const path = join(

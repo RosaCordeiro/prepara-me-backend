@@ -37,6 +37,51 @@ class ResponsesReport {
                                     '-'
                             end           
                 end as empresa,
+                case
+                    when u."companyId" is not null then
+                        (
+                            select 
+                                ce."entryDate"  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id   
+                        )
+                    else 
+                        null
+                end as periodo,   
+                case
+                    when u."companyId" is not null then
+                    (
+                        select 
+                            ce.unity  
+                        from "companyEmployees" ce 
+                        where "userId" = U.id   
+                    
+                    )                
+                    else 
+                        '-'
+                end as unidade,   
+                case
+                    when u."companyId" is not null then
+                        (
+                            select 
+                                ce.department  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id               	
+                        )                
+                    else 
+                        '-'
+                end as area, 
+                case
+                    when u."companyId" is not null then
+                        (
+                            select 
+                                ce."position"  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id               	
+                        )                
+                    else 
+                        '-'
+                end as cargo, 
                 u.email, 
                 u."feelingsMapJSON", 
                 u."laborRiskJSON", 

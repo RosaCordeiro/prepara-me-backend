@@ -12,18 +12,25 @@ class GetCompanyParametersUseCase {
         private companyEmployeesRepository: ICompanyEmployeesRepository
     ) {}
 
-    async execute(id: string) {
+    async execute(id: string, period?: any, unity?: any, area?: any) {
         if (!id) {
             throw new AppError("Invalid id");
         }
 
-        const company = await this.companiesRepository.findById(id);
+        if (id !== "TUDO" && id !== "B2B" && id !== "B2C") {
+            const company = await this.companiesRepository.findById(id);
 
-        if (!company) {
-            throw new AppError("Company not found");
+            if (!company) {
+                throw new AppError("Company not found");
+            }
         }
 
-        return await this.companyEmployeesRepository.getParameters(id);
+        return await this.companyEmployeesRepository.getParameters(
+            id,
+            period,
+            unity,
+            area
+        );
     }
 }
 
