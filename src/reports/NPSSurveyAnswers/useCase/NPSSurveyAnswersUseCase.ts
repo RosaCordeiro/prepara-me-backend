@@ -68,7 +68,7 @@ class NPSSurveyAnswersUseCase {
                 return npsSurvey.surveyAnswered;
             }
         });
-        if (npsSurveyAnswers.length === 0) {
+        if (npsSurveyAnswers.length <= 5) {
             return "N/A";
         }
 
@@ -90,7 +90,7 @@ class NPSSurveyAnswersUseCase {
             return user?.surveyAnswered;
         }).length;
 
-        if (countUsersResponded === 0) {
+        if (countUsersResponded <= 5) {
             return "N/A";
         }
 
@@ -273,6 +273,10 @@ class NPSSurveyAnswersUseCase {
             return user?.surveyAnswered === true;
         });
 
+        if (usersResponded.length <= 5) {
+            return [];
+        }
+
         for (const user of usersResponded) {
             //of serve para desmembrar um array e listar direto em uma variável
             //ele já tira o objeto e joga ele
@@ -322,6 +326,10 @@ class NPSSurveyAnswersUseCase {
         const countUsersResponded = users.filter((user: any) => {
             return user?.surveyAnswered;
         }).length;
+
+        if (countUsersResponded <= 5) {
+            return "N/A";
+        }
 
         for (const user of users) {
             if (user?.laborRiskJSON === undefined) {
