@@ -328,7 +328,7 @@ class NPSSurveyAnswersUseCase {
         }).length;
 
         if (countUsersResponded <= 5) {
-            return "N/A";
+            return [];
         }
 
         for (const user of users) {
