@@ -37,7 +37,8 @@ class NPSSurveyAnswersUseCase {
         let usersAll = await npsSurveyAnswers.reportAllusers();
 
         return {
-            lessThanFive: users.length <= 5,
+            lessThanFive:
+                users.filter((user) => user.surveyAnswered).length <= 5,
             laborRisk: this.getLaborRisk(users),
             brandRisk: this.getBrandRisk(users),
             nps: this.getNps(users),
