@@ -90,12 +90,21 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
 
         const companyEmployee = await query.getMany();
 
+        if (area) {
+            area = JSON.parse(area);
+            query.andWhere(
+                `ce.department IN (${area.map((a) => `'${a}'`).join(",")})`
+            );
+        }
+
+        const rolesCompanyEmployee = await query.getMany();
+
         const areas = companyEmployee
             .map((ce) => ce.department)
             .filter((c) => c !== null && c !== undefined && c !== "");
         const uniqueAreas = [...new Set(areas)];
 
-        const roles = companyEmployee
+        const roles = rolesCompanyEmployee
             .map((ce) => ce.position)
             .filter((c) => c !== null && c !== undefined && c !== "");
         const uniqueRoles = [...new Set(roles)];
