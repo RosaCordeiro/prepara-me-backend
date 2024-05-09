@@ -27,6 +27,8 @@ class CreateCompanyEmployeeController {
             CreateCompanyEmployeeUseCase
         );
 
+        console.log("planId", planId);
+
         const companyEmployee = await createCompanyEmployeeUseCase.execute({
             companyId,
             documentId,
