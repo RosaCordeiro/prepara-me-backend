@@ -36,6 +36,19 @@ class SubscriptionPlansRepository implements ISubscriptionPlansRepository {
         if (id === undefined || id === null || id === "") {
             return null;
         }
+
+        console.log("chegou aqui?");
+
+        const subscriptionPlan = await this.repository.findOne(id, {
+            relations: [
+                "subscriptionPlanProduct",
+                "subscriptionPlanProduct.product",
+            ],
+        });
+
+        console.log("subscriptionPlan", subscriptionPlan);
+
+        return subscriptionPlan;
     }
 
     async find({
@@ -105,6 +118,8 @@ class SubscriptionPlansRepository implements ISubscriptionPlansRepository {
     }
 
     async findByID(id: string): Promise<SubscriptionPlan> {
+        console.log("chegou aqui?");
+
         const subscriptionPlan = await this.repository.findOne(id, {
             relations: [
                 "subscriptionPlanProduct",

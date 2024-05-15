@@ -80,6 +80,8 @@ class CreateCompanyEmployeeUseCase {
             throw new AppError("easyRegister can't be null");
         }
 
+        console.log("aqui", plan);
+
         const planModel = await this.subscriptionPlansRepository.findById(plan);
 
         console.log("planModel", planModel);
