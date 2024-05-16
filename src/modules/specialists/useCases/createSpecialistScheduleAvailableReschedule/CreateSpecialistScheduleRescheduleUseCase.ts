@@ -13,6 +13,7 @@ import { formatDateToString } from "@utils/formatDate";
 import { inject, injectable } from "tsyringe";
 import { resolve } from "path";
 import { IRescheduleSpecialistScheduleDTO } from "@modules/specialists/dtos/IRescheduleSpecialistScheduleDTO";
+import { ISpecialistSchedulesFilesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesFilesRepository";
 
 @injectable()
 class CreateSpecialistScheduleRescheduleUseCase {
@@ -30,7 +31,9 @@ class CreateSpecialistScheduleRescheduleUseCase {
         @inject("UsersRepository")
         private userRepository: IUsersRepository,
         @inject("SESMailProvider")
-        private mailProvider: IMailProvider
+        private mailProvider: IMailProvider,
+        @inject("SpecialistSchedulesFilesRepository")
+        private specialistSchedulesFilesRepository: ISpecialistSchedulesFilesRepository
     ) {}
 
     async execute({
@@ -122,7 +125,7 @@ class CreateSpecialistScheduleRescheduleUseCase {
             } catch (error) {
                 console.log("error create specialist schedule", error);
 
-                throw new AppError("Was not possible schedule your event!");
+                //throw new AppError("Was not possible schedule your event!");
             }
 
             try {
@@ -248,6 +251,25 @@ class CreateSpecialistScheduleRescheduleUseCase {
                 id,
                 rating,
             });
+
+        const files = await this.specialistSchedulesFilesRepository.find(
+            oldSchedule.id
+        );
+
+        for (let file of files) {
+            console.log("file", file);
+
+            await this.specialistSchedulesFilesRepository.remove(file.id);
+        }
+        for (let file of files) {
+            await this.specialistSchedulesFilesRepository.create({
+                id: file.id,
+                specialistScheduleId: specialistSchedule.id,
+                fileType: file.fileType,
+                fileName: file.fileName,
+                fileLink: file.fileLink,
+            });
+        }
 
         return specialistSchedule;
     }
