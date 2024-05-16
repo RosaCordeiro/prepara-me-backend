@@ -11,6 +11,9 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
     constructor() {
         this.repository = getRepository(SpecialistSchedule);
     }
+    findById(id: string): Promise<SpecialistSchedule> {
+        return this.repository.findOne(id);
+    }
 
     async create({
         dateSchedule,

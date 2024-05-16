@@ -191,6 +191,10 @@ class ScheduleGoogle implements IScheduleProvider {
             eventId: eventId,
         });
 
+        if (!event) {
+            throw new Error("Event not found");
+        }
+
         const result = await calendar.events.patch({
             calendarId: "primary",
             eventId: eventId,

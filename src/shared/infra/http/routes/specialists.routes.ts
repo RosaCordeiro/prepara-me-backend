@@ -16,6 +16,7 @@ import multer from "multer";
 import { CreateSpecialistScheduleFilesController } from "@modules/specialists/useCases/createSpecialistScheduleFiles/CreateSpecialistScheduleFilesController";
 import { ListSpecialistScheduleFilesController } from "@modules/specialists/useCases/listSpecialistScheduleFiles/ListSpecialistScheduleFilesController";
 import { RemoveSpecialistScheduleFilesController } from "@modules/specialists/useCases/removeSpeecialistScheduleFiles/removeSpecialistScheduleFilesController";
+import { CreateSpecialistScheduleRescheduleController } from "@modules/specialists/useCases/createSpecialistScheduleAvailableReschedule/CreateSpecialistScheduleRescheduleController";
 
 const specialistsRoutes = Router();
 const uploadImage = multer(uploadConfig);
@@ -59,6 +60,14 @@ specialistsRoutes.put(
     "/schedule/:id",
     ensuredAuthenticated,
     createSpecialistScheduleController.handle
+);
+
+const createSpecialistScheduleRescheduleController =
+    new CreateSpecialistScheduleRescheduleController();
+specialistsRoutes.put(
+    "/reschedule/:id",
+    ensuredAuthenticated,
+    createSpecialistScheduleRescheduleController.handle
 );
 
 const cancelSpecialistScheduleController =
@@ -124,4 +133,3 @@ specialistsRoutes.delete(
 );
 
 export { specialistsRoutes };
-
