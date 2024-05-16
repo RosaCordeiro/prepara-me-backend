@@ -10,6 +10,7 @@ import {
 import { Specialist } from "./Specialist";
 import { User } from "@modules/accounts/infra/typeorm/entities/User";
 import { Product } from "@modules/products/infra/typeorm/entities/Product";
+import { SpecialistScheduleCancelReasonEnum } from "@modules/specialists/enums/SpecialistScheduleCancelReasonEnum";
 
 @Entity("specialistScheduleCancel")
 class SpecialistScheduleCancel {
@@ -34,8 +35,16 @@ class SpecialistScheduleCancel {
 
     @Column()
     productId: string;
+
     @ManyToOne(() => Product, (product) => product.specialistScheduleCancel)
     product: Product;
+
+    @Column({
+        type: "enum",
+        enum: SpecialistScheduleCancelReasonEnum,
+        default: SpecialistScheduleCancelReasonEnum.CANCELED,
+    })
+    reason: SpecialistScheduleCancelReasonEnum;
 
     @CreateDateColumn()
     created_at: Date;
@@ -45,7 +54,8 @@ class SpecialistScheduleCancel {
         specialistId: string,
         userId: string,
         productId: string,
-        id: string
+        id: string,
+        reason: SpecialistScheduleCancelReasonEnum
     ) {
         if (id) {
             this.id = id;
@@ -59,6 +69,7 @@ class SpecialistScheduleCancel {
         this.specialistId = specialistId;
         this.userId = userId;
         this.productId = productId;
+        this.reason = reason;
     }
 }
 

@@ -4,6 +4,7 @@ interface ICreateSpecialistScheduleCancelDTO {
     userId: string;
     productId: string;
     id?: string;
+    reason: string;
 }
 
 export { ICreateSpecialistScheduleCancelDTO };

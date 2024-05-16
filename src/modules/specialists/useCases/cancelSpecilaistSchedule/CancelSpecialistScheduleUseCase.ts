@@ -2,6 +2,7 @@ import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
 import { IUserProductsAvailableRepository } from "@modules/accounts/repositories/IUserProductsAvailableRepository";
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { ICreateSpecialistScheduleDTO } from "@modules/specialists/dtos/ICreateSpecialistScheduleDTO";
+import { SpecialistScheduleCancelReasonEnum } from "@modules/specialists/enums/SpecialistScheduleCancelReasonEnum";
 import { SpecialistScheduleStatusEnum } from "@modules/specialists/enums/SpecialistScheduleStatusEnum";
 import { SpecialistSchedule } from "@modules/specialists/infra/typeorm/entities/SpecialistSchedule";
 import { ISpecialistSchedulesCancelRepository } from "@modules/specialists/repositories/ISpecialistSchedulesCancelRepository";
@@ -16,6 +17,7 @@ import { inject, injectable } from "tsyringe";
 interface ICancelSpecialistSchedule {
     id: string;
     revertAvailableProduct: boolean;
+    reason?: string;
 }
 
 @injectable()
@@ -36,9 +38,21 @@ class CancelSpecialistScheduleUseCase {
     ) {}
 
     async execute(
-        { id, revertAvailableProduct }: ICancelSpecialistSchedule,
+        { id, revertAvailableProduct, reason }: ICancelSpecialistSchedule,
         loggedUserId: string
     ): Promise<any> {
+        if (!reason) {
+            reason = SpecialistScheduleCancelReasonEnum.CANCELED;
+        } else {
+            if (
+                reason !== "NÃO COMPARECEU" &&
+                reason !== "REAGENDADO" &&
+                reason !== "CANCELADO"
+            ) {
+                throw new Error("Invalid reason");
+            }
+        }
+
         const specialistsSchedule =
             await this.specialistSchedulesRepository.find({
                 id,
@@ -51,6 +65,7 @@ class CancelSpecialistScheduleUseCase {
             userId: specialistSchedule.userId,
             productId: specialistSchedule.productId,
             id: specialistSchedule.id,
+            reason,
         });
 
         if (specialistSchedule.scheduleEventId) {
