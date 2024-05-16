@@ -68,6 +68,9 @@ class CompanyEmployee {
     @Column()
     unity: string;
 
+    @Column()
+    packageDeclined: boolean;
+
     constructor(
         name: string,
         subscribeToken: string,
@@ -84,7 +87,8 @@ class CompanyEmployee {
         position: string,
         department: string,
         plan: string,
-        unity: string
+        unity: string,
+        packageDeclined: boolean
     ) {
         if (id) {
             this.id = id;
@@ -114,6 +118,7 @@ class CompanyEmployee {
         this.department = department;
         this.plan = plan;
         this.unity = unity;
+        this.packageDeclined = packageDeclined;
     }
 }
 

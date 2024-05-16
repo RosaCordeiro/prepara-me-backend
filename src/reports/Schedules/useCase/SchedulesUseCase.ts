@@ -11,6 +11,8 @@ class SchedulesUseCase {
 
         const result = await schedules.report(inicialDate, finalDate);
 
+        console.log("result", result[0]);
+
         const headers = [
             "Nome",
             "Origem",
@@ -36,6 +38,8 @@ class SchedulesUseCase {
             "Data Recolocação",
             "Data Envio Relatório",
             "Data Cancelamento",
+            "Razão Cancelamento",
+            "Pacote Recusado",
         ];
 
         result.forEach((element) => {
@@ -51,8 +55,23 @@ class SchedulesUseCase {
             element.mes_ano = dateToMonthYear(element.mes_ano);
             element.data_cancelamento = formatDate(element.data_cancelamento);
 
+            if (
+                element.package_declined === null ||
+                element.package_declined === undefined
+            ) {
+                element.package_declined = "-";
+            } else {
+                if (element.package_declined.toString() === "true") {
+                    element.package_declined = "Sim";
+                } else {
+                    element.package_declined = "Não";
+                }
+            }
+
             delete element.data_criacao;
         });
+
+        console.log("result", result[0]);
 
         const excel = await geradorExcelTools.geradorExcel(
             headers,

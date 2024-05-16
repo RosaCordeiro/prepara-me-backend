@@ -152,7 +152,22 @@ class Schedules {
                         where url."userId" = U.id
                     ) as data_realocacao,
                     null as data_envio_relatorio,     
-                    null as data_cancelamento,      
+                    null as data_cancelamento,    
+                    null as razao_cancelamento,  
+                    case
+                        when u."companyId" is not null then
+                            COALESCE(
+                                (
+                                    select 
+                                        ce."packageDeclined"  
+                                    from "companyEmployees" ce 
+                                    where "userId" = U.id   
+                                ),
+                                false
+                            )
+                        else 
+                            null
+                    end as package_declined,  
                     1 as order,
                     (
                         select 
@@ -266,7 +281,7 @@ class Schedules {
                             (select p2."name" from products p2 where id = upal."productIdOld") 
                         else 
                             p."name"
-                    end as servico,
+                    end as servico,                    
                     case
                         when upal.id is not	null then
                             'Sim'
@@ -302,7 +317,22 @@ class Schedules {
                         where url."userId" = U.id
                     ) as data_realocacao,
                     null as data_envio_relatorio,        
-                    null as data_cancelamento,           
+                    null as data_cancelamento,  
+                    null as razao_cancelamento,   
+                    case
+                        when u."companyId" is not null then
+                            COALESCE(
+                                (
+                                    select 
+                                        ce."packageDeclined"  
+                                    from "companyEmployees" ce 
+                                    where "userId" = U.id   
+                                ),
+                                false
+                            )
+                        else 
+                            null
+                    end as package_declined,       
                     2 as order,
                     (
                         select 
@@ -415,7 +445,7 @@ class Schedules {
                         else 
                             'Não'
                     end as botao_vermelho,
-                    p."name" as servico,                    
+                    p."name" as servico,                                     
                     null as mentoria_trocada,
                     null as mentoria_incluida,
                     null as data_troca,
@@ -446,7 +476,22 @@ class Schedules {
                         from "specialistScheduleFiles" ssf 
                         where "specialistScheduleId" = ss.id
                     ), 'YYYY-MM-DD HH24:MI:SS') as data_envio_relatorio,    
-                    null as data_cancelamento,                                              
+                    null as data_cancelamento, 
+                    null as razao_cancelamento,  
+                    case
+                        when u."companyId" is not null then
+                            COALESCE(
+                                (
+                                    select 
+                                        ce."packageDeclined"  
+                                    from "companyEmployees" ce 
+                                    where "userId" = U.id   
+                                ),
+                                false
+                            )
+                        else 
+                            null
+                    end as package_declined,                                               
                     3 as order,
                     (
                         select 
@@ -558,7 +603,7 @@ class Schedules {
                         else 
                             'Não'
                     end as botao_vermelho,
-                    'Mentoria Coletiva' as servico,                
+                    'Mentoria Coletiva' as servico,                                  
                     null as mentoria_trocada,
                     null as mentoria_incluida,
                     null as data_troca,
@@ -584,7 +629,22 @@ class Schedules {
                         where url."userId" = U.id
                     ) as data_realocacao,  
                     null as data_envio_relatorio,         
-                    null as data_cancelamento,                 
+                    null as data_cancelamento, 
+                    null as razao_cancelamento,     
+                    case
+                        when u."companyId" is not null then
+                            COALESCE(
+                                (
+                                    select 
+                                        ce."packageDeclined"  
+                                    from "companyEmployees" ce 
+                                    where "userId" = U.id   
+                                ),
+                                false
+                            )
+                        else 
+                            null
+                    end as package_declined,              
                     4 as order,
                     (
                         select 
@@ -696,7 +756,7 @@ class Schedules {
                         else 
                             'Não'
                     end as botao_vermelho,
-                    concat('CANCELADO - ', p."name") as servico,                
+                    concat('CANCELADO - ', p."name") as servico,   
                     null as mentoria_trocada,
                     null as mentoria_incluida,
                     null as data_troca,
@@ -722,7 +782,22 @@ class Schedules {
                         where url."userId" = U.id
                     ) as data_realocacao,  
                     null as data_envio_relatorio, 
-                    TO_CHAR(ssc."created_at", 'YYYY-MM-DD HH24:MI:SS') as data_cancelamento,                    
+                    TO_CHAR(ssc."created_at", 'YYYY-MM-DD HH24:MI:SS') as data_cancelamento,   
+                    ssc."reason" as razao_cancelamento, 
+                    case
+                        when u."companyId" is not null then
+                            COALESCE(
+                                (
+                                    select 
+                                        ce."packageDeclined"  
+                                    from "companyEmployees" ce 
+                                    where "userId" = U.id   
+                                ),
+                                false
+                            )
+                        else 
+                            null
+                    end as package_declined,                  
                     5 as order,
                     (
                         select 
@@ -774,6 +849,8 @@ export interface ISchedulesReport {
     order: number;
     data_envio_relatorio: string;
     data_cancelamento: string;
+    razao_cancelamento: string;
+    package_declined: string;
     data_criacao: string;
 }
 

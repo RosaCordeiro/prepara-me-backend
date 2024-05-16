@@ -41,6 +41,7 @@ class CreateCompanyEmployeeBatchUseCase {
             "Empresa",
             "Plano",
             "Unidade",
+            "Pacote Recusado",
         ];
 
         const fileRows: any[][] = await readXlsxFile(`${files[0].filepath}`);
@@ -128,6 +129,7 @@ class CreateCompanyEmployeeBatchUseCase {
                     subscribeToken: row[7],
                     plan: row[8],
                     unity: row[9],
+                    packageDeclined: row[10] === "Sim" ? true : false,
                 });
 
             console.log("companyEmployeeCreated", companyEmployeeCreated);
@@ -178,6 +180,7 @@ class CreateCompanyEmployeeBatchUseCase {
                     department: companyEmployeeCreated.department,
                     plan: companyEmployeeCreated.plan,
                     unity: companyEmployeeCreated.unity,
+                    packageDeclined: companyEmployeeCreated.packageDeclined,
                 });
 
             console.log("companyEmployeeCreated", companyEmployeeCreated);

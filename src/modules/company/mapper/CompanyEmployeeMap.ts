@@ -22,6 +22,7 @@ class CompanyEmployeeMap {
         department,
         plan,
         unity,
+        packageDeclined,
     }: CompanyEmployee): ICompanyEmployeeResponseDTO {
         let easyRegisterMapped = "";
 
@@ -60,6 +61,10 @@ class CompanyEmployeeMap {
             department,
             plan,
             unity,
+            packageDeclined:
+                packageDeclined === null || packageDeclined === undefined
+                    ? false
+                    : packageDeclined,
         });
 
         return companyEmployee;

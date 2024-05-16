@@ -25,6 +25,7 @@ export class GeradorExcelEmployeeTools {
                 "Empresa",
                 "Plano",
                 "Unidade",
+                "Pacote Recusado",
             ];
 
             const wb = new xl.Workbook();
@@ -51,10 +52,21 @@ export class GeradorExcelEmployeeTools {
                 errorTitle: "Empresa Inválida",
                 error: "Escolha uma empresa válida",
                 showDropDown: true,
-                sqref: "H1:H10000",
+                sqref: "H2:H10000",
                 formulas: [
                     `${companies.map((company) => company.name).sort()}`,
                 ],
+            });
+
+            ws.addDataValidation({
+                type: "list",
+                allowBlank: true,
+                prompt: "Pacote Recusado",
+                errorTitle: "Pacote Recusado Inválido",
+                error: "Selecione uma opção válida",
+                showDropDown: true,
+                sqref: "K2:K10000",
+                formulas: ["Sim, Não"],
             });
 
             const path = join(

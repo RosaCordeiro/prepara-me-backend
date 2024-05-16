@@ -170,6 +170,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         plan,
         unity,
         accepted,
+        packageDeclined,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const companyEmployee = this.repository.create({
             companyId,
@@ -187,6 +188,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             plan,
             unity,
             accepted,
+            packageDeclined,
         });
 
         await this.repository.save(companyEmployee);

@@ -41,6 +41,7 @@ class CreateCompanyEmployeeUseCase {
         plan,
         unity,
         accepted,
+        packageDeclined,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         console.log({
             companyId,
@@ -58,6 +59,7 @@ class CreateCompanyEmployeeUseCase {
             plan,
             unity,
             accepted,
+            packageDeclined,
         });
 
         /* if (1 === 1) {
@@ -78,6 +80,10 @@ class CreateCompanyEmployeeUseCase {
 
         if (!easyRegister) {
             throw new AppError("easyRegister can't be null");
+        }
+
+        if (packageDeclined === undefined) {
+            packageDeclined = false;
         }
 
         console.log("aqui", plan);
@@ -111,6 +117,7 @@ class CreateCompanyEmployeeUseCase {
             department,
             unity,
             accepted,
+            packageDeclined,
         };
 
         if (!id) {
@@ -192,6 +199,7 @@ class CreateCompanyEmployeeUseCase {
                     department: companyEmployeeCreated.department,
                     plan: companyEmployeeCreated.plan,
                     unity: companyEmployeeCreated.unity,
+                    packageDeclined: companyEmployeeCreated.packageDeclined,
                 });
 
             if (!id && plan && planModel.subscriptionPlanProduct)
