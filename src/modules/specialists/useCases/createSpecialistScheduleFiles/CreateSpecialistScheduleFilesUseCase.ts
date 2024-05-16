@@ -26,13 +26,19 @@ class CreateSpecialistScheduleFilesUseCase {
     constructor(
         @inject("SpecialistSchedulesFilesRepository")
         private specialistSchedulesFilesRepository: ISpecialistSchedulesFilesRepository,
-
         @inject("StorageProvider")
-        private storageProvider: IStorageProvider //provedor de armazenamento
+        private storageProvider: IStorageProvider,
+        @inject("SpecialistSchedulesRepository")
+        private specialistSchedulesRepository: ISpecialistSchedulesRepository,
+        @inject("SESMailProvider")
+        private mailProvider: IMailProvider,
+        @inject("ProductsRepository")
+        private productsRepository: IProductsRepository
     ) {}
 
     async execute(
-        data: ICreateSpecialistScheduleFileRequestDTO
+        data: ICreateSpecialistScheduleFileRequestDTO,
+        typeUser: any
     ): Promise<SpecialistScheduleFiles[]> {
         const specialistScheduleFile: SpecialistScheduleFiles[] = [];
         let fileFolder = "specialistschedulesfiles";
@@ -57,6 +63,51 @@ class CreateSpecialistScheduleFilesUseCase {
         if (specialistScheduleFilesFind.length === 0) {
             throw new AppError("Files not found");
         }
+
+        if (typeUser.value === "SPECIALIST") {
+            try {
+                const templatePath = resolve(
+                    __dirname,
+                    "..",
+                    "..",
+                    "views",
+                    "emails",
+                    "mentoringReport.hbs"
+                );
+
+                const specialistSchedule =
+                    await this.specialistSchedulesRepository.find({
+                        id: data.specialistScheduleId,
+                    });
+
+                if (specialistSchedule.length === 0) {
+                    throw new AppError("Specialist schedule not found");
+                }
+
+                const product = await this.productsRepository.findById(
+                    specialistSchedule[0].productId
+                );
+
+                if (!product) {
+                    throw new AppError("Product not found");
+                }
+
+                const variables = {
+                    name: specialistSchedule[0].specialist.user.name,
+                    mentoring: product.shortName,
+                };
+
+                void this.mailProvider.sendMail(
+                    specialistSchedule[0].user.email,
+                    "Relatório de Mentoria",
+                    variables,
+                    templatePath
+                );
+            } catch (error) {
+                console.log("error send email", error);
+            }
+        }
+
         return specialistScheduleFile;
     }
 }

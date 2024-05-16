@@ -143,7 +143,7 @@ class ProductsRepository implements IProductsRepository {
     }
 
     findById(id: string): Promise<Product> {
-        throw new Error("Method not implemented.");
+        return this.repository.findOne(id);
     }
 
     async create({

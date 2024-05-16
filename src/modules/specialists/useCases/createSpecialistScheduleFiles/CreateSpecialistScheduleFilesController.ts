@@ -46,16 +46,19 @@ class CreateSpecialistScheduleFilesController {
         console.log(typeUser);
 
         const specialistScheduleFiles =
-            await createSpecialistScheduleFilesUseCase.execute({
-                specialistScheduleId: body.specialistScheduleId,
-                id: body?.id,
-                files: files.map((file) => {
-                    return {
-                        fileName: file.filename,
-                        fileType: typeUser.value,
-                    };
-                }),
-            });
+            await createSpecialistScheduleFilesUseCase.execute(
+                {
+                    specialistScheduleId: body.specialistScheduleId,
+                    id: body?.id,
+                    files: files.map((file) => {
+                        return {
+                            fileName: file.filename,
+                            fileType: typeUser.value,
+                        };
+                    }),
+                },
+                typeUser
+            );
 
         if (body?.id !== undefined) {
             return response.status(200).json(specialistScheduleFiles);
