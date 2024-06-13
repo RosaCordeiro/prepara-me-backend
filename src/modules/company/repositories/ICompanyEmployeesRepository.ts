@@ -25,7 +25,9 @@ interface ICompanyEmployeesRepository {
         id: string,
         period?: any,
         unity?: any,
-        area?: any
+        area?: any,
+        subarea?: any,
+        level?: any
     ): Promise<IGetParametersResponseDTO>;
 }
 

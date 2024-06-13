@@ -82,6 +82,28 @@ class ResponsesReport {
                     else 
                         '-'
                 end as cargo, 
+                case
+                    when u."companyId" is not null then
+                        (
+                            select 
+                                ce.subarea  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id               	
+                        )                
+                    else 
+                        '-'
+                end as subarea, 
+                case
+                    when u."companyId" is not null then
+                        (
+                            select 
+                                ce."level"  
+                            from "companyEmployees" ce 
+                            where "userId" = U.id               	
+                        )                
+                    else 
+                        '-'
+                end as "level", 
                 u.email, 
                 u."feelingsMapJSON", 
                 u."laborRiskJSON", 

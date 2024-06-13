@@ -14,7 +14,9 @@ class NPSSurveyAnswers {
         area: string[],
         role: string[],
         period: Date[][],
-        unity: string[]
+        unity: string[],
+        subarea: string[],
+        level: string[]
     ) {
         const NPSSurveyAnswers = this.repository
             .createQueryBuilder("ce")
@@ -58,6 +60,18 @@ class NPSSurveyAnswers {
         if (unity.length > 0) {
             NPSSurveyAnswers.andWhere(
                 `ce.unity IN (${unity.map((u) => `'${u}'`).join(",")})`
+            );
+        }
+
+        if (subarea.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.subarea IN (${subarea.map((s) => `'${s}'`).join(",")})`
+            );
+        }
+
+        if (level.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.level IN (${level.map((l) => `'${l}'`).join(",")})`
             );
         }
 

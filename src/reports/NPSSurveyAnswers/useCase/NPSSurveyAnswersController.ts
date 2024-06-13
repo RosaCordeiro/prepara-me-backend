@@ -3,7 +3,8 @@ import { NPSSurveyAnswersUseCase } from "./NPSSurveyAnswersUseCase";
 
 class NPSSurveyAnswersController {
     async handle(request: Request, response: Response): Promise<Response> {
-        const { companyId, area, role, period, unity } = request.query;
+        const { companyId, area, role, period, unity, subarea, level } =
+            request.query;
 
         let npsSurveyAnswersUseCaseNew = new NPSSurveyAnswersUseCase();
 
@@ -13,6 +14,8 @@ class NPSSurveyAnswersController {
             role,
             period,
             unity,
+            subarea,
+            level,
         });
 
         return response.status(200).send(results);

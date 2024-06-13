@@ -6,11 +6,13 @@ import { getFirstAndLastDayOfMonth } from "@utils/formatDate";
 
 @injectable()
 class NPSSurveyAnswersUseCase {
-    async execute({ companyId, area, role, period, unity }) {
+    async execute({ companyId, area, role, period, unity, subarea, level }) {
         const areaArray = area ? JSON.parse(area) : [];
         const roleArray = role ? JSON.parse(role) : [];
         const periodArray = period ? JSON.parse(period) : [];
         const unityArray = unity ? JSON.parse(unity) : [];
+        const subareaArray = subarea ? JSON.parse(subarea) : [];
+        const levelArray = level ? JSON.parse(level) : [];
 
         const npsSurveyAnswers = new NPSSurveyAnswers();
         let users;
@@ -28,17 +30,24 @@ class NPSSurveyAnswersUseCase {
                 areaArray,
                 roleArray,
                 periodArray.map((p) => getFirstAndLastDayOfMonth(p)),
-                unityArray
+                unityArray,
+                subareaArray,
+                levelArray
             );
 
             users = result.map((r) => r.user);
         }
 
         let usersAll = await npsSurveyAnswers.reportAllusers();
+        users = users.filter((user) => user !== null);
 
         return {
             lessThanFive:
-                users.filter((user) => user.surveyAnswered).length <= 5,
+                users.filter((user) => {
+                    console.log(user);
+
+                    return user.surveyAnswered;
+                }).length <= 5,
             laborRisk: this.getLaborRisk(users),
             brandRisk: this.getBrandRisk(users),
             nps: this.getNps(users),

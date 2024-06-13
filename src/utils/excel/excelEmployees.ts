@@ -21,10 +21,12 @@ export class GeradorExcelEmployeeTools {
                 "Email",
                 "Data de entrada do funcionário",
                 "Cargo",
-                "Área",
                 "Empresa",
                 "Plano",
                 "Unidade",
+                "Área",
+                "Subárea",
+                "Nível",
                 "Pacote Recusado",
             ];
 
@@ -52,7 +54,7 @@ export class GeradorExcelEmployeeTools {
                 errorTitle: "Empresa Inválida",
                 error: "Escolha uma empresa válida",
                 showDropDown: true,
-                sqref: "H2:H10000",
+                sqref: "G2:G10000",
                 formulas: [
                     `${companies.map((company) => company.name).sort()}`,
                 ],
@@ -65,7 +67,7 @@ export class GeradorExcelEmployeeTools {
                 errorTitle: "Pacote Recusado Inválido",
                 error: "Selecione uma opção válida",
                 showDropDown: true,
-                sqref: "K2:K10000",
+                sqref: "M2:M10000",
                 formulas: ["Sim, Não"],
             });
 

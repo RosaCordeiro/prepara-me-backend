@@ -25,7 +25,9 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         id: string,
         period?: any,
         unity?: any,
-        area?: any
+        area?: any,
+        subarea?: any,
+        level?: any
     ): Promise<IGetParametersResponseDTO> {
         console.log("id", id);
 
@@ -49,44 +51,6 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                 query.andWhere("ce.companyId is not null");
             }
         }
-
-        /* if (unity) {
-            unity = JSON.parse(unity);
-            query.andWhere(
-                `ce.unity IN (${unity.map((u) => `'${u}'`).join(",")})`
-            );
-        }
-
-        if (area) {
-            area = JSON.parse(area);
-            query.andWhere(
-                `ce.department IN (${area.map((a) => `'${a}'`).join(",")})`
-            );
-        }
-
-        if (period) {
-            period = JSON.parse(period).map((p) =>
-                getFirstAndLastDayOfMonth(p)
-            );
-
-            query.andWhere(
-                `ce.entryDate BETWEEN ${formatDateTimeToISO(
-                    period[0][0]
-                )} AND ${formatDateTimeToISO(period[0][1])} ${
-                    period.length > 1
-                        ? period
-                              .slice(1)
-                              .map(
-                                  (p) =>
-                                      `OR ce.entryDate BETWEEN ${formatDateTimeToISO(
-                                          p[0]
-                                      )} AND ${formatDateTimeToISO(p[1])}`
-                              )
-                              .join(" ")
-                        : ""
-                }`
-            );
-        } */
 
         const companyEmployee = await query.getMany();
 
@@ -128,11 +92,25 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
 
         const uniqueUnities = [...new Set(unities)];
 
+        const subareas = companyEmployee
+            .map((ce) => ce.subarea)
+            .filter((c) => c !== null && c !== undefined && c !== "");
+
+        const uniqueSubareas = [...new Set(subareas)];
+
+        const levels = companyEmployee
+            .map((ce) => ce.level)
+            .filter((c) => c !== null && c !== undefined && c !== "");
+
+        const uniqueLevels = [...new Set(levels)];
+
         return {
             period: uniquePeriods,
             unity: uniqueUnities,
             area: uniqueAreas,
             role: uniqueRoles,
+            subarea: uniqueSubareas,
+            level: uniqueLevels,
         };
     }
 
@@ -171,6 +149,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         unity,
         accepted,
         packageDeclined,
+        subarea,
+        level,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const companyEmployee = this.repository.create({
             companyId,
@@ -189,6 +169,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             unity,
             accepted,
             packageDeclined,
+            subarea,
+            level,
         });
 
         await this.repository.save(companyEmployee);

@@ -37,10 +37,12 @@ class CreateCompanyEmployeeBatchUseCase {
             "Email",
             "Data de entrada do funcionário",
             "Cargo",
-            "Área",
             "Empresa",
             "Plano",
             "Unidade",
+            "Área",
+            "Subárea",
+            "Nível",
             "Pacote Recusado",
         ];
 
@@ -113,6 +115,22 @@ class CreateCompanyEmployeeBatchUseCase {
                 };
             }
 
+            /*     
+            
+            0 "Nome",
+            1 "Documento",
+            2 "Telefone",
+            3"Email",
+            4"Data de entrada do funcionário",
+            5"Cargo",
+            6"Empresa",
+            7"Plano",
+            8"Unidade",
+            9"Área",
+            10"Subárea",
+            11"Nível",
+            12"Pacote Recusado", */
+
             let companyEmployeeCreated =
                 await this.companyEmployeesRepository.create({
                     name: row[0],
@@ -121,15 +139,16 @@ class CreateCompanyEmployeeBatchUseCase {
                     email: row[3],
                     entryDate: row[4],
                     position: row[5],
-                    department: row[6],
-                    companyId: companies.find((c) => c.name.trim() === row[7])
+                    companyId: companies.find((c) => c.name.trim() === row[6])
                         .id,
-
+                    plan: row[7],
+                    unity: row[8],
+                    department: row[9],
+                    subarea: row[10],
+                    level: row[11],
+                    subscribeToken: row[6],
                     easyRegister: "YES",
-                    subscribeToken: row[7],
-                    plan: row[8],
-                    unity: row[9],
-                    packageDeclined: row[10] === "Sim" ? true : false,
+                    packageDeclined: row[12] === "Sim" ? true : false,
                 });
 
             console.log("companyEmployeeCreated", companyEmployeeCreated);

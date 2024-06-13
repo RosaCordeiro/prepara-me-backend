@@ -12,7 +12,14 @@ class GetCompanyParametersUseCase {
         private companyEmployeesRepository: ICompanyEmployeesRepository
     ) {}
 
-    async execute(id: string, period?: any, unity?: any, area?: any) {
+    async execute(
+        id: string,
+        period?: any,
+        unity?: any,
+        area?: any,
+        subarea?: any,
+        level?: any
+    ) {
         if (!id) {
             throw new AppError("Invalid id");
         }
@@ -29,7 +36,9 @@ class GetCompanyParametersUseCase {
             id,
             period,
             unity,
-            area
+            area,
+            subarea,
+            level
         );
     }
 }

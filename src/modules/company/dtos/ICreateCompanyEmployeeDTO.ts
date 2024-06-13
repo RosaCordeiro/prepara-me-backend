@@ -16,6 +16,8 @@ interface ICreateCompanyEmployeeDTO {
     plan?: string;
     unity?: string;
     packageDeclined?: boolean;
+    subarea?: string;
+    level?: string;
 }
 
 export { ICreateCompanyEmployeeDTO };

@@ -96,6 +96,28 @@ class Schedules {
                             '-'
                     end as cargo, 
                     case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."subarea"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as subarea,
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."level"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as level,
+                    case
                         when (
                             select 
                             accepted 
@@ -245,6 +267,28 @@ class Schedules {
                         else 
                             '-'
                     end as cargo, 
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."subarea"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as subarea,
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."level"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as level,
                     case
                         when (
                             select 
@@ -415,6 +459,28 @@ class Schedules {
                             '-'
                     end as cargo, 
                     case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."subarea"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as subarea,
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."level"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as level,
+                    case
                         when (
                             select 
                             accepted 
@@ -573,6 +639,28 @@ class Schedules {
                             '-'
                     end as cargo, 
                     case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."subarea"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as subarea,
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."level"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as level,
+                    case
                         when (
                             select 
                             accepted 
@@ -726,6 +814,28 @@ class Schedules {
                             '-'
                     end as cargo, 
                     case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."subarea"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as subarea,
+                    case
+                        when u."companyId" is not null then
+                            (
+                                select 
+                                    ce."level"  
+                                from "companyEmployees" ce 
+                                where "userId" = U.id               	
+                            )                
+                        else 
+                            '-'
+                    end as level,
+                    case
                         when (
                             select 
                             accepted 
@@ -832,6 +942,8 @@ export interface ISchedulesReport {
     unidade: string;
     area: string;
     cargo: string;
+    subarea: string;
+    level: string;
     primeiro_login: string;
     pesquisa_desligamento: string;
     botao_vermelho: string;
