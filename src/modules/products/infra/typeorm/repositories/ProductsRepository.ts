@@ -22,6 +22,10 @@ class ProductsRepository implements IProductsRepository {
     }
 
     async removeByProductAvailableId(id: string): Promise<void> {
+        await this.repository.query(`
+            delete from "userProductsAvailableLog" where "userProductsAvailableId" = '${id}'
+        `);
+
         this.repository.query(`
             delete from "userProductsAvailable" where id = '${id}'
         `);
