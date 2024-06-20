@@ -94,7 +94,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -244,7 +244,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -413,7 +413,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -571,7 +571,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -724,7 +724,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -760,8 +760,8 @@ class Schedules {
                     null as mentoria_trocada,
                     null as mentoria_incluida,
                     null as data_troca,
-                    NULL as data_agendamento,
-                    NULL  as data_servico,
+                    TO_CHAR(ssc."dateSchedule", 'YYYY-MM-DD HH24:MI:SS') as data_agendamento,
+                    TO_CHAR(ssc."dateSchedule", 'YYYY-MM-DD HH24:MI:SS') as data_servico,
                     NULL AS mes_ano,
                     s."name" as especialista,
                     NULL as nota,
@@ -811,9 +811,9 @@ class Schedules {
                 inner join users u on u.id = ssc."userId"    
                 inner join specialists s on s.id = ssc."specialistId"  
                 inner join products p on p.id = ssc."productId"
-            ) as row            
+            ) as row   
             ${where}
-            order by row.name, row.order            
+            order by row.name, row.order
         `);
 
         data.forEach((item) => {
@@ -832,6 +832,8 @@ export interface ISchedulesReport {
     unidade: string;
     area: string;
     cargo: string;
+    subarea: string;
+    level: string;
     primeiro_login: string;
     pesquisa_desligamento: string;
     botao_vermelho: string;
