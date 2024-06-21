@@ -81,7 +81,8 @@ class ProductsRepository implements IProductsRepository {
                 null as "specialist", 
                 null as "schedule",
                 NULL as countFilesUser,
-                NULL as countFilesSpecialist
+                NULL as countFilesSpecialist,
+                null as "reason"
             from "userProductsAvailable" upa 
             inner join products p on p.id = upa."productId"
             where upa."userId" = '${userId}' 
@@ -102,11 +103,36 @@ class ProductsRepository implements IProductsRepository {
                 p."name", to_jsonb((array[s.*])[1]) as "specialist", 
                 to_jsonb((array[ss.*])[1]) as "schedule",
                 CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'USER' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesUser,
-                CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'SPECIALIST' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesSpecialist
+                CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'SPECIALIST' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesSpecialist,
+                null as "reason"
             from "specialistSchedule" ss 
             inner join products p on p.id = ss."productId"
             inner join specialists s on s.id = ss."specialistId"  
             where ss."userId" = '${userId}'	
+            ${
+                productId !== "undefined"
+                    ? `and ss."productId" = '${productId}'`
+                    : ""
+            }
+
+            union
+            
+            select 
+            	ssc.id,
+            	ssc."userId",
+            	"productId",
+            	0 as "availableQuantity",
+            	p."name",
+            	to_jsonb((array[s.*])[1]) as "specialist",
+            	null as "schedule",
+            	null as countFilesUser,
+            	null as countFilesSpecialist,
+            	ssc."reason"
+            from "specialistScheduleCancel" ssc 
+            inner join products p on p.id = ssc."productId"
+            inner join specialists s on s.id = ssc."specialistId"
+            where ssc."userId" = '${userId}'
+
             ${
                 productId !== "undefined"
                     ? `and ss."productId" = '${productId}'`
