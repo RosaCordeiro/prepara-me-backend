@@ -82,7 +82,9 @@ class ProductsRepository implements IProductsRepository {
                 null as "schedule",
                 NULL as countFilesUser,
                 NULL as countFilesSpecialist,
-                null as "reason"
+                null as "reason",
+                null as "dateSchedule",
+                'PRODUTOS DISPONÍVEIS' as "table"
             from "userProductsAvailable" upa 
             inner join products p on p.id = upa."productId"
             where upa."userId" = '${userId}' 
@@ -104,7 +106,9 @@ class ProductsRepository implements IProductsRepository {
                 to_jsonb((array[ss.*])[1]) as "schedule",
                 CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'USER' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesUser,
                 CAST(coalesce((select COUNT(*) from "specialistScheduleFiles" ssf where "fileType" = 'SPECIALIST' and "specialistScheduleId" = SS.id), '0') AS integer) as countFilesSpecialist,
-                null as "reason"
+                null as "reason",
+                null as "dateSchedule",
+                'PRODUTOS AGENDADOS' as "table"
             from "specialistSchedule" ss 
             inner join products p on p.id = ss."productId"
             inner join specialists s on s.id = ss."specialistId"  
@@ -127,7 +131,9 @@ class ProductsRepository implements IProductsRepository {
             	null as "schedule",
             	null as countFilesUser,
             	null as countFilesSpecialist,
-            	ssc."reason"
+            	ssc."reason",
+            	TO_CHAR(ssc."dateSchedule", 'YYYY-MM-DD"T"HH24:MI:SS') as dateSchedule,
+                'PRODUTOS CANCELADOS' as "table"
             from "specialistScheduleCancel" ssc 
             inner join products p on p.id = ssc."productId"
             inner join specialists s on s.id = ssc."specialistId"
