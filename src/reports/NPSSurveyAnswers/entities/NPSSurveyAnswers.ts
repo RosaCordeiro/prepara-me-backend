@@ -19,9 +19,14 @@ class NPSSurveyAnswers {
         const NPSSurveyAnswers = this.repository
             .createQueryBuilder("ce")
             .leftJoinAndSelect("ce.user", "u")
-            .where("ce.companyId = :companyId and u.surveyAnswered is true", {
+            .where("ce.companyId = :companyId", {
                 companyId: companyId,
             });
+
+        if (1 === 1) {
+            const companyUsers = await NPSSurveyAnswers.getMany();
+            console.log(companyUsers);
+        }
 
         if (area.length > 0) {
             NPSSurveyAnswers.andWhere(
