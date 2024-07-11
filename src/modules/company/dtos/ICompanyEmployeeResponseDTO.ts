@@ -19,8 +19,6 @@ interface ICompanyEmployeeResponseDTO {
     unity: string;
     planId?: any;
     packageDeclined: boolean;
-    subarea: string;
-    level: string;
 }
 
 export { ICompanyEmployeeResponseDTO };

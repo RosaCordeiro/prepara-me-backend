@@ -20,8 +20,6 @@ class CreateCompanyEmployeeController {
             unity,
             accepted,
             packageDeclined,
-            subarea,
-            level,
         } = request.body;
 
         const { id: companyId } = request.params;
@@ -49,8 +47,6 @@ class CreateCompanyEmployeeController {
             unity,
             accepted,
             packageDeclined,
-            subarea,
-            level,
         });
 
         return response.status(201).send(companyEmployee);

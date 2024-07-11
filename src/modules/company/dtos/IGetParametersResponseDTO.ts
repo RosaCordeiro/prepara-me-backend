@@ -3,8 +3,6 @@ interface IGetParametersResponseDTO {
     unity: string[];
     area: string[];
     role: string[];
-    subarea: string[];
-    level: string[];
 }
 
 export { IGetParametersResponseDTO };

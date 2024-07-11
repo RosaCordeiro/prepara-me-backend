@@ -42,8 +42,6 @@ class CreateCompanyEmployeeUseCase {
         unity,
         accepted,
         packageDeclined,
-        subarea,
-        level,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         console.log({
             companyId,
@@ -62,8 +60,6 @@ class CreateCompanyEmployeeUseCase {
             unity,
             accepted,
             packageDeclined,
-            subarea,
-            level,
         });
 
         /* if (1 === 1) {
@@ -122,8 +118,6 @@ class CreateCompanyEmployeeUseCase {
             unity,
             accepted,
             packageDeclined,
-            subarea,
-            level,
         };
 
         if (!id) {
@@ -206,8 +200,6 @@ class CreateCompanyEmployeeUseCase {
                     plan: companyEmployeeCreated.plan,
                     unity: companyEmployeeCreated.unity,
                     packageDeclined: companyEmployeeCreated.packageDeclined,
-                    subarea: companyEmployeeCreated.subarea,
-                    level: companyEmployeeCreated.level,
                 });
 
             if (!id && plan && planModel.subscriptionPlanProduct)

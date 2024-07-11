@@ -94,29 +94,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."subarea"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as subarea,
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."level"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as level,
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -266,29 +244,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."subarea"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as subarea,
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."level"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as level,
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -457,29 +413,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."subarea"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as subarea,
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."level"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as level,
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -637,29 +571,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."subarea"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as subarea,
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."level"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as level,
+                    end as cargo,                     
                     case
                         when (
                             select 
@@ -812,29 +724,7 @@ class Schedules {
                             )                
                         else 
                             '-'
-                    end as cargo, 
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."subarea"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as subarea,
-                    case
-                        when u."companyId" is not null then
-                            (
-                                select 
-                                    ce."level"  
-                                from "companyEmployees" ce 
-                                where "userId" = U.id               	
-                            )                
-                        else 
-                            '-'
-                    end as level,
+                    end as cargo,                     
                     case
                         when (
                             select 

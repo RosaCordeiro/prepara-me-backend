@@ -21,8 +21,6 @@ class SchedulesUseCase {
             "Unidade",
             "Área",
             "Cargo",
-            "Subárea",
-            "Nível",
             "Acolhimento Realizado",
             "Data 1 login",
             "Pesquisa Desligamento Realizada",

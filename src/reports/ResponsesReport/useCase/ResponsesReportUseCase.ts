@@ -105,8 +105,6 @@ class ResponsesReportUseCase {
                 unity: r.unidade,
                 area: r.area,
                 role: r.cargo,
-                subarea: r.subarea,
-                level: r.level,
                 ...copyFeelingsAnswers,
                 ...copyQuestions,
             };
@@ -122,8 +120,6 @@ class ResponsesReportUseCase {
             "Unidade",
             "Área",
             "Cargo",
-            "Subárea",
-            "Nível",
             "Alíviado(a). Já queria sair da empresa.",
             "Surpreso(a). Não esperava pela demissão.",
             "Injustiçado(a). Minha demissão foi injusta.",
