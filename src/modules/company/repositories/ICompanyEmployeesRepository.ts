@@ -12,6 +12,7 @@ interface IRequestFind {
     phone?: string;
     email?: string;
     id?: string;
+    department?: string;
 }
 
 interface ICompanyEmployeesRepository {

@@ -187,6 +187,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         email,
         companyId,
         id,
+        department,
     }): Promise<ICompanyEmployeeResponseDTO[]> {
         const companyEmployeesQuery = this.repository
             .createQueryBuilder("ce")
@@ -243,8 +244,14 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                     email: email,
                 });
             }
-        }
 
+            if (department) {
+                companyEmployeesQuery.andWhere("ce.department = :department", {
+                    department: department
+                });
+            }
+        }
+        
         const companyEmployees = await companyEmployeesQuery.getMany();
 
         const companyEmployeesMapped = companyEmployees.map(

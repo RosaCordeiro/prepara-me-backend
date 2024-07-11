@@ -17,6 +17,7 @@ class ListCompanyEmployeeUseCase {
         email,
         companyId,
         id,
+        department,
     }) {
         const companyEmployees = await this.companyEmployeesRepository.find({
             name,
@@ -27,6 +28,7 @@ class ListCompanyEmployeeUseCase {
             email,
             companyId,
             id,
+            department,
         });
 
         console.log("companyEmployees", companyEmployees);
