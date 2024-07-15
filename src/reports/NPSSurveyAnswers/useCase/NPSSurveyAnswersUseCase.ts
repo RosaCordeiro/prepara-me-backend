@@ -38,7 +38,7 @@ class NPSSurveyAnswersUseCase {
 
         return {
             lessThanFive:
-                users.filter((user) => user.surveyAnswered).length <= 5,
+                users.filter((user) => user?.surveyAnswered).length <= 5,
             laborRisk: this.getLaborRisk(users),
             brandRisk: this.getBrandRisk(users),
             nps: this.getNps(users),
