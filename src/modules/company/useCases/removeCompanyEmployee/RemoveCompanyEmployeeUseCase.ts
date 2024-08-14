@@ -10,10 +10,10 @@ class RemoveCompanyEmployeeUseCase {
     ) {}
 
     async execute(id) {
-        const companyEmployees = await this.companyEmployees.find({id})
+        const companyEmployees = await this.companyEmployees.find({ id });
 
         if (companyEmployees[0].user && companyEmployees[0].user.id) {
-            throw new AppError("Can't remove a employee connected at a user")
+            throw new AppError("Can't remove a employee connected at a user");
         }
 
         return await this.companyEmployees.remove(id);
@@ -21,3 +21,4 @@ class RemoveCompanyEmployeeUseCase {
 }
 
 export { RemoveCompanyEmployeeUseCase };
+

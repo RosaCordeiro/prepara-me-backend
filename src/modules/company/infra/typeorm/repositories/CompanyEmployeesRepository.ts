@@ -280,16 +280,20 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             const subscriptionPlansRepository: ISubscriptionPlansRepository =
                 new SubscriptionPlansRepository();
 
-            const plan = await subscriptionPlansRepository.find({
-                name: companyEmployeesMapped[0].plan,
-            });
+            try {
+                const plan = await subscriptionPlansRepository.find({
+                    name: companyEmployeesMapped[0].plan,
+                });
 
-            console.log(`await plan`, plan[0]);
+                console.log(`await plan`, plan[0]);
 
-            companyEmployeesMapped[0].planId = {
-                id: plan[0].id,
-                name: plan[0].name,
-            };
+                companyEmployeesMapped[0].planId = {
+                    id: plan[0].id,
+                    name: plan[0].name,
+                };
+            } catch (error) {
+                console.log(`PLANO NÃO ENCONTRADO`, error);
+            }
         }
 
         return companyEmployeesMapped;

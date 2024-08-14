@@ -1,4 +1,5 @@
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
+import { AppError } from "@shared/errors/AppError";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
@@ -9,7 +10,13 @@ class RemoveUserUseCase {
     ) {}
 
     async execute(id) {
-        await this.usersRepository.remove(id);
+        try {
+            await this.usersRepository.remove(id);
+        } catch (error) {
+            throw new AppError(
+                "Não é possível remover um usuário com relacionamentos existentes"
+            );
+        }
     }
 }
 
