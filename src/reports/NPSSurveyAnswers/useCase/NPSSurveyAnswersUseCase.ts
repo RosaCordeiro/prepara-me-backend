@@ -38,7 +38,7 @@ class NPSSurveyAnswersUseCase {
 
         return {
             lessThanFive:
-                users.filter((user) => user.surveyAnswered).length <= 5,
+                users.filter((user) => user.surveyAnswered).length < 5,
             laborRisk: this.getLaborRisk(users),
             brandRisk: this.getBrandRisk(users),
             nps: this.getNps(users),
@@ -69,7 +69,7 @@ class NPSSurveyAnswersUseCase {
                 return npsSurvey.surveyAnswered;
             }
         });
-        if (npsSurveyAnswers.length <= 5) {
+        if (npsSurveyAnswers.length < 5) {
             return "N/A";
         }
 
@@ -91,7 +91,7 @@ class NPSSurveyAnswersUseCase {
             return user?.surveyAnswered;
         }).length;
 
-        if (countUsersResponded <= 5) {
+        if (countUsersResponded < 5) {
             return "N/A";
         }
 
@@ -132,7 +132,7 @@ class NPSSurveyAnswersUseCase {
             return employee.userId;
         });
 
-        if (filterUsers.length <= 5) {
+        if (filterUsers.length < 5) {
             return "N/A";
         }
 
@@ -146,7 +146,7 @@ class NPSSurveyAnswersUseCase {
     }
 
     getLaborIssuesAllUsers(users: any) {
-        if (users.length <= 5) {
+        if (users.length < 5) {
             return "N/A";
         }
 
@@ -168,7 +168,7 @@ class NPSSurveyAnswersUseCase {
             }
         });
 
-        if (npsSurveyAnswers.length <= 5) {
+        if (npsSurveyAnswers.length < 5) {
             return "N/A";
         }
 
@@ -197,7 +197,7 @@ class NPSSurveyAnswersUseCase {
             //se nao voce para aqui
         }).length;
 
-        if (countUsersResponded <= 5) {
+        if (countUsersResponded < 5) {
             return "N/A";
         }
 
@@ -246,7 +246,7 @@ class NPSSurveyAnswersUseCase {
             return user.user?.realocated == "REALOCATED";
         });
 
-        if (filterUsers.length <= 5) {
+        if (filterUsers.length < 5) {
             return "N/A";
         }
 
@@ -260,7 +260,7 @@ class NPSSurveyAnswersUseCase {
             (user: CompanyEmployee) => user.accepted
         ).length;
 
-        if (empployee.length <= 5) {
+        if (empployee.length < 5) {
             return "N/A";
         }
 
@@ -274,7 +274,7 @@ class NPSSurveyAnswersUseCase {
             return user?.surveyAnswered === true;
         });
 
-        if (usersResponded.length <= 5) {
+        if (usersResponded.length < 5) {
             return [];
         }
 
@@ -328,7 +328,7 @@ class NPSSurveyAnswersUseCase {
             return user?.surveyAnswered;
         }).length;
 
-        if (countUsersResponded <= 5) {
+        if (countUsersResponded < 5) {
             return [];
         }
 
