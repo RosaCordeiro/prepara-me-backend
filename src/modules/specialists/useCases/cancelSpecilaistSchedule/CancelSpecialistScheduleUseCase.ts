@@ -64,7 +64,6 @@ class CancelSpecialistScheduleUseCase {
             specialistId: specialistSchedule.specialistId,
             userId: specialistSchedule.userId,
             productId: specialistSchedule.productId,
-            id: specialistSchedule.id,
             reason,
         });
 
