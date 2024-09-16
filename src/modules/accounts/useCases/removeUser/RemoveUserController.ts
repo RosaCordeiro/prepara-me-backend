@@ -22,4 +22,3 @@ class RemoveUserController {
 }
 
 export { RemoveUserController };
-

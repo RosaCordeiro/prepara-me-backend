@@ -141,7 +141,7 @@ class ProductsRepository implements IProductsRepository {
 
             ${
                 productId !== "undefined"
-                    ? `and ss."productId" = '${productId}'`
+                    ? `and ssc."productId" = '${productId}'`
                     : ""
             }
         ) AS "schedule"	ORDER BY "availableQuantity" asc, "schedule"->>'dateSchedule' DESC;

@@ -188,10 +188,8 @@ class UsersRepository implements IUsersRepository {
         return usersMapped;
     }
 
-    async remove(id: string): Promise<string> {
-        this.repository.delete(id);
-
-        return id;
+    async remove(id: string): Promise<any> {
+        return this.repository.delete(id);
     }
 }
 

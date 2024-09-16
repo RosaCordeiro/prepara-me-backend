@@ -21,7 +21,7 @@ interface IUsersRepository {
     findByDocument(email: string): Promise<User>;
     findById(id: string): Promise<User>;
     find(data: IRequestFind): Promise<IUserResponseDTO[]>;
-    remove(id: string): Promise<String>;
+    remove(id: string): Promise<any>;
 }
 
 export { IUsersRepository };
