@@ -11,7 +11,9 @@ class CancelSpecialistScheduleController {
         const cancelSpecialistScheduleUseCase = container.resolve(
             CancelSpecialistScheduleUseCase
         );
-
+        console.log('Iniciando cancelamento da agenda', revertAvailableProduct);
+        console.log('id', id);
+        
         const specialistScheduleUpdated =
             await cancelSpecialistScheduleUseCase.execute(
                 {

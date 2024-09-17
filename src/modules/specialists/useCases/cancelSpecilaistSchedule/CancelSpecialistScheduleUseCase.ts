@@ -57,7 +57,7 @@ class CancelSpecialistScheduleUseCase {
             await this.specialistSchedulesRepository.find({
                 id,
             });
-
+        
         const specialistSchedule = specialistsSchedule[0];
         await this.specialistSchedulesCancelRepository.create({
             dateSchedule: specialistSchedule.dateSchedule,
@@ -67,12 +67,15 @@ class CancelSpecialistScheduleUseCase {
             reason,
         });
 
+        console.log('Agenda', specialistSchedule);
+
         if (specialistSchedule.scheduleEventId) {
             try {
                 this.scheduleGoogle.cancelScheduledEvent(
                     "primary",
                     specialistSchedule.scheduleEventId
                 );
+                console.log('Evento cancelado no Google');
             } catch (error) {
                 console.log("error", error);
             }
@@ -82,7 +85,8 @@ class CancelSpecialistScheduleUseCase {
 
         const user = await this.usersRepository.findById(loggedUserId);
         const isAdmin = user.type === UserTypeEnum.ADMIN;
-
+        console.log('User', user);
+        
         if (isAdmin) {
             try {
                 const templatePath = resolve(
@@ -123,7 +127,8 @@ class CancelSpecialistScheduleUseCase {
         }
 
         const productId = specialistSchedule.productId;
-
+        console.log('Produto', productId);
+        
         if (userId && productId && revertAvailableProduct) {
             const userProducts =
                 await this.userProductsAvailableRepository.find({
@@ -157,6 +162,8 @@ class CancelSpecialistScheduleUseCase {
                 scheduleEventId: null,
                 id,
             });
+
+        console.log('Agenda atualizada', specialistScheduleUpdated);
 
         return specialistScheduleUpdated;
     }
