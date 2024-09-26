@@ -131,7 +131,7 @@ class Schedules {
                     null as mentoria_incluida,
                     null as data_troca,
                     null as data_agendamento,
-                    null as data_servico,
+                    TO_CHAR(u."created_at", 'YYYY-MM-DD HH24:MI:SS') as data_servico,
                     null as mes_ano,
                     '-' as especialista ,
                     '-' as nota,                 
