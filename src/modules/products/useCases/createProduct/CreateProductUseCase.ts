@@ -52,7 +52,7 @@ class CreateProductUseCase {
 
         const response = await this.productsRepository.findBySlug(slug);
 
-        if (response) {
+        if (!id && response) {
             throw new AppError("Slug already exists");
         }
 
