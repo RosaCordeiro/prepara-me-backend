@@ -10,6 +10,7 @@ class RemoveProductUserUseCase {
     ) {}
 
     async execute(id: string) {
+        console.log('product user id', id);
         if (
             id === null ||
             id === undefined ||
