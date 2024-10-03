@@ -10,6 +10,7 @@ import { ICompanyEmployeesRepository } from "@modules/company/repositories/IComp
 import { ISubscriptionPlansRepository } from "@modules/products/repositories/ISubscriptionPlansRepository";
 import { AppError } from "@shared/errors/AppError";
 import { hash } from "bcryptjs";
+import { checkPrimeSync } from "crypto";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
@@ -91,7 +92,7 @@ class CreateCompanyEmployeeUseCase {
         const planModel = await this.subscriptionPlansRepository.findById(plan);
 
         console.log("planModel", planModel);
-
+        
         if (!id) {
             if (!planModel) {
                 throw new AppError("Plan not found");
@@ -122,6 +123,35 @@ class CreateCompanyEmployeeUseCase {
 
         if (!id) {
             cEmp["plan"] = planModel.name;
+
+            const companyEmployeeEmailExists =
+                await this.companyEmployeesRepository.find({
+                    email,
+                });
+
+            const companyEmployeeDocumentExists =
+                await this.companyEmployeesRepository.find({
+                    documentId,
+                });
+
+            if (
+                companyEmployeeEmailExists.length > 0 ||
+                companyEmployeeDocumentExists.length > 0
+            ) {                
+                throw new AppError("Company Employee already exists");
+            }
+    
+            const userEmailExists = await this.usersRepository.find({
+                email,
+            });
+    
+            const userDocumentExists = await this.usersRepository.find({
+                documentId,
+            });
+    
+            if (userEmailExists.length > 0 || userDocumentExists.length > 0) {
+                throw new AppError("User already exists");
+            }
         }
 
         let companyEmployeeCreated =
