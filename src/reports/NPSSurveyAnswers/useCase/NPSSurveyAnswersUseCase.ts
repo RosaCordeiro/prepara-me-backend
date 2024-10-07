@@ -36,42 +36,56 @@ class NPSSurveyAnswersUseCase {
 
         let usersAll = await npsSurveyAnswers.reportAllusers();
 
+        const lessThanFive = this.shouldCheckSurveyLimit(companyId, users);
+
         return {
-            lessThanFive:
-                users.filter((user) => user?.surveyAnswered).length <= 5,
-            laborRisk: this.getLaborRisk(users),
-            brandRisk: this.getBrandRisk(users),
-            nps: this.getNps(users),
-            realocateds: result ? this.getRealocateds(result) : "N/A",
-            termination: this.getTermination(users),
-            laborIssues: result ? this.getLaborIssues(result) : "N/A",
-            welcomed: result ? this.getWelcomed(result) : "N/A",
-            feelingMap: this.getFeelingMap(users),
-            shutDown: this.getShutDown(users),
+            lessThanFive,
+            laborRisk: this.getLaborRisk(users, companyId),
+            brandRisk: this.getBrandRisk(users, companyId),
+            nps: this.getNps(users, companyId),
+            realocateds: result ? this.getRealocateds(result, companyId) : "N/A",
+            termination: this.getTermination(users, companyId),
+            laborIssues: result ? this.getLaborIssues(result, companyId) : "N/A",
+            welcomed: result ? this.getWelcomed(result, companyId, users) : "N/A",
+            feelingMap: this.getFeelingMap(users, companyId),
+            shutDown: this.getShutDown(users, companyId),
             general: {
-                laborRisk: this.getLaborRisk(usersAll),
-                brandRisk: this.getBrandRisk(usersAll),
-                nps: this.getNps(usersAll),
+                laborRisk: this.getLaborRisk(usersAll, companyId),
+                brandRisk: this.getBrandRisk(usersAll, companyId),
+                nps: this.getNps(usersAll, companyId),
                 realocateds: `N/A`,
-                termination: this.getTermination(usersAll),
-                laborIssues: this.getLaborIssuesAllUsers(usersAll),
-                welcomed: this.getWelcomed(usersAll),
-                feelingMap: this.getFeelingMap(usersAll),
-                shutDown: this.getShutDown(usersAll),
+                termination: this.getTermination(usersAll, companyId),
+                laborIssues: this.getLaborIssuesAllUsers(usersAll, companyId),
+                welcomed: this.getWelcomed(usersAll, companyId, users),
+                feelingMap: this.getFeelingMap(usersAll, companyId),
+                shutDown: this.getShutDown(usersAll, companyId),
             },
         };
         //return "test";
     }
 
-    getLaborRisk(users: any) {
+    shouldCheckSurveyLimit(companyId: string, users: any[]): boolean {
+        const EXCEPTION_COMPANY_ID = "a62a66b5-2ad4-446d-af44-95679cb9d580"; // Substitua com o ID da empresa de exceção
+    
+        // Se for a empresa de exceção, ignore a verificação de limite
+        if (companyId === EXCEPTION_COMPANY_ID) {
+            return false;
+        }
+    
+        // Se não for, verifique se há menos de 5 respostas
+        return users.filter((user) => user?.surveyAnswered).length <= 5;
+    }
+
+    getLaborRisk(users: any, companyId: any) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return "N/A";
+        }
+
         const npsSurveyAnswers = users.filter((npsSurvey) => {
             if (npsSurvey) {
                 return npsSurvey.surveyAnswered;
             }
         });
-        if (npsSurveyAnswers.length <= 5) {
-            return "N/A";
-        }
 
         let laborRisk: number = npsSurveyAnswers.reduce(
             (laborRisckTotal = 0, user) => {
@@ -83,17 +97,12 @@ class NPSSurveyAnswersUseCase {
         return (10 - laborRisk / npsSurveyAnswers.length).toFixed(2);
     }
 
-    getTermination(users: any) {
-        const laborRiskData = [];
-        const lastAnswers = [];
-
-        const countUsersResponded = users.filter((user: any) => {
-            return user?.surveyAnswered;
-        }).length;
-
-        if (countUsersResponded <= 5) {
+    getTermination(users: any, companyId) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
             return "N/A";
         }
+        const laborRiskData = [];
+        const lastAnswers = [];
 
         for (const user of users) {
             //of serve para desmembrar um array e listar direto em uma variável
@@ -127,14 +136,16 @@ class NPSSurveyAnswersUseCase {
         );
     }
 
-    getLaborIssues(users: any) {
+    getLaborIssues(users: any, companyId) {
+
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return "N/A";
+        }
+
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
 
-        if (filterUsers.length <= 5) {
-            return "N/A";
-        }
 
         const laborRiskAlerts = filterUsers.filter((user: any) => {
             return user?.user?.laborRiskAlert == "ALERT";
@@ -145,8 +156,8 @@ class NPSSurveyAnswersUseCase {
         );
     }
 
-    getLaborIssuesAllUsers(users: any) {
-        if (users.length <= 5) {
+    getLaborIssuesAllUsers(users: any, companyId) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
             return "N/A";
         }
 
@@ -161,16 +172,15 @@ class NPSSurveyAnswersUseCase {
         return ((laborRiskAlerts.length / users.length) * 100).toFixed(2) + "%";
     }
 
-    getBrandRisk(users: any) {
+    getBrandRisk(users: any, companyId: any) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return "N/A";
+        }
         const npsSurveyAnswers = users.filter((npsSurvey) => {
             if (npsSurvey) {
                 return npsSurvey.surveyAnswered;
             }
         });
-
-        if (npsSurveyAnswers.length <= 5) {
-            return "N/A";
-        }
 
         let brandRisk: number = npsSurveyAnswers.reduce(
             (brandRisckTotal = 0, user: any) => {
@@ -182,7 +192,10 @@ class NPSSurveyAnswersUseCase {
         return (10 - brandRisk / npsSurveyAnswers.length).toFixed(2);
     }
 
-    getNps(users: any) {
+    getNps(users: any, companyId: any) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return "N/A";
+        }
         /*  try { */
         //fazer um if para verificar diferente de undefined e de zero
         const countUsersResponded = users.filter((user: any) => {
@@ -197,9 +210,6 @@ class NPSSurveyAnswersUseCase {
             //se nao voce para aqui
         }).length;
 
-        if (countUsersResponded <= 5) {
-            return "N/A";
-        }
 
         const result = users.reduce(
             (accumulators: any, user: any) => {
@@ -237,7 +247,10 @@ class NPSSurveyAnswersUseCase {
         ).toFixed(2);
     }
 
-    getRealocateds(users: any) {
+    getRealocateds(users: any, companyId) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return "N/A";
+        }
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
@@ -245,38 +258,33 @@ class NPSSurveyAnswersUseCase {
         const realocateds = filterUsers.filter((user: any) => {
             return user.user?.realocated == "REALOCATED";
         });
-
-        if (filterUsers.length <= 5) {
-            return "N/A";
-        }
-
+       
         return (
             ((realocateds.length / filterUsers.length) * 100).toFixed(2) + "%"
         );
     }
 
-    getWelcomed(empployee: CompanyEmployee[]) {
+    getWelcomed(empployee: CompanyEmployee[], companyId, users) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return "N/A";
+        }
+
         const countAccepted = empployee.filter(
             (user: CompanyEmployee) => user.accepted
         ).length;
 
-        if (empployee.length <= 5) {
-            return "N/A";
-        }
-
         return `${countAccepted}/${empployee.length}`;
     }
 
-    getFeelingMap(users: any) {
+    getFeelingMap(users: any, companyId) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return [];
+        }
         const feelingsMapData = [];
 
         const usersResponded = users.filter((user: any) => {
             return user?.surveyAnswered === true;
         });
-
-        if (usersResponded.length <= 5) {
-            return [];
-        }
 
         for (const user of usersResponded) {
             //of serve para desmembrar um array e listar direto em uma variável
@@ -320,17 +328,16 @@ class NPSSurveyAnswersUseCase {
         return feelingsMapData;
     }
 
-    getShutDown(users: any) {
+    getShutDown(users: any, companyId) {
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return [];
+        }
         const laborRiskData = [];
         const lastAnswers = [];
 
         const countUsersResponded = users.filter((user: any) => {
             return user?.surveyAnswered;
         }).length;
-
-        if (countUsersResponded <= 5) {
-            return [];
-        }
 
         for (const user of users) {
             if (user?.laborRiskJSON === undefined) {
