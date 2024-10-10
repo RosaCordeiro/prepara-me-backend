@@ -21,7 +21,7 @@ class UsersReportUseCase {
             'Entrada no prepara.me',
             'Data de recolocação',
             'Mês de recolocação',
-            'Tempo de recolocação',
+            'Tempo de recolocação em dias',
             'Respondeu pesquisa de desligamento',
             'Mentorias individuais',
             'Mentorias coletivas'
