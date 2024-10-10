@@ -21,7 +21,8 @@ class UsersReports {
                 url.created_at as realocation_date,
                 date_part('month', url.created_at) as realocation_month,
                 extract(day from (url.created_at - u.created_at)) as realocation_time,
-                count(distinct mu) + count(distinct ss) as mentoring
+                count(distinct mu) as collective_mentoring,
+                count(distinct ss) as individual_mentoring
             from users u 
                 left join companies c 
                     on c.id = u."companyId" 

@@ -23,7 +23,8 @@ class UsersReportUseCase {
             'Mês de recolocação',
             'Tempo de recolocação',
             'Respondeu pesquisa de desligamento',
-            'Mentorias realizadas'
+            'Mentorias individuais',
+            'Mentorias coletivas'
         ]
 
         let data = []
@@ -34,9 +35,10 @@ class UsersReportUseCase {
                 entry_date: this.dateProvider.formatDateTime(item.entry_date, "DD/MM/YYYY"),
                 realocation_date: item.realocation_date ? this.dateProvider.formatDateTime(item.realocation_date, "DD/MM/YYYY") : '', 
                 realocation_month: item.realocation_month,
-                realocation_time: item.realocation_time ? `${item.realocation_time} dias` : '',
+                realocation_time: item.realocation_time,
                 surveyAnswered: item.surveyAnswered ? 'Sim' : 'Não',
-                mentoring: item.mentoring ?? ''
+                individual_mentoring: item.individual_mentoring,
+                collective_mentoring: item.collective_mentoring
             })
         }
 
