@@ -63,17 +63,21 @@ class NPSSurveyAnswersUseCase {
         };
         //return "test";
     }
-
-    shouldCheckSurveyLimit(companyId: string, users: any[]): boolean {
-        const EXCEPTION_COMPANY_ID = "a62a66b5-2ad4-446d-af44-95679cb9d580"; // Substitua com o ID da empresa de exceção
     
-        // Se for a empresa de exceção, ignore a verificação de limite
+    shouldCheckSurveyLimit(companyId: string, users: any[], filterUsers?: any[]): boolean {
+        const EXCEPTION_COMPANY_ID = "a62a66b5-2ad4-446d-af44-95679cb9d580";
+
         if (companyId === EXCEPTION_COMPANY_ID) {
-            return false;
+            return true;
         }
     
-        // Se não for, verifique se há menos de 5 respostas
-        return users.filter((user) => user?.surveyAnswered).length <= 5;
+        const targetUsers = filterUsers || users;
+    
+        if(targetUsers.filter((user) => user?.surveyAnswered).length <= 5){
+            return true
+        } else {
+            return true
+        }
     }
 
     getLaborRisk(users: any, companyId: any) {
@@ -138,18 +142,17 @@ class NPSSurveyAnswersUseCase {
 
     getLaborIssues(users: any, companyId) {
 
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
-            return "N/A";
-        }
-
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
 
+        if (this.shouldCheckSurveyLimit(companyId, users, filterUsers)) {
+            return "N/A";
+        }
 
         const laborRiskAlerts = filterUsers.filter((user: any) => {
             return user?.user?.laborRiskAlert == "ALERT";
-        });
+        })
         return (
             ((laborRiskAlerts.length / filterUsers.length) * 100).toFixed(2) +
             "%"
@@ -157,13 +160,14 @@ class NPSSurveyAnswersUseCase {
     }
 
     getLaborIssuesAllUsers(users: any, companyId) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
-            return "N/A";
-        }
 
         const filteredUsers = users.filter((user: any) => {
             return user.companyId !== null && user.companyId !== undefined;
         });
+
+        if (this.shouldCheckSurveyLimit(companyId, users)) {
+            return "N/A";
+        }
 
         const laborRiskAlerts = filteredUsers.filter((user: any) => {
             return user.laborRiskAlert == "ALERT";
@@ -248,9 +252,6 @@ class NPSSurveyAnswersUseCase {
     }
 
     getRealocateds(users: any, companyId) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
-            return "N/A";
-        }
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
@@ -258,7 +259,11 @@ class NPSSurveyAnswersUseCase {
         const realocateds = filterUsers.filter((user: any) => {
             return user.user?.realocated == "REALOCATED";
         });
-       
+
+        if (filterUsers.length <= 5) {
+            return "N/A";
+        }
+
         return (
             ((realocateds.length / filterUsers.length) * 100).toFixed(2) + "%"
         );
