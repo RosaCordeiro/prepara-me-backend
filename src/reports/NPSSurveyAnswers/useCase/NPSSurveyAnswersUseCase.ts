@@ -64,16 +64,16 @@ class NPSSurveyAnswersUseCase {
         //return "test";
     }
 
-    shouldCheckSurveyLimit(companyId: string, users: any[]): boolean {
-        const EXCEPTION_COMPANY_ID = "a62a66b5-2ad4-446d-af44-95679cb9d580"; // Substitua com o ID da empresa de exceção
+    shouldCheckSurveyLimit(companyId: string, users: any[], filterUsers?: any[]): boolean {
+        const EXCEPTION_COMPANY_ID = "a62a66b5-2ad4-446d-af44-95679cb9d580";
     
-        // Se for a empresa de exceção, ignore a verificação de limite
         if (companyId === EXCEPTION_COMPANY_ID) {
             return false;
         }
     
-        // Se não for, verifique se há menos de 5 respostas
-        return users.filter((user) => user?.surveyAnswered).length <= 5;
+        const targetUsers = filterUsers || users;
+        console.log(targetUsers)
+        return targetUsers.filter((user) => user?.surveyAnswered).length <= 5;
     }
 
     getLaborRisk(users: any, companyId: any) {
@@ -138,14 +138,13 @@ class NPSSurveyAnswersUseCase {
 
     getLaborIssues(users: any, companyId) {
 
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
-            return "N/A";
-        }
-
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
 
+        if (!this.shouldCheckSurveyLimit(companyId, filterUsers)) {
+            return "N/A";
+        }
 
         const laborRiskAlerts = filterUsers.filter((user: any) => {
             return user?.user?.laborRiskAlert == "ALERT";
@@ -248,12 +247,13 @@ class NPSSurveyAnswersUseCase {
     }
 
     getRealocateds(users: any, companyId) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
-            return "N/A";
-        }
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
+
+        if (!this.shouldCheckSurveyLimit(companyId, filterUsers)) {
+            return "N/A";
+        }
 
         const realocateds = filterUsers.filter((user: any) => {
             return user.user?.realocated == "REALOCATED";
