@@ -48,7 +48,7 @@ class NPSSurveyAnswersUseCase {
             welcomed: result ? this.getWelcomed(result) : "N/A",
             feelingMap: this.getFeelingMap(users),
             shutDown: this.getShutDown(users),
-            numberOfPeople: users.length,
+            realocatedCount: this.getRealocatedsNumber(users),
             general: {
                 laborRisk: this.getLaborRisk(usersAll),
                 brandRisk: this.getBrandRisk(usersAll),
@@ -236,6 +236,14 @@ class NPSSurveyAnswersUseCase {
                 result.npsAnswersLassThanSeven / countUsersResponded) *
             100
         ).toFixed(2);
+    }
+
+    getRealocatedsNumber(users: any) {
+        const realocateds = users.filter((user: any) => {            
+            return user.realocated == "REALOCATED";
+        });
+        
+        return realocateds.length
     }
 
     getRealocateds(users: any) {
