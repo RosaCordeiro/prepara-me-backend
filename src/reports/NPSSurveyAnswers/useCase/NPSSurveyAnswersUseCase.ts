@@ -48,6 +48,7 @@ class NPSSurveyAnswersUseCase {
             welcomed: result ? this.getWelcomed(result) : "N/A",
             feelingMap: this.getFeelingMap(users),
             shutDown: this.getShutDown(users),
+            numberOfPeople: users.length,
             general: {
                 laborRisk: this.getLaborRisk(usersAll),
                 brandRisk: this.getBrandRisk(usersAll),
