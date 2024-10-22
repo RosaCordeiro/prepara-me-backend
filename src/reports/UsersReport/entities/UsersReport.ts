@@ -17,6 +17,7 @@ class UsersReports {
                 u."companyId",
                 c.name as company,
                 u.created_at as entry_date,
+                date_part('month', u.created_at) as entry_month,
                 u."surveyAnswered",
                 url.created_at as realocation_date,
                 date_part('month', url.created_at) as realocation_month,
