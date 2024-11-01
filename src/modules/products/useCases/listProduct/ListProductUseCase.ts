@@ -15,15 +15,17 @@ class ListProductUseCase {
         status,
         type,
         bestSeller,
-        id
-    }): Promise<IResponseProductDTO[]> {
+        id,
+        onlyAdmin
+    }): Promise<IResponseProductDTO[]> {        
         const products = await this.productsRepository.find({
             name,
             shortName,
             status,
             type,
             bestSeller,
-            id
+            id,
+            onlyAdmin
         });
 
         return products;

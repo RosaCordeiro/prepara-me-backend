@@ -19,6 +19,8 @@ class CreateSpecialistScheduleController {
 
         const { id } = request.params;
 
+        const userRequestId = request.user.id
+
         const createSpecialistScheduleUseCase = container.resolve(
             CreateSpecialistScheduleUseCase
         );
@@ -34,7 +36,8 @@ class CreateSpecialistScheduleController {
             scheduleEventId,
             id,
             createEvent,
-            rating
+            rating,
+            userRequestId
         })
 
         const specialistSchedule =
@@ -49,7 +52,8 @@ class CreateSpecialistScheduleController {
                 scheduleEventId,
                 id,
                 createEvent,
-                rating
+                rating,
+                userRequestId
             });
 
         return response.status(201).json(specialistSchedule);

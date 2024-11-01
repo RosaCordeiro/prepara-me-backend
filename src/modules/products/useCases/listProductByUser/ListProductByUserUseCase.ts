@@ -9,7 +9,7 @@ class ListProductByUserUseCase {
         private productsRepository: IProductsRepository
     ) {}
 
-    async execute(userId: string, onlyAvailables: boolean, productId?: string) {
+    async execute(userId: string, onlyAvailables: boolean, productId?: string, onlyAdmin?: boolean) {
         if (
             userId === null ||
             userId === undefined ||
@@ -22,7 +22,8 @@ class ListProductByUserUseCase {
         return await this.productsRepository.findByUserId(
             userId,
             onlyAvailables,
-            productId
+            productId,
+            onlyAdmin
         );
     }
 }

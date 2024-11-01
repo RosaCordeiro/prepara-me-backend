@@ -12,6 +12,7 @@ interface IRequestFind {
     type?: ProductTypeEnum;
     bestSeller?: ProductBestSellerEnum;
     id?: string;
+    onlyAdmin?: boolean
 }
 
 interface IProductsRepository {
@@ -26,7 +27,8 @@ interface IProductsRepository {
     findByUserId(
         userId: string,
         onlyAvailables: boolean,
-        productId?: string
+        productId?: string,
+        onlyAdmin?: boolean
     ): Promise<any>;
     removeByProductAvailableId(id: string): Promise<void>;
     findByUserIdWithSpecialist(

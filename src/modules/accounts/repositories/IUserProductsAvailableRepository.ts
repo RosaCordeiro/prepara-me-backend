@@ -7,6 +7,7 @@ interface IRequestFind {
     userId?: string;
     productId?: string;
     onlyAvailables?: boolean;
+    onlyAdmin?: boolean;
 }
 
 interface IUserProductsAvailableRepository {

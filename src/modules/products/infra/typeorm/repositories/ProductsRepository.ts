@@ -34,7 +34,8 @@ class ProductsRepository implements IProductsRepository {
     async findByUserId(
         userId: string,
         onlyAvailables: boolean,
-        productId?: string
+        productId?: string,
+        onlyAdmin?: boolean
     ): Promise<any> {
         let where = `where upa."userId" = '${userId}' `;
 
@@ -44,6 +45,10 @@ class ProductsRepository implements IProductsRepository {
 
         if (onlyAvailables) {
             where += ` and upa."availableQuantity" > 0`;
+        }
+
+        if (onlyAdmin !== undefined && onlyAdmin !== null) {   
+            where += ` and p."onlyAdmin" = ${onlyAdmin}`;      
         }
 
         return await this.repository.query(`
@@ -242,6 +247,7 @@ class ProductsRepository implements IProductsRepository {
         shortName,
         bestSeller,
         id,
+        onlyAdmin
     }): Promise<IResponseProductDTO[]> {
         const productsQuery = this.repository
             .createQueryBuilder("p")
@@ -290,6 +296,12 @@ class ProductsRepository implements IProductsRepository {
                 productsQuery.andWhere("p.shortName like :shortName", {
                     shortName: shortName,
                 });
+            }
+            
+            if (onlyAdmin !== undefined && onlyAdmin !== null) {                
+                productsQuery.andWhere("p.onlyAdmin = :onlyAdmin", {
+                    onlyAdmin: onlyAdmin
+                })
             }
         }
 

@@ -17,6 +17,7 @@ import { CreateSpecialistScheduleFilesController } from "@modules/specialists/us
 import { ListSpecialistScheduleFilesController } from "@modules/specialists/useCases/listSpecialistScheduleFiles/ListSpecialistScheduleFilesController";
 import { RemoveSpecialistScheduleFilesController } from "@modules/specialists/useCases/removeSpeecialistScheduleFiles/removeSpecialistScheduleFilesController";
 import { CreateSpecialistScheduleRescheduleController } from "@modules/specialists/useCases/createSpecialistScheduleAvailableReschedule/CreateSpecialistScheduleRescheduleController";
+import { ListSpecialistScheduleToUserController } from "@modules/specialists/useCases/listSpecialistScheduleToUser/ListSpecialistScheduleToUserController";
 
 const specialistsRoutes = Router();
 const uploadImage = multer(uploadConfig);
@@ -79,7 +80,7 @@ specialistsRoutes.post(
 );
 
 const listSpecialistScheduleController = new ListSpecialistScheduleController();
-specialistsRoutes.get("/schedule/", listSpecialistScheduleController.handle);
+specialistsRoutes.get("/schedule/", ensuredAuthenticated, listSpecialistScheduleController.handle);
 specialistsRoutes.get("/schedule/:id", listSpecialistScheduleController.handle);
 
 const removeSpecialistScheduleController =
@@ -100,7 +101,10 @@ specialistsRoutes.post(
 );
 
 const listProductSpecialistController = new ListProductSpecialistController();
-specialistsRoutes.get("/products", listProductSpecialistController.handle);
+specialistsRoutes.get("/products", ensuredAuthenticated, listProductSpecialistController.handle);
+
+const listSpecialistScheduleToUserController = new ListSpecialistScheduleToUserController();
+specialistsRoutes.get("/schedule-to-user", listSpecialistScheduleToUserController.handle);
 
 const removeProductSpecialistController =
     new RemoveProductSpecialistController();

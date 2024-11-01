@@ -13,6 +13,7 @@ interface IRequestFind {
     specialistId?: string;
     specialistUserId?: string;
     id?: string;
+    dateSchedule?: Date;
 }
 
 interface ISpecialistSchedulesRepository {
@@ -20,6 +21,7 @@ interface ISpecialistSchedulesRepository {
     find(data: IRequestFind): Promise<ISpecialistScheduleResponseDTO[]>;
     remove(id: string): Promise<string>;
     findById(id: string): Promise<SpecialistSchedule>;
+    findToUser(data: IRequestFind): Promise<any>;
 }
 
 export { ISpecialistSchedulesRepository };
