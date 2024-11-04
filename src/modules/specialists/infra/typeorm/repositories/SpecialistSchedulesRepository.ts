@@ -294,7 +294,9 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
                 on p.id = ss."productId"
             ${where}
             group by 
-                ss."id", s.id, u.id, u2.id, p.id;
+                ss."id", s.id, u.id, u2.id, p.id
+            order by
+                ss."dateSchedule" asc    
             `
         )
         const specialistSchedulesMapped = specialistSchedules.map(
