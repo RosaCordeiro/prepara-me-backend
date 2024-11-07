@@ -23,10 +23,7 @@ class NPSSurveyAnswers {
                 companyId: companyId,
             });
 
-        if (1 === 1) {
-            const companyUsers = await NPSSurveyAnswers.getMany();
-            console.log(companyUsers);
-        }
+        NPSSurveyAnswers.andWhere("ce.entryDate IS NOT NULL");
 
         if (area.length > 0) {
             NPSSurveyAnswers.andWhere(
@@ -41,23 +38,19 @@ class NPSSurveyAnswers {
         }
 
         if (period.length > 0) {
-            NPSSurveyAnswers.andWhere(
-                `ce.entryDate BETWEEN ${formatDateTimeToISO(
-                    period[0][0]
-                )} AND ${formatDateTimeToISO(period[0][1])} ${
-                    period.length > 1
-                        ? period
-                              .slice(1)
-                              .map(
-                                  (p) =>
-                                      `OR ce.entryDate BETWEEN ${formatDateTimeToISO(
-                                          p[0]
-                                      )} AND ${formatDateTimeToISO(p[1])}`
-                              )
-                              .join(" ")
-                        : ""
-                }`
-            );
+            let dateCondition = `ce.entryDate BETWEEN ${formatDateTimeToISO(period[0][0])} 
+                AND ${formatDateTimeToISO(period[0][1])}`;
+    
+            if (period.length > 1) {
+                const additionalConditions = period.slice(1).map((p) => {
+                    return `OR ce.entryDate BETWEEN ${formatDateTimeToISO(p[0])} 
+                    AND ${formatDateTimeToISO(p[1])}`;
+                }).join(" ");
+    
+                dateCondition += ` ${additionalConditions}`;
+            }
+    
+            NPSSurveyAnswers.andWhere(dateCondition);
         }
 
         if (unity.length > 0) {

@@ -3,6 +3,7 @@ import { inject, injectable } from "tsyringe";
 import { NPSSurveyAnswers } from "../entities/NPSSurveyAnswers";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { getFirstAndLastDayOfMonth } from "@utils/formatDate";
+import e from "express";
 
 @injectable()
 class NPSSurveyAnswersUseCase {
@@ -72,7 +73,6 @@ class NPSSurveyAnswersUseCase {
         }
     
         const targetUsers = filterUsers || users;
-        console.log(targetUsers)
         return targetUsers.filter((user) => user?.surveyAnswered).length <= 5;
     }
 
@@ -269,11 +269,17 @@ class NPSSurveyAnswersUseCase {
             return "N/A";
         }
 
-        const countAccepted = empployee.filter(
+        const filteredEmployees = empployee.filter(
+            (user: CompanyEmployee) => user.companyId === companyId
+        );
+
+        const countAccepted = filteredEmployees.filter(
             (user: CompanyEmployee) => user.accepted
         ).length;
 
-        return `${countAccepted}/${empployee.length}`;
+        console.log(countAccepted)
+
+        return `${countAccepted}/${filteredEmployees.length}`;
     }
 
     getFeelingMap(users: any, companyId) {
