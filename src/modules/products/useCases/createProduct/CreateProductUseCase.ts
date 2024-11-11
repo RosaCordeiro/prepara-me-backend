@@ -25,6 +25,7 @@ class CreateProductUseCase {
         bestSeller,
         id,
         slug,
+        onlyAdmin
     }: ICreateProductDTO): Promise<Product> {
         if (!name) {
             throw new AppError("Name can't be null");
@@ -66,6 +67,7 @@ class CreateProductUseCase {
             bestSeller,
             id,
             slug,
+            onlyAdmin
         });
 
         return product;

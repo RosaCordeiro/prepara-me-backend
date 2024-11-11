@@ -197,6 +197,7 @@ class ProductsRepository implements IProductsRepository {
         bestSeller,
         id,
         slug,
+        onlyAdmin
     }: ICreateProductDTO): Promise<Product> {
         const product = this.repository.create({
             name,
@@ -208,6 +209,7 @@ class ProductsRepository implements IProductsRepository {
             bestSeller,
             id,
             slug,
+            onlyAdmin
         });
 
         await this.repository.save(product);

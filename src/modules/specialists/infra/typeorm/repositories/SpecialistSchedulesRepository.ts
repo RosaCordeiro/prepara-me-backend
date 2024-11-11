@@ -278,7 +278,8 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
                         'bestSeller', p."bestSeller",
                         'price', p.price,
                         'duration', p.duration,
-                        'slug', p.slug
+                        'slug', p.slug,
+                        'onlyAdmin', p."onlyAdmin",
                     ) 
                     else null
                 end as "product"		

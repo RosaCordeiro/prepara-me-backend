@@ -14,6 +14,7 @@ class ProductMap {
         duration,
         productContent,
         slug,
+        onlyAdmin
     }: Product): IResponseProductDTO {
         const statusMapped = status === "ACTIVE" ? "Ativo" : "Inativo";
         const typeMapped = type === "SCHEDULED" ? "Agendado" : "Não Agendado";
@@ -31,6 +32,7 @@ class ProductMap {
             duration,
             productContent,
             slug,
+            onlyAdmin
         });
 
         return product;
