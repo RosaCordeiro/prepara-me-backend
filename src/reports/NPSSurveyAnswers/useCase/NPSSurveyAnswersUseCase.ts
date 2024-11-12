@@ -269,17 +269,13 @@ class NPSSurveyAnswersUseCase {
             return "N/A";
         }
 
-        const filteredEmployees = empployee.filter(
-            (user: CompanyEmployee) => user.companyId === companyId
-        );
-
-        const countAccepted = filteredEmployees.filter(
+        const countAccepted = empployee.filter(
             (user: CompanyEmployee) => user.accepted
         ).length;
 
         console.log(countAccepted)
 
-        return `${countAccepted}/${filteredEmployees.length}`;
+        return `${countAccepted}/${empployee.length}`;
     }
 
     getFeelingMap(users: any, companyId) {
