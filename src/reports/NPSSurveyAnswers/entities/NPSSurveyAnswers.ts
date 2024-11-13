@@ -16,6 +16,9 @@ class NPSSurveyAnswers {
         period: Date[][],
         unity: string[]
     ) {
+
+        console.log("Company ID:", companyId);
+
         const NPSSurveyAnswers = this.repository
             .createQueryBuilder("ce")
             .leftJoinAndSelect("ce.user", "u")
@@ -23,10 +26,6 @@ class NPSSurveyAnswers {
                 companyId: companyId,
             });
 
-        if (1 === 1) {
-            const companyUsers = await NPSSurveyAnswers.getMany();
-            console.log(companyUsers);
-        }
 
         if (area.length > 0) {
             NPSSurveyAnswers.andWhere(
@@ -41,23 +40,15 @@ class NPSSurveyAnswers {
         }
 
         if (period.length > 0) {
-            NPSSurveyAnswers.andWhere(
-                `ce.entryDate BETWEEN ${formatDateTimeToISO(
-                    period[0][0]
-                )} AND ${formatDateTimeToISO(period[0][1])} ${
-                    period.length > 1
-                        ? period
-                              .slice(1)
-                              .map(
-                                  (p) =>
-                                      `OR ce.entryDate BETWEEN ${formatDateTimeToISO(
-                                          p[0]
-                                      )} AND ${formatDateTimeToISO(p[1])}`
-                              )
-                              .join(" ")
-                        : ""
-                }`
-            );
+            NPSSurveyAnswers.andWhere(`(${period
+                .map(
+                    (p) =>
+                        `(ce.entryDate BETWEEN ${formatDateTimeToISO(
+                            p[0]
+                        )} AND ${formatDateTimeToISO(p[1])})`
+                )
+                .join(" OR ")}
+            )`);
         }
 
         if (unity.length > 0) {
@@ -70,6 +61,32 @@ class NPSSurveyAnswers {
 
         return companyUsers;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     async reportAllusers() {
         return await this.repository.query(`
