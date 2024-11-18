@@ -60,6 +60,7 @@ class UserProductsAvailableRepository
         userId,
         productId,
         onlyAvailables,
+        onlyAdmin
     }): Promise<IUserProductAvailableResponseDTO[]> {
         let userProductAvailableQuery = this.repository
             .createQueryBuilder("upa")
@@ -90,6 +91,15 @@ class UserProductsAvailableRepository
                         productId: productId,
                     }
                 );
+            }
+
+            if (onlyAdmin !== undefined && onlyAdmin !== null) {   
+                userProductAvailableQuery.andWhere(
+                    "product.onlyAdmin = :onlyAdmin",
+                    {
+                        onlyAdmin: onlyAdmin,
+                    }
+                );    
             }
         }
 

@@ -44,12 +44,19 @@ class NPSSurveyAnswersUseCase {
             laborRisk: this.getLaborRisk(users, companyId),
             brandRisk: this.getBrandRisk(users, companyId),
             nps: this.getNps(users, companyId),
-            realocateds: result ? this.getRealocateds(result, companyId) : "N/A",
+            realocateds: result
+                ? this.getRealocateds(result, companyId)
+                : "N/A",
             termination: this.getTermination(users, companyId),
-            laborIssues: result ? this.getLaborIssues(result, companyId) : "N/A",
-            welcomed: result ? this.getWelcomed(result, companyId, users) : "N/A",
+            laborIssues: result
+                ? this.getLaborIssues(result, companyId)
+                : "N/A",
+            welcomed: result
+                ? this.getWelcomed(result, companyId, users)
+                : "N/A",
             feelingMap: this.getFeelingMap(users, companyId),
             shutDown: this.getShutDown(users, companyId),
+            realocatedCount: this.getRealocatedsNumber(users),
             general: {
                 laborRisk: this.getLaborRisk(usersAll, companyId),
                 brandRisk: this.getBrandRisk(usersAll, companyId),
@@ -65,13 +72,17 @@ class NPSSurveyAnswersUseCase {
         //return "test";
     }
 
-    shouldCheckSurveyLimit(companyId: string, users: any[], filterUsers?: any[]): boolean {
+    shouldCheckSurveyLimit(
+        companyId: string,
+        users: any[],
+        filterUsers?: any[]
+    ): boolean {
         const EXCEPTION_COMPANY_ID = "a62a66b5-2ad4-446d-af44-95679cb9d580";
-    
+
         if (companyId === EXCEPTION_COMPANY_ID) {
             return false;
         }
-    
+
         const targetUsers = filterUsers || users;
         return targetUsers.filter((user) => user?.surveyAnswered).length <= 5;
     }
@@ -137,7 +148,6 @@ class NPSSurveyAnswersUseCase {
     }
 
     getLaborIssues(users: any, companyId) {
-
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
@@ -209,7 +219,6 @@ class NPSSurveyAnswersUseCase {
             //se nao voce para aqui
         }).length;
 
-
         const result = users.reduce(
             (accumulators: any, user: any) => {
                 //
@@ -246,6 +255,14 @@ class NPSSurveyAnswersUseCase {
         ).toFixed(2);
     }
 
+    getRealocatedsNumber(users: any) {
+        const realocateds = users.filter((user: any) => {
+            return user.realocated == "REALOCATED";
+        });
+
+        return realocateds.length;
+    }
+
     getRealocateds(users: any, companyId) {
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
@@ -258,7 +275,7 @@ class NPSSurveyAnswersUseCase {
         const realocateds = filterUsers.filter((user: any) => {
             return user.user?.realocated == "REALOCATED";
         });
-       
+
         return (
             ((realocateds.length / filterUsers.length) * 100).toFixed(2) + "%"
         );
@@ -273,7 +290,7 @@ class NPSSurveyAnswersUseCase {
             (user: CompanyEmployee) => user.accepted
         ).length;
 
-        console.log(countAccepted)
+        console.log(countAccepted);
 
         return `${countAccepted}/${empployee.length}`;
     }
@@ -387,4 +404,3 @@ class NPSSurveyAnswersUseCase {
     }
 }
 export { NPSSurveyAnswersUseCase };
-

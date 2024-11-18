@@ -51,6 +51,13 @@ class Product {
     })
     bestSeller: ProductBestSellerEnum;
 
+    @Column({
+        type: 'boolean',
+        default: false,
+        name: 'onlyAdmin'
+    })
+    onlyAdmin: boolean
+
     @OneToMany(() => ProductContent, (productContent) => productContent.product)
     productContent: ProductContent[];
 

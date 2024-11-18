@@ -11,6 +11,8 @@ interface IDateProvider {
     getDate(date: Date): Date;
     getDateTimeZone(date: Date): Date;
     formatDateTime(date: Date, mask: string): string;
+    addMinutes(minutes: number, date?: Date): Date;
+    subtractMinutes(minutes: number, date: Date): Date;
 }
 
 export { IDateProvider };

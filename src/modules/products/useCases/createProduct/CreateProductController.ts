@@ -15,8 +15,8 @@ class CreateProductController {
             id,
             bestSeller,
             slug,
+            onlyAdmin = "false",
         } = request.body;
-
         const createProductUseCase = container.resolve(CreateProductUseCase);
 
         const product = await createProductUseCase.execute({
@@ -29,6 +29,7 @@ class CreateProductController {
             bestSeller,
             id,
             slug,
+            onlyAdmin : onlyAdmin === "true",
         });
 
         return response.status(201).json(product);

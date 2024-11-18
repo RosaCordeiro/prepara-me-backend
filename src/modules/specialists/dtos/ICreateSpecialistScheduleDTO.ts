@@ -12,6 +12,7 @@ interface ICreateSpecialistScheduleDTO {
     id?: string;
     createEvent?: boolean;
     rating?: number;
+    userRequestId?: string;
 }
 
 export { ICreateSpecialistScheduleDTO };

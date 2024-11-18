@@ -1,14 +1,17 @@
 import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
 import { IUserProductsAvailableRepository } from "@modules/accounts/repositories/IUserProductsAvailableRepository";
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
+import { IProductsRepository } from "@modules/products/repositories/IProductsRepository";
 import { ICreateSpecialistScheduleDTO } from "@modules/specialists/dtos/ICreateSpecialistScheduleDTO";
 import { SpecialistScheduleCancelReasonEnum } from "@modules/specialists/enums/SpecialistScheduleCancelReasonEnum";
 import { SpecialistScheduleStatusEnum } from "@modules/specialists/enums/SpecialistScheduleStatusEnum";
 import { SpecialistSchedule } from "@modules/specialists/infra/typeorm/entities/SpecialistSchedule";
 import { ISpecialistSchedulesCancelRepository } from "@modules/specialists/repositories/ISpecialistSchedulesCancelRepository";
 import { ISpecialistSchedulesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesRepository";
+import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
 import { IMailProvider } from "@shared/container/providers/MailProvider/IMailProvider";
 import { IScheduleProvider } from "@shared/container/providers/ScheduleProvider/IScheduleProvider";
+import { AppError } from "@shared/errors/AppError";
 import { formatDateToString } from "@utils/formatDate";
 import { resolve } from "path";
 
@@ -34,8 +37,12 @@ class CancelSpecialistScheduleUseCase {
         @inject("SESMailProvider")
         private mailProvider: IMailProvider,
         @inject("SpecialistSchedulesCancelRepository")
-        private specialistSchedulesCancelRepository: ISpecialistSchedulesCancelRepository
-    ) {}
+        private specialistSchedulesCancelRepository: ISpecialistSchedulesCancelRepository,
+        @inject("ProductsRepository")
+        private productsRepository: IProductsRepository,
+        @inject("DayjsDateProvider")
+        private dateProvider: IDateProvider,
+    ) { }
 
     async execute(
         { id, revertAvailableProduct, reason }: ICancelSpecialistSchedule,
@@ -67,12 +74,15 @@ class CancelSpecialistScheduleUseCase {
             reason,
         });
 
+        console.log('Agenda', specialistSchedule);
+
         if (specialistSchedule.scheduleEventId) {
             try {
                 this.scheduleGoogle.cancelScheduledEvent(
                     "primary",
                     specialistSchedule.scheduleEventId
                 );
+                console.log('Evento cancelado no Google');
             } catch (error) {
                 console.log("error", error);
             }
@@ -82,7 +92,8 @@ class CancelSpecialistScheduleUseCase {
 
         const user = await this.usersRepository.findById(loggedUserId);
         const isAdmin = user.type === UserTypeEnum.ADMIN;
-
+        console.log('User', user);
+        
         if (isAdmin) {
             try {
                 const templatePath = resolve(
@@ -123,7 +134,8 @@ class CancelSpecialistScheduleUseCase {
         }
 
         const productId = specialistSchedule.productId;
-
+        console.log('Produto', productId);
+        
         if (userId && productId && revertAvailableProduct) {
             const userProducts =
                 await this.userProductsAvailableRepository.find({
@@ -157,6 +169,35 @@ class CancelSpecialistScheduleUseCase {
                 scheduleEventId: null,
                 id,
             });
+
+        const product = await this.productsRepository.findById(productId)
+        if (product.duration === 60) {
+            let nextSchedule: any = new Date(specialistSchedule.dateSchedule)
+            nextSchedule = this.dateProvider.getDateTimeZone(nextSchedule)
+
+            nextSchedule = this.dateProvider.formatDateTime(
+                this.dateProvider.addMinutes(
+                    30,
+                    nextSchedule
+                ),
+                "YYYY-MM-DDThh:mm:ssfff:00"
+            )
+
+            const specialistScheduleCancel = await this.specialistSchedulesRepository.find({
+                dateSchedule: nextSchedule,
+                specialistId: specialistSchedule.specialistId
+            })
+
+            if (specialistSchedule[0]) {
+                await this.specialistSchedulesRepository.create({
+                    id: specialistScheduleCancel[0].id,
+                    status: SpecialistScheduleStatusEnum.AVAILABLE
+                })
+
+            }
+        }
+
+        console.log('Agenda atualizada', specialistScheduleUpdated);
 
         return specialistScheduleUpdated;
     }

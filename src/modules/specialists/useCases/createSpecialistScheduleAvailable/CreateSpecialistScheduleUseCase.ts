@@ -1,3 +1,4 @@
+import { Product } from '@modules/products/infra/typeorm/entities/Product';
 import { IUserProductsAvailableRepository } from "@modules/accounts/repositories/IUserProductsAvailableRepository";
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { IProductsRepository } from "@modules/products/repositories/IProductsRepository";
@@ -30,7 +31,7 @@ class CreateSpecialistScheduleUseCase {
         private userRepository: IUsersRepository,
         @inject("SESMailProvider")
         private mailProvider: IMailProvider
-    ) {}
+    ) { }
 
     async execute({
         dateSchedule,
@@ -44,12 +45,19 @@ class CreateSpecialistScheduleUseCase {
         id,
         createEvent,
         rating,
+        userRequestId
     }: ICreateSpecialistScheduleDTO): Promise<SpecialistSchedule> {
         console.log("productId", productId);
         console.log("userId", userId);
         console.log("createEvent", createEvent);
 
         const user = await this.userRepository.findById(userId);
+        const userRequest = await this.userRepository.findById(userRequestId);
+        console.log('userRequest', userRequest);
+
+        const productItem = await this.productsRepository.findById(productId)
+        console.log('product aqui', productItem);
+
 
         if (!user) {
             throw new AppError("User not found!");
@@ -71,7 +79,7 @@ class CreateSpecialistScheduleUseCase {
 
                 const userProduct =
                     userProducts[
-                        availableQuantity === -1 ? 0 : availableQuantity
+                    availableQuantity === -1 ? 0 : availableQuantity
                     ];
 
                 if (userProduct.availableQuantity >= 1) {
@@ -90,24 +98,62 @@ class CreateSpecialistScheduleUseCase {
                                 "YYYY-MM-DDThh:mm:ssfff:00"
                             );
 
-                        let products = await this.productsRepository.find({
-                            id: productId,
-                        });
-
-                        let product = products[0];
+                        let product = productItem;
 
                         const dateScheduleEndMasked =
                             this.dateProvider.formatDateTime(
-                                this.dateProvider.addHours(
+                                this.dateProvider.addMinutes(
                                     product.duration,
                                     dateSchedule
                                 ),
                                 "YYYY-MM-DDThh:mm:ssfff:00"
                             );
 
+
                         //console.log('Chegou aqui no primeiro if')
 
                         try {
+                            if (productItem.onlyAdmin && userRequest.type.toUpperCase() !== 'ADMIN') {
+                                throw new Error('Only admins can create this type of schedule.')
+                            }
+                            if (product.duration === 60) {
+                                console.log('horário de 1 hora', dateScheduleStartMasked);
+                                let nextSchedule: any = new Date(dateScheduleStartMasked)
+                                nextSchedule = this.dateProvider.getDateTimeZone(nextSchedule)
+
+                                //se o produto tiver duração de 1h, só pode ocorrer em horários inteiros
+                                if (nextSchedule.getMinutes() === 30) {
+                                    throw new Error('One-hour scheduling can only occur in full time slots')
+                                }
+                                //pega a próxima agenda do especialista (se existir) 
+                                //com horário quebrado (30min) e atualiza para indisponível,
+                                //pois o horário é de 1h
+                                nextSchedule = this.dateProvider.formatDateTime(
+                                    this.dateProvider.addMinutes(
+                                        30,
+                                        nextSchedule
+                                    ),
+                                    "YYYY-MM-DDThh:mm:ssfff:00"
+                                )
+
+                                const specialistSchedule = await this.specialistSchedulesRepository.find({
+                                    dateSchedule: nextSchedule,
+                                    specialistId
+                                })
+
+                                //verifica se existe a próxima agenda e se ela está disponível
+                                //se sim, torna ela indisponível
+                                if (specialistSchedule[0]) {
+                                    if (specialistSchedule[0].status['value'] === 'AVAILABLE') {
+                                        await this.specialistSchedulesRepository.create({
+                                            id: specialistSchedule[0].id,
+                                            status: SpecialistScheduleStatusEnum.UNAVAILABLE
+                                        })
+                                    } else {
+                                        throw new AppError('Was not possible schedule your event')
+                                    }
+                                }
+                            }
                             const eventScheduled =
                                 await this.scheduleGoogle.scheduleEvent(
                                     `${userProduct.product.shortName} com o(a) especialista ${specialistsSchedule[0].specialist.name}`,
@@ -145,6 +191,7 @@ class CreateSpecialistScheduleUseCase {
                             userProduct.availableQuantity - 1;
 
                         try {
+
                             await this.userProductsAvailableRepository.create({
                                 availableQuantity:
                                     userProduct.availableQuantity,
@@ -152,6 +199,8 @@ class CreateSpecialistScheduleUseCase {
                                 userId: userProduct.user.id,
                                 id: userProduct.id,
                             });
+
+
                         } catch (error) {
                             await this.scheduleGoogle.cancelScheduledEvent(
                                 "primary",

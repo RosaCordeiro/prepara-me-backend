@@ -13,6 +13,7 @@ class ListUserProductsAvailableUseCase {
         id,
         userId,
         productId,
+        onlyAdmin
     }): Promise<IUserProductAvailableResponseDTO[]> {
         const userProductsAvailable =
             await this.userProductsAvailableRepository.find({
@@ -20,6 +21,7 @@ class ListUserProductsAvailableUseCase {
                 userId,
                 productId,
                 onlyAvailables: true,
+                onlyAdmin
             });
 
         return userProductsAvailable;
