@@ -23,6 +23,10 @@ import { CreateCompanyEmployeeBatchController } from "@modules/company/useCases/
 import { uploadFileXlsx } from "../middlewares/uploadFileXlsx";
 import { DownloadCompanyExcelModelController } from "@modules/company/useCases/downloadCompanyExcelModel/DownloadCompanyExcelModel";
 import { GetCompanyParametersController } from "@modules/company/useCases/getCompanyParameters/GetCompanyParametersController";
+import { CreateSurveyQuestionController } from "@modules/company/useCases/createSurveyQuestion/createSurveyQuestionController";
+import { GetSurveyQuestionController } from "@modules/company/useCases/getSurveyQuestion/getSurveyQuestionController";
+import { DeleteSurveyQuestionController } from "@modules/company/useCases/deleteSurveyQuestion/deleteSurveyQuestionController";
+
 
 const companiesRoutes = Router();
 const uploadImage = multer(uploadConfig);
@@ -195,5 +199,27 @@ companiesRoutes.delete(
 
 const listVacanciesController = new ListVacanciesController();
 companiesRoutes.get("/vacancies/:companyName", listVacanciesController.handle);
+
+//Nova rota: Armazenamento de perguntas
+const createSurveyQuestionsController = new CreateSurveyQuestionController()
+companiesRoutes.post("/surveyquestions", createSurveyQuestionsController.handle)
+
+
+//Nova rota: Leitura de perguntas
+const getSurveyQuestionController = new GetSurveyQuestionController();
+companiesRoutes.get(
+    "/:id", 
+    getSurveyQuestionController.handle
+);
+
+//Nova rota: Deletar de perguntas
+const deleteSurveyQuestionController = new DeleteSurveyQuestionController();
+companiesRoutes.delete(
+    "/:id", 
+    ensuredAuthenticated, 
+    ensureAdmin, 
+    deleteSurveyQuestionController.handle
+);
+
 
 export { companiesRoutes };
