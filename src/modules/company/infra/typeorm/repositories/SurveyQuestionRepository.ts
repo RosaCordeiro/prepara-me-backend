@@ -1,59 +1,62 @@
-import { getRepository } from "typeorm";
-import { AppError } from "@shared/errors/AppError"; 
+import { getRepository, Repository } from "typeorm";
+import { SurveyQuestion } from "../entities/SurveyQuestions";
+import { ISurveyQuestionsRepository } from "@modules/company/repositories/ISurveyQuestionsRepository";
+import { ICreateSurveyQuestionDTO } from "@modules/company/dtos/ICreateSurveyQuestionDTO";
+import { AppError } from "@shared/errors/AppError";
 
-class SurveyQuestionsRepository {
-    private repository = getRepository("surveyquestions"); 
+interface IRequestFind { // Definição temporária de interface para o metodo de busca
+    companyId?: string;
+    id?: string;
+    questionText?: string;
+}
 
-    // Método para criar uma nova pergunta
-    async create({ companyId, questionText }: { companyId: string, questionText: string }) {
-        const result = await this.repository
-            .insert({
-                companyId,
-                questionText,
-            });
+class SurveyQuestionsRepository implements ISurveyQuestionsRepository {
+    private repository: Repository<SurveyQuestion>;
 
-        return result.raw[0]; // Retorna a pergunta criada
+    constructor() {
+        this.repository = getRepository(SurveyQuestion);
+    }
+    find(data: IRequestFind): Promise<SurveyQuestion[]> {
+        throw new Error("Method not implemented.");
+    }
+    findAll(): Promise<SurveyQuestion[]> {
+        throw new Error("Method not implemented.");
+    }
+    remove(id: string): Promise<void> {
+        throw new Error("Method not implemented.");
     }
 
-    // Método para buscar uma pergunta por ID
-    async findById(id: string) {
-        const surveyQuestion = await this.repository.findOne({
-            where: { id },
-        });
+    async create({ companyId, questionText }: ICreateSurveyQuestionDTO): Promise<SurveyQuestion> {
+        const surveyQuestion = this.repository.create({ companyId, questionText });
+        await this.repository.save(surveyQuestion);
+        return surveyQuestion;
+    }
+
+    async findById(id: string): Promise<SurveyQuestion> {
+        const surveyQuestion = await this.repository.findOne(id);
 
         if (!surveyQuestion) {
-            throw new AppError("Survey Question not found", 404); // Caso a pergunta não exista
+            throw new AppError("Survey Question not found", 404);
         }
 
         return surveyQuestion;
     }
 
-    // Método para listar todas as perguntas de uma empresa
-    async listByCompanyId(companyId: string) {
-        return this.repository.find({
-            where: { companyId },
-        });
+    async update(surveyQuestion: SurveyQuestion): Promise<SurveyQuestion> {
+        return this.repository.save(surveyQuestion);
+    }    
+
+    async listByCompanyId(companyId: string): Promise<SurveyQuestion[]> {
+        return this.repository.find({ where: { companyId } });
     }
 
-    // Método para deletar uma pergunta
-    async deleteById(id: string) {
+    async deleteById(id: string): Promise<void> {
         const result = await this.repository.delete(id);
 
         if (result.affected === 0) {
-            throw new AppError("Survey Question not found", 404); // Se não encontrar a pergunta para deletar
+            throw new AppError("Survey Question not found", 404);
         }
     }
-
-    // Método para atualizar uma pergunta
-//  async update(id: string, { questionText }: { questionText: string }) {
-//      const surveyQuestion = await this.findById(id);
-//  
-//      surveyQuestion.questionText = questionText; // Atualiza o texto da pergunta
-//  
-//      await this.repository.save(surveyQuestion); // Salva no banco de dados
-//  
-//      return surveyQuestion;
-//  }
 }
 
 export { SurveyQuestionsRepository };

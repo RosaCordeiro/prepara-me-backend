@@ -11,7 +11,7 @@ interface IRequest {
 class CreateSurveyQuestionUseCase {
     constructor(
         @inject("SurveyQuestionsRepository")
-        private surveyQuestionsRepository: SurveyQuestionsRepository // Injeta o repositório
+        private surveyQuestionsRepository: SurveyQuestionsRepository
     ) {}
 
     async execute({ companyId, questionText }: IRequest) {

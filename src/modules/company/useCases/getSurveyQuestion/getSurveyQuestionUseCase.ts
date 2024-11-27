@@ -6,7 +6,7 @@ import { AppError } from "@shared/errors/AppError";
 class GetSurveyQuestionUseCase {
     constructor(
         @inject("SurveyQuestionsRepository")
-        private surveyQuestionsRepository: SurveyQuestionsRepository // Injeta o repositório
+        private surveyQuestionsRepository: SurveyQuestionsRepository
     ) {}
 
     async execute(id: string) {
