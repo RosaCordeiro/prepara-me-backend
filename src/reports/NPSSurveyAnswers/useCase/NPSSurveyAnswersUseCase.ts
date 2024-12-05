@@ -251,9 +251,6 @@ class NPSSurveyAnswersUseCase {
             return employee.userId;
         });
 
-        if (!this.shouldCheckSurveyLimit(companyId, filterUsers)) {
-            return "N/A";
-        }
 
         const realocateds = filterUsers.filter((user: any) => {
             return user.user?.realocated == "REALOCATED";
@@ -265,9 +262,6 @@ class NPSSurveyAnswersUseCase {
     }
 
     getWelcomed(empployee: CompanyEmployee[], companyId, users) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
-            return "N/A";
-        }
 
         const countAccepted = empployee.filter(
             (user: CompanyEmployee) => user.accepted
