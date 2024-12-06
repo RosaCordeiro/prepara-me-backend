@@ -251,6 +251,9 @@ class NPSSurveyAnswersUseCase {
             return employee.userId;
         });
 
+        if (filterUsers.length === 0) {
+            return "0%";
+        }
 
         const realocateds = filterUsers.filter((user: any) => {
             return user.user?.realocated == "REALOCATED";
