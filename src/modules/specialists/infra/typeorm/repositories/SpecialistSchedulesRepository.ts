@@ -54,7 +54,7 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
         specialistId,
         specialistUserId,
         id,
-        dateSchedule
+        dateSchedule,
     }): Promise<ISpecialistScheduleResponseDTO[]> {
         const specialistSchedulesQuery = this.repository
             .createQueryBuilder("ss")
@@ -130,9 +130,9 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
                 specialistSchedulesQuery.andWhere(
                     "ss.dateSchedule = :dateSchedule",
                     {
-                        dateSchedule: dateSchedule
+                        dateSchedule: dateSchedule,
                     }
-                )
+                );
             }
         }
 
@@ -154,21 +154,17 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
 
         return id;
     }
-    async findToUser({
-        dateBegin,
-        dateEnd,
-        specialistId
-    }): Promise<any> {
-        let where = 'where extract(minute from ss."dateSchedule") <> 30'
+    async findToUser({ dateBegin, dateEnd, specialistId }): Promise<any> {
+        let where = 'where extract(minute from ss."dateSchedule") <> 30';
         if (dateBegin && dateEnd) {
-            const formattedDateBegin = new Date(dateBegin).toISOString()
-            const formattedDateEnd = new Date(dateEnd).toISOString()
-            where += ` and ss."dateSchedule" between '${formattedDateBegin}' and '${formattedDateEnd}'`
+            const formattedDateBegin = new Date(dateBegin).toISOString();
+            const formattedDateEnd = new Date(dateEnd).toISOString();
+            where += ` and ss."dateSchedule" between '${formattedDateBegin}' and '${formattedDateEnd}'`;
         }
         if (specialistId) {
-            where += ` and ss."specialistId" = '${specialistId}'`
+            where += ` and ss."specialistId" = '${specialistId}'`;
         }
-        
+
         const specialistSchedules = await this.repository.query(
             `select 
                 ss."id",
@@ -279,7 +275,7 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
                         'price', p.price,
                         'duration', p.duration,
                         'slug', p.slug,
-                        'onlyAdmin', p."onlyAdmin",
+                        'onlyAdmin', p."onlyAdmin"
                     ) 
                     else null
                 end as "product"		
@@ -299,7 +295,7 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
             order by
                 ss."dateSchedule" asc    
             `
-        )
+        );
         const specialistSchedulesMapped = specialistSchedules.map(
             (specialistSchedule) => {
                 return SpecialistScheduleMap.toDTO(specialistSchedule);
@@ -307,7 +303,6 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
         );
 
         return specialistSchedulesMapped;
-
     }
 }
 
