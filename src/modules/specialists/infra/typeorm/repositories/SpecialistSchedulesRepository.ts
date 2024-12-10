@@ -55,17 +55,25 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
         specialistUserId,
         id,
         dateSchedule,
+    }: {
+        dateBegin?: Date;
+        dateEnd?: Date;
+        userId?: string;
+        status?: string;
+        productId?: string;
+        specialistId?: string;
+        specialistUserId?: string;
+        id?: string;
+        dateSchedule?: Date;
     }): Promise<ISpecialistScheduleResponseDTO[]> {
         const specialistSchedulesQuery = this.repository
             .createQueryBuilder("ss")
-            /* count  specialistScheduleFiles where type is user*/
             .loadRelationCountAndMap(
                 "ss.filesCountUser",
                 "ss.specialistScheduleFiles",
                 "ssf",
                 (qb) => qb.where("ssf.fileType = 'USER'")
             )
-            /* count  specialistScheduleFiles where type is SPECIALIST*/
             .loadRelationCountAndMap(
                 "ss.filesCountSpecialist",
                 "ss.specialistScheduleFiles",
@@ -79,19 +87,24 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
             .orderBy("ss.dateSchedule", "ASC");
 
         if (id) {
-            specialistSchedulesQuery.andWhere("ss.id = :id", {
-                id: id,
-            });
+            specialistSchedulesQuery.andWhere("ss.id = :id", { id });
         } else {
             if (status) {
                 specialistSchedulesQuery.andWhere("ss.status = :status", {
-                    status: status,
+                    status,
                 });
+
+                if (status === "UNAVAILABLE") {
+                    specialistSchedulesQuery.andWhere("ss.userId IS NOT NULL");
+                    specialistSchedulesQuery.andWhere(
+                        "ss.productId IS NOT NULL"
+                    );
+                }
             }
 
             if (userId) {
                 specialistSchedulesQuery.andWhere("ss.userId = :userId", {
-                    userId: userId,
+                    userId,
                 });
             }
 
@@ -105,14 +118,14 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
                 specialistSchedulesQuery.andWhere(
                     "ss.specialistId = :specialistId",
                     {
-                        specialistId: specialistId,
+                        specialistId,
                     }
                 );
             }
 
             if (productId) {
                 specialistSchedulesQuery.andWhere("ss.productId = :productId", {
-                    productId: productId,
+                    productId,
                 });
             }
 
@@ -120,8 +133,8 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
                 specialistSchedulesQuery.andWhere(
                     "ss.dateSchedule between :dateBegin and :dateEnd",
                     {
-                        dateBegin: dateBegin,
-                        dateEnd: dateEnd,
+                        dateBegin,
+                        dateEnd,
                     }
                 );
             }
@@ -148,7 +161,6 @@ class SpecialistSchedulesRepository implements ISpecialistSchedulesRepository {
 
         return specialistSchedulesMapped;
     }
-
     async remove(id: string): Promise<string> {
         this.repository.delete(id);
 

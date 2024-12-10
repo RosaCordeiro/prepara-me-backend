@@ -69,7 +69,6 @@ class NPSSurveyAnswersUseCase {
                 shutDown: this.getShutDown(usersAll, companyId),
             },
         };
-        //return "test";
     }
 
     getRealocatedsNumber(users: any) {
@@ -85,14 +84,16 @@ class NPSSurveyAnswersUseCase {
         users: any[],
         filterUsers?: any[]
     ): boolean {
-        const EXCEPTION_COMPANY_ID = "a62a66b5-2ad4-446d-af44-95679cb9d580";
+        const EXCEPTION_COMPANY_IDS = [
+            "a62a66b5-2ad4-446d-af44-95679cb9d580",
+            "4c92a342-98d1-4742-9962-d9e46b93b2e1",
+        ];
 
-        if (companyId === EXCEPTION_COMPANY_ID) {
+        if (EXCEPTION_COMPANY_IDS.includes(companyId)) {
             return false;
         }
 
         const targetUsers = filterUsers || users;
-        console.log(targetUsers);
         return targetUsers.filter((user) => user?.surveyAnswered).length <= 5;
     }
 

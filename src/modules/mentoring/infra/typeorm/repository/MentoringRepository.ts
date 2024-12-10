@@ -203,61 +203,63 @@ class MentoringRepository implements IMentoringRepository {
     async reminderMentoring(): Promise<IMentoringTime[]> {
         return await this.repository.query(`
         select * from
-        (
-
-          select
-              m.title,
-              TO_CHAR(m."date" , 'HH24:MI') as hour, 
-              m."linkMeet",
-              u.email,
-              '24' as type
-          from "mentoringUsers" mu 
-          inner join "mentoring" m on mu."mentoringId"  = m.id 
-          inner join users u ON u.id = mu."userId" 
-          where m."date" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '24 hour' 
-          
-          union
-          
-          select
-              p."name" as title,
-              TO_CHAR(ss."dateSchedule" , 'HH24:MI') as hour,
-              ss."hangoutLink",
-              u.email as nomeMentoria,
-              '24' as type
-          from "specialistSchedule" ss 
-          inner join users u ON ss."userId" = u.id 
-          inner join products p on ss."productId" = p.id 
-          where ss.status  = 'UNAVAILABLE' 
-          and ss."dateSchedule" = DATE_TRUNC('hour',NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '24 hour' 
-          
-          union 
-          
-          select
-              m.title,
-              TO_CHAR(m."date" , 'HH24:MI') as hour,
-              m."linkMeet",
-              u.email,
-              '1' as type
-          from "mentoringUsers" mu 
-          inner join "mentoring" m on mu."mentoringId"  = m.id 
-          inner join users u ON u.id = mu."userId" 
-          where m."date" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour' 
-          
-          union
-          
-          select 
-              p."name" as title, 
-              TO_CHAR(ss."dateSchedule" , 'HH24:MI') as hour, 
-              ss."hangoutLink",
-              u.email,
-              '1' as type
-          from "specialistSchedule" ss
-          inner join users u ON ss."userId" = u.id 
-          inner join products p on ss."productId" = p.id 
-          where ss.status  = 'UNAVAILABLE' 
-          and ss."dateSchedule" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour'
-          
-          ) as schedule
+(
+  select
+      m.title,
+      TO_CHAR(m."date", 'HH24:MI') as hour, 
+      m."linkMeet",
+      u.email,
+      '24' as type
+  from "mentoringUsers" mu 
+  inner join "mentoring" m on mu."mentoringId"  = m.id 
+  inner join users u ON u.id = mu."userId" 
+  where m."date" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '24 hour' 
+  
+  union
+  
+  select
+      p."name" as title,
+      TO_CHAR(ss."dateSchedule", 'HH24:MI') as hour,
+      ss."hangoutLink",
+      u.email as nomeMentoria,
+      '24' as type
+  from "specialistSchedule" ss 
+  inner join users u ON ss."userId" = u.id 
+  inner join products p on ss."productId" = p.id 
+  where ss.status = 'UNAVAILABLE' 
+    and ss."userId" IS NOT NULL 
+    and ss."productId" IS NOT NULL
+    and ss."dateSchedule" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '24 hour'
+  
+  union 
+  
+  select
+      m.title,
+      TO_CHAR(m."date", 'HH24:MI') as hour,
+      m."linkMeet",
+      u.email,
+      '1' as type
+  from "mentoringUsers" mu 
+  inner join "mentoring" m on mu."mentoringId"  = m.id 
+  inner join users u ON u.id = mu."userId" 
+  where m."date" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour' 
+  
+  union
+  
+  select 
+      p."name" as title, 
+      TO_CHAR(ss."dateSchedule", 'HH24:MI') as hour, 
+      ss."hangoutLink",
+      u.email,
+      '1' as type
+  from "specialistSchedule" ss
+  inner join users u ON ss."userId" = u.id 
+  inner join products p on ss."productId" = p.id 
+  where ss.status = 'UNAVAILABLE' 
+    and ss."userId" IS NOT NULL 
+    and ss."productId" IS NOT NULL
+    and ss."dateSchedule" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour'
+) as schedule
         `);
         //aqui no return eu pego o valor da query e retorno ela direto na funçao reminderMentoring24h
         //poderia fazer declarando uma variável pra receber um valor de await.this.repository.query e depois retornar essa variável
@@ -267,26 +269,40 @@ class MentoringRepository implements IMentoringRepository {
     async reminderMentoring1h(): Promise<IMentoringTime[]> {
         console.log(
             await this.repository.query(
-                ` select DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour'`
+                `select DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour'`
             )
         );
+    
         return await this.repository.query(`
-        select * from (
-
-            select m.title,TO_CHAR(m."date" , 'HH24:MI') as hour, m."linkMeet", u.email from "mentoringUsers" mu inner join "mentoring" m on mu."mentoringId"  = m.id 
-            inner join users u ON u.id = mu."userId" where m."date" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour' 
-            
-            union
-            
-            select p."name" as title, TO_CHAR(ss."dateSchedule" , 'HH24:MI') as hour, ss."hangoutLink", u.email  from "specialistSchedule" ss inner join users u ON ss."userId" = u.id 
-            inner join products p on ss."productId" = p.id 
-            where ss.status  = 'UNAVAILABLE' 
-            and ss."dateSchedule" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour'
-            
-            )as schedule1hour
+            select * from (
+                select 
+                    m.title,
+                    TO_CHAR(m."date", 'HH24:MI') as hour,
+                    m."linkMeet",
+                    u.email
+                from "mentoringUsers" mu 
+                inner join "mentoring" m on mu."mentoringId" = m.id 
+                inner join users u ON u.id = mu."userId"
+                where m."date" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour'
+                
+                union
+                
+                select 
+                    p."name" as title,
+                    TO_CHAR(ss."dateSchedule", 'HH24:MI') as hour,
+                    ss."hangoutLink",
+                    u.email
+                from "specialistSchedule" ss
+                inner join users u ON ss."userId" = u.id
+                inner join products p on ss."productId" = p.id
+                where ss.status = 'UNAVAILABLE' 
+                  and ss."userId" IS NOT NULL 
+                  and ss."productId" IS NOT NULL
+                  and ss."dateSchedule" = DATE_TRUNC('hour', NOW() AT TIME ZONE 'America/Sao_Paulo') + interval '1 hour'
+            ) as schedule1hour
         `);
     }
-}
+}    
 
 export interface Pagination {
     page: number;
