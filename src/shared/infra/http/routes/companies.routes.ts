@@ -32,175 +32,6 @@ import { UpdateSurveyQuestionController } from "@modules/company/useCases/uptade
 const companiesRoutes = Router();
 const uploadImage = multer(uploadConfig);
 
-const getCompanyParametersController = new GetCompanyParametersController();
-companiesRoutes.get(
-    "/config/:id",
-    ensuredAuthenticated,
-    uploadImage.any(),
-    getCompanyParametersController.handle
-);
-
-const createCompanyPageController = new CreateCompanyPageController();
-companiesRoutes.post(
-    "/page",
-    ensuredAuthenticated,
-    ensureAdmin,
-    uploadImage.any(),
-    createCompanyPageController.handle
-);
-
-const getCompanyPageByNameController = new GetCompanyPageByNameController();
-companiesRoutes.get("/page/:name", getCompanyPageByNameController.handle);
-
-const getCompanyPageByIdController = new GetCompanyPageByIdController();
-companiesRoutes.get(
-    "/pageById/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
-    getCompanyPageByIdController.handle
-);
-
-const sendFreeMentorshipMailController = new SendFreeMentorshipMailController();
-companiesRoutes.post(
-    "/freeMentorship",
-    sendFreeMentorshipMailController.handle
-);
-
-const createCompanyEmployeeController = new CreateCompanyEmployeeController();
-companiesRoutes.post(
-    "/:id/employees",
-    ensuredAuthenticated,
-    ensureAdmin,
-    createCompanyEmployeeController.handle
-);
-
-const createCompanyEmployeeBatchController =
-    new CreateCompanyEmployeeBatchController();
-companiesRoutes.post(
-    "/employees/batch",
-    ensuredAuthenticated,
-    ensureAdmin,
-    uploadFileXlsx,
-    createCompanyEmployeeBatchController.handle
-);
-
-const downloadCompanyExcelModelController =
-    new DownloadCompanyExcelModelController();
-companiesRoutes.get(
-    "/employees/batch/download",
-    ensuredAuthenticated,
-    ensureAdmin,
-    downloadCompanyExcelModelController.handle
-);
-
-const listCompanyEmployeeController = new ListCompanyEmployeeController();
-companiesRoutes.get(
-    "/employees",
-    ensuredAuthenticated,
-    ensureAdmin,
-    listCompanyEmployeeController.handle
-);
-
-companiesRoutes.get(
-    "/employees/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
-    listCompanyEmployeeController.handle
-);
-
-const removeCompanyEmployeeController = new RemoveCompanyEmployeeController();
-companiesRoutes.delete(
-    "/employees/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
-    removeCompanyEmployeeController.handle
-);
-
-const acceptCompanyEmployeeController = new AcceptCompanyEmployeeController();
-companiesRoutes.put(
-    "/employees/:id/accept",
-    ensuredAuthenticated,
-    ensureAdmin,
-    acceptCompanyEmployeeController.handle
-);
-
-const realocateCompanyEmployeeController =
-    new RealocateCompanyEmployeeController();
-companiesRoutes.put(
-    "/employees/:id/realocate",
-    ensuredAuthenticated,
-    ensureAdmin,
-    realocateCompanyEmployeeController.handle
-);
-
-const createCompanySubscriptionPlanController =
-    new CreateCompanySubscriptionPlanController();
-companiesRoutes.post(
-    "/:id/subscriptionPlans",
-    ensuredAuthenticated,
-    ensureAdmin,
-    createCompanySubscriptionPlanController.handle
-);
-
-const listCompanySubscriptionPlanController =
-    new ListCompanySubscriptionPlanController();
-companiesRoutes.get(
-    "/subscriptionPlans",
-    ensuredAuthenticated,
-    ensureAdmin,
-    listCompanySubscriptionPlanController.handle
-);
-
-companiesRoutes.get(
-    "/subscriptionPlans/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
-    listCompanySubscriptionPlanController.handle
-);
-
-const removeCompanySubscriptionPlanController =
-    new RemoveCompanySubscriptionPlanController();
-companiesRoutes.delete(
-    "/subscriptionPlans/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
-    removeCompanySubscriptionPlanController.handle
-);
-
-const listCompanyController = new ListCompanyController();
-companiesRoutes.get(
-    "/",
-    ensuredAuthenticated,
-    ensureAdmin,
-    listCompanyController.handle
-);
-
-companiesRoutes.get(
-    "/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
-    listCompanyController.handle
-);
-
-const createCompanyController = new CreateCompanyController();
-companiesRoutes.post(
-    "/",
-    ensuredAuthenticated,
-    ensureAdmin,
-    createCompanyController.handle
-);
-
-const removeCompanyControllerController = new RemoveCompanyController();
-companiesRoutes.delete(
-    "/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
-    removeCompanyControllerController.handle
-);
-
-const listVacanciesController = new ListVacanciesController();
-companiesRoutes.get("/vacancies/:companyName", listVacanciesController.handle);
-
 //Nova rota: Armazenamento de perguntas
 const createSurveyQuestionsController = new CreateSurveyQuestionController()
 companiesRoutes.post("/surveyquestions", createSurveyQuestionsController.handle)
@@ -209,7 +40,7 @@ companiesRoutes.post("/surveyquestions", createSurveyQuestionsController.handle)
 //Nova rota: Leitura de perguntas
 const getSurveyQuestionController = new GetSurveyQuestionController();
 companiesRoutes.get(
-    "/surveyquestions/:id",
+    "/surveyquestions",
     getSurveyQuestionController.handle
 );
 
@@ -224,5 +55,158 @@ companiesRoutes.delete(
 
 const updateSurveyQuestionController = new UpdateSurveyQuestionController();
 companiesRoutes.put("/surveyquestions/:id", updateSurveyQuestionController.handle);
+
+
+const getCompanyParametersController = new GetCompanyParametersController();
+companiesRoutes.get(
+    "/config/:id",
+    ensuredAuthenticated,
+    uploadImage.any(),
+    getCompanyParametersController.handle
+);
+
+const createCompanyPageController = new CreateCompanyPageController();
+companiesRoutes.post(
+    "/page",
+    
+    uploadImage.any(),
+    createCompanyPageController.handle
+);
+
+const getCompanyPageByNameController = new GetCompanyPageByNameController();
+companiesRoutes.get("/page/:name", getCompanyPageByNameController.handle);
+
+const getCompanyPageByIdController = new GetCompanyPageByIdController();
+companiesRoutes.get(
+    "/pageById/:id",
+    
+    getCompanyPageByIdController.handle
+);
+
+const sendFreeMentorshipMailController = new SendFreeMentorshipMailController();
+companiesRoutes.post(
+    "/freeMentorship",
+    sendFreeMentorshipMailController.handle
+);
+
+const createCompanyEmployeeController = new CreateCompanyEmployeeController();
+companiesRoutes.post(
+    "/:id/employees",
+    
+    createCompanyEmployeeController.handle
+);
+
+const createCompanyEmployeeBatchController =
+    new CreateCompanyEmployeeBatchController();
+companiesRoutes.post(
+    "/employees/batch",
+    
+    uploadFileXlsx,
+    createCompanyEmployeeBatchController.handle
+);
+
+const downloadCompanyExcelModelController =
+    new DownloadCompanyExcelModelController();
+companiesRoutes.get(
+    "/employees/batch/download",
+    
+    downloadCompanyExcelModelController.handle
+);
+
+const listCompanyEmployeeController = new ListCompanyEmployeeController();
+companiesRoutes.get(
+    "/employees",
+    
+    listCompanyEmployeeController.handle
+);
+
+companiesRoutes.get(
+    "/employees/:id",
+    
+    listCompanyEmployeeController.handle
+);
+
+const removeCompanyEmployeeController = new RemoveCompanyEmployeeController();
+companiesRoutes.delete(
+    "/employees/:id",
+    
+    removeCompanyEmployeeController.handle
+);
+
+const acceptCompanyEmployeeController = new AcceptCompanyEmployeeController();
+companiesRoutes.put(
+    "/employees/:id/accept",
+    
+    acceptCompanyEmployeeController.handle
+);
+
+const realocateCompanyEmployeeController =
+    new RealocateCompanyEmployeeController();
+companiesRoutes.put(
+    "/employees/:id/realocate",
+    
+    realocateCompanyEmployeeController.handle
+);
+
+const createCompanySubscriptionPlanController =
+    new CreateCompanySubscriptionPlanController();
+companiesRoutes.post(
+    "/:id/subscriptionPlans",
+    
+    createCompanySubscriptionPlanController.handle
+);
+
+const listCompanySubscriptionPlanController =
+    new ListCompanySubscriptionPlanController();
+companiesRoutes.get(
+    "/subscriptionPlans",
+    
+    listCompanySubscriptionPlanController.handle
+);
+
+companiesRoutes.get(
+    "/subscriptionPlans/:id",
+    
+    listCompanySubscriptionPlanController.handle
+);
+
+const removeCompanySubscriptionPlanController =
+    new RemoveCompanySubscriptionPlanController();
+companiesRoutes.delete(
+    "/subscriptionPlans/:id",
+    
+    removeCompanySubscriptionPlanController.handle
+);
+
+const listCompanyController = new ListCompanyController();
+companiesRoutes.get(
+    "/",
+    
+    listCompanyController.handle
+);
+
+companiesRoutes.get(
+    "/:id",
+    
+    listCompanyController.handle
+);
+
+const createCompanyController = new CreateCompanyController();
+companiesRoutes.post(
+    "/",
+    
+    createCompanyController.handle
+);
+
+const removeCompanyControllerController = new RemoveCompanyController();
+companiesRoutes.delete(
+    "/:id",
+    
+    removeCompanyControllerController.handle
+);
+
+const listVacanciesController = new ListVacanciesController();
+companiesRoutes.get("/vacancies/:companyName", listVacanciesController.handle);
+
 
 export { companiesRoutes };

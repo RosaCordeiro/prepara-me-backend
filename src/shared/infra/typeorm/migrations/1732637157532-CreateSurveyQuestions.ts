@@ -3,7 +3,6 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class CreateSurveyQuestions1732637157532 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        // Criação da tabela
         await queryRunner.query(`
             CREATE TABLE survey_questions (
                 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -14,7 +13,6 @@ export class CreateSurveyQuestions1732637157532 implements MigrationInterface {
             );
         `);
 
-        // Criar trigger para atualizar o campo 'updatedAt' automaticamente
         await queryRunner.query(`
             CREATE OR REPLACE FUNCTION update_updatedAt_column()
             RETURNS TRIGGER AS $$
@@ -34,7 +32,6 @@ export class CreateSurveyQuestions1732637157532 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        // Remover trigger e função na reversão
         await queryRunner.query(`
             DROP TRIGGER IF EXISTS update_survey_questions_updatedAt ON survey_questions;
         `);
@@ -43,7 +40,6 @@ export class CreateSurveyQuestions1732637157532 implements MigrationInterface {
             DROP FUNCTION IF EXISTS update_updatedAt_column;
         `);
 
-        // Dropar a tabela
         await queryRunner.query(`
             DROP TABLE IF EXISTS survey_questions;
         `);

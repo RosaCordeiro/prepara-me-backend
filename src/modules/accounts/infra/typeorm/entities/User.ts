@@ -153,6 +153,9 @@ class User {
     brandRiskJSON: string;
 
     @Column()
+    surveyQuestion: string;
+
+    @Column()
     expiresDate: Date;
 
     @Column()

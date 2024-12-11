@@ -33,7 +33,11 @@ class SurveyQuestionsRepository implements ISurveyQuestionsRepository {
     }
 
     async findById(id: string): Promise<SurveyQuestion> {
-        const surveyQuestion = await this.repository.findOne(id);
+        const surveyQuestion = await this.repository.findOne({
+            where: {
+                id: id, 
+            }
+        });
 
         if (!surveyQuestion) {
             throw new AppError("Survey Question not found", 404);
