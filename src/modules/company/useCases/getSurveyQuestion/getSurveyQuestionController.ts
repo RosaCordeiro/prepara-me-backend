@@ -5,12 +5,11 @@ import { GetSurveyQuestionUseCase } from "./getSurveyQuestionUseCase";
 
 class GetSurveyQuestionController {
     async handle(request: Request, response: Response): Promise<Response> {
-        const { companyId } = request.body;
-
+        const { companyId } = request.query;
         const getSurveyQuestionUseCase = container.resolve(GetSurveyQuestionUseCase);
 
         try {
-            const surveyQuestions = await getSurveyQuestionUseCase.execute(companyId);
+            const surveyQuestions = await getSurveyQuestionUseCase.execute(`${companyId}`);
 
             return response.status(200).json(surveyQuestions);
         } catch (error) {

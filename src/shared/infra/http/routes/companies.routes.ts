@@ -27,6 +27,7 @@ import { CreateSurveyQuestionController } from "@modules/company/useCases/create
 import { GetSurveyQuestionController } from "@modules/company/useCases/getSurveyQuestion/getSurveyQuestionController";
 import { DeleteSurveyQuestionController } from "@modules/company/useCases/deleteSurveyQuestion/deleteSurveyQuestionController";
 import { UpdateSurveyQuestionController } from "@modules/company/useCases/uptadeSurveyQuestion/UpdateSurveyQuestionController";
+import { GetSurveyQuestionByIdController } from "@modules/company/useCases/getSurveyQuestionById/getSurveyQuestionByIdController";
 
 
 const companiesRoutes = Router();
@@ -44,12 +45,17 @@ companiesRoutes.get(
     getSurveyQuestionController.handle
 );
 
+const getSurveyQuestionByIdController = new GetSurveyQuestionByIdController();
+companiesRoutes.get(
+    "/surveyquestions/:id",
+    getSurveyQuestionByIdController.handle
+);
+
 //Nova rota: Deletar de perguntas
 const deleteSurveyQuestionController = new DeleteSurveyQuestionController();
 companiesRoutes.delete(
     "/surveyquestions/:id",
     ensuredAuthenticated, 
-    ensureAdmin, 
     deleteSurveyQuestionController.handle
 );
 

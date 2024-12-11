@@ -11,7 +11,7 @@ class UpdateSurveyQuestionController {
 
         await updateSurveyQuestionUseCase.execute({ id, questionText });
 
-        return response.status(200).json({ message: "Survey question updated successfully." });
+        return response.status(201).json({ message: "Survey question updated successfully." });
     }
 }
 
