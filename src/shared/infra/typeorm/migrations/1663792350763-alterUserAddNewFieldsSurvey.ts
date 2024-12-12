@@ -29,12 +29,22 @@ export class alterUserAddNewFieldsSurvey1663792350763 implements MigrationInterf
                 isNullable: true,
             })
         );
+
+        await queryRunner.addColumn(
+            "users",
+            new TableColumn({
+                name: "surveyQuestion", 
+                type: "varchar", 
+                isNullable: true, 
+            })
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropColumn("users", "laborRiskJSON")
         await queryRunner.dropColumn("users", "brandRiskJSON")
         await queryRunner.dropColumn("users", "brandRisk")
+        await queryRunner.dropColumn("users", "surveyQuestion")
     }
 
 }
