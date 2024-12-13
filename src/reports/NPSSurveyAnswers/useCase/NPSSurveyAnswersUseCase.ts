@@ -4,9 +4,16 @@ import { NPSSurveyAnswers } from "../entities/NPSSurveyAnswers";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { getFirstAndLastDayOfMonth } from "@utils/formatDate";
 import e from "express";
+import { SurveyQuestionsRepository } from "@modules/company/infra/typeorm/repositories/SurveyQuestionRepository";
 
 @injectable()
 class NPSSurveyAnswersUseCase {
+    constructor(
+        @inject("SurveyQuestionsRepository")
+        private surveyQuestionsRepository: SurveyQuestionsRepository
+    ) {
+        this.surveyQuestionsRepository = new SurveyQuestionsRepository()
+    }
     async execute({ companyId, area, role, period, unity }) {
         const areaArray = area ? JSON.parse(area) : [];
         const roleArray = role ? JSON.parse(role) : [];
@@ -57,6 +64,7 @@ class NPSSurveyAnswersUseCase {
             feelingMap: this.getFeelingMap(users, companyId),
             shutDown: this.getShutDown(users, companyId),
             realocatedCount: this.getRealocatedsNumber(users),
+            companyQuestions: await this.getAnswersCompanyQuestions(users, companyId),
             general: {
                 laborRisk: this.getLaborRisk(usersAll, companyId),
                 brandRisk: this.getBrandRisk(usersAll, companyId),
@@ -70,6 +78,29 @@ class NPSSurveyAnswersUseCase {
             },
         };
         //return "test";
+    }
+
+    async getAnswersCompanyQuestions(users: any, companyId: any) {
+        const companyQuestions = await this.surveyQuestionsRepository.listByCompanyId(companyId);
+        const usersFilterred = users.filter((user) => user.surveyQuestion !== null && user.surveyQuestion !== '');
+        
+        let result = [];
+        result = companyQuestions
+       
+        for (const user of usersFilterred) {
+            const surveyQuestions = JSON.parse(user.surveyQuestion);
+            for (const surveyQuestion of surveyQuestions) {
+                result = result.map((question) => { 
+                    if (question.id === surveyQuestion.questionId) {
+                        question.answers = question.answers || [];
+                        question.answers.push(surveyQuestion.answer);
+                    }
+                    return question;
+                })
+            }
+        }
+
+        return result
     }
 
     shouldCheckSurveyLimit(
