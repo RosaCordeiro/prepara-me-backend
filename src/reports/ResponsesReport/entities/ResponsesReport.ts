@@ -86,7 +86,8 @@ class ResponsesReport {
                 u."feelingsMapJSON", 
                 u."laborRiskJSON", 
                 u."brandRiskJSON", 
-                u."NPSSurvey" 
+                u."NPSSurvey",
+                u."surveyQuestion"
             from users u 
             where u."surveyAnswered" 
             ${additionalQuery};
