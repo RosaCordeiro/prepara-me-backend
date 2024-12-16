@@ -31,6 +31,7 @@ class UserMap {
         brandRisk,
         laborRiskJSON,
         brandRiskJSON,
+        surveyQuestion,
         laborRiskAlert,
         expiresDate,
         periodTest,
@@ -93,6 +94,7 @@ class UserMap {
             brandRisk,
             laborRiskJSON,
             brandRiskJSON,
+            surveyQuestion,
             laborRiskAlert: {
                 label: laborRiskAlertMapped,
                 value: laborRiskAlert,

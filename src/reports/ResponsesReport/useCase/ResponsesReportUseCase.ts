@@ -8,8 +8,8 @@ class ResponsesReportUseCase {
     async execute(companyId?: string) {
         const responsesReport = new ResponsesReport();
         const geradorExcelTools = new GeradorExcelTools();
-
         const result = await responsesReport.report(companyId);
+        let companyQuestionsKeys = []
 
         const feelingsAnswers = {
             "Alíviado(a). Já queria sair da empresa.": null,
@@ -43,7 +43,7 @@ class ResponsesReportUseCase {
             "Os cálculos da rescisão estão corretos?": null,
         };
 
-        const responses = result.map((r) => {
+        let responses = result.map((r) => {
             const feelingsMap = JSON.parse(r.feelingsMapJSON);
 
             const copyFeelingsAnswers = JSON.parse(
@@ -94,7 +94,18 @@ class ResponsesReportUseCase {
             }
 
             console.log(r);
-
+            let companyQuestionsAnswers = {}
+            
+            if (r.surveyQuestion !== null && r.surveyQuestion !== '') {
+                r.surveyQuestion = JSON.parse(r.surveyQuestion)
+                for (let question of r.surveyQuestion) {                    
+                    companyQuestionsAnswers[`${question.questionText}`] = `${question.questionText}: ${question.answer}`
+                }
+                while (companyQuestionsKeys.length < Object.keys(companyQuestionsAnswers).length) {
+                    companyQuestionsKeys.push(companyQuestionsKeys.length + 1);
+                }
+            }
+    
             return {
                 id: r.id,
                 name: r.name,
@@ -107,9 +118,10 @@ class ResponsesReportUseCase {
                 role: r.cargo,
                 ...copyFeelingsAnswers,
                 ...copyQuestions,
+                ...companyQuestionsAnswers
             };
         });
-
+        
         const headers = [
             "ID",
             "Nome",
@@ -142,6 +154,9 @@ class ResponsesReportUseCase {
             "O quanto você gostava do pacote de benefícios e remuneração da empresa?",
             "Os cálculos da rescisão estão corretos?",
         ];
+        for (let key of companyQuestionsKeys) {
+            headers.push(`Pergunta ${key}`);
+        }
 
         const excel = await geradorExcelTools.geradorExcel(
             headers,

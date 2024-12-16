@@ -23,6 +23,7 @@ interface ICreateUserDTO {
     feelingsMapJSON?: string;
     laborRiskJSON?: string;
     brandRiskJSON?: string;
+    surveyQuestion?: string;
     laborRiskAlert?: UserLaborRiskAlertEnum;
     expiresDate: Date;
     periodTest: Date;
