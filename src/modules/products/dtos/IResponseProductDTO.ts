@@ -10,6 +10,7 @@ interface IResponseProductDTO {
     price: number;
     duration: number;
     productContent: ProductContent[]
+    onlyAdmin: boolean;
 }
 
 export { IResponseProductDTO };

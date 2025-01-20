@@ -97,13 +97,80 @@ class CreateSpecialistScheduleRescheduleUseCase {
             let product = products[0];
 
             const dateScheduleEndMasked = this.dateProvider.formatDateTime(
-                this.dateProvider.addHours(product.duration, dateSchedule),
+                this.dateProvider.addMinutes(
+                    product.duration,
+                    dateSchedule
+                ),
                 "YYYY-MM-DDThh:mm:ssfff:00"
             );
 
             //console.log('Chegou aqui no primeiro if')
 
             try {
+                if (product.duration === 60) {                    
+                    let oldScheduleNext: any = new Date(oldSchedule.dateSchedule);
+                    
+                    oldScheduleNext = this.dateProvider.getDateTimeZone(oldScheduleNext);
+
+                    oldScheduleNext = this.dateProvider.formatDateTime(
+                        this.dateProvider.addMinutes(
+                            30,
+                            oldScheduleNext
+                        ),
+                        "YYYY-MM-DDThh:mm:ssfff:00"
+                    );
+                    
+                    let specialistOldScheduleNext = await this.specialistSchedulesRepository.find({
+                        dateSchedule: oldScheduleNext,
+                        specialistId
+                    })
+                    //verifica se a agenda antiga tinha um horário seguinte quebrado (30min) e se ele está indisponível
+                    //se sim, torna ela disponível
+                    if (specialistOldScheduleNext[0]) {
+                        if (specialistOldScheduleNext[0].status['value'] === 'UNAVAILABLE') {
+                            await this.specialistSchedulesRepository.create({
+                                id: specialistOldScheduleNext[0].id,
+                                status: SpecialistScheduleStatusEnum.AVAILABLE
+                            })
+                        }
+                    }
+
+                    let nextSchedule: any = new Date(dateScheduleStartMasked)
+                    nextSchedule = this.dateProvider.getDateTimeZone(nextSchedule)
+
+                    //se o produto tiver duração de 1h, só pode ocorrer em horários inteiros
+                    if (nextSchedule.getMinutes() === 30) {
+                        throw new Error('One-hour scheduling can only occur in full time slots')
+                    }
+                    //pega a próxima agenda do especialista (se existir) 
+                    //com horário quebrado (30min) e atualiza para indisponível,
+                    //pois o horário é de 1h
+                    nextSchedule = this.dateProvider.formatDateTime(
+                        this.dateProvider.addMinutes(
+                            30,
+                            nextSchedule
+                        ),
+                        "YYYY-MM-DDThh:mm:ssfff:00"
+                    )
+
+                    const specialistSchedule = await this.specialistSchedulesRepository.find({
+                        dateSchedule: nextSchedule,
+                        specialistId
+                    })
+
+                    //verifica se existe a próxima agenda e se ela está disponível
+                    //se sim, torna ela indisponível
+                    if (specialistSchedule[0]) {
+                        if (specialistSchedule[0].status['value'] === 'AVAILABLE') {
+                            await this.specialistSchedulesRepository.create({
+                                id: specialistSchedule[0].id,
+                                status: SpecialistScheduleStatusEnum.UNAVAILABLE
+                            })
+                        } else {
+                            throw new AppError('Was not possible schedule your event')
+                        }
+                    }
+                }
                 const eventScheduled =
                     await this.scheduleGoogle.updateScehduledEvent(
                         oldSchedule.scheduleEventId,
