@@ -32,6 +32,9 @@ class SendGridProvider implements IMailProvider {
             html: "<strong>and easy to do anywhere, even with Node.js</strong>",
         };
 
+        console.log('info sendMail - SendGridProvider', msg);
+        
+
         this.client
             .sendMail({
                 to: to,
@@ -41,7 +44,7 @@ class SendGridProvider implements IMailProvider {
                 html: "<strong>and easy to do anywhere, even with Node.js</strong>",
             })
             .then(() => {
-                console.log("Email sent");
+                console.log("Email sent - SendGridProvider");
             })
             .catch((error) => {
                 console.error(error);
