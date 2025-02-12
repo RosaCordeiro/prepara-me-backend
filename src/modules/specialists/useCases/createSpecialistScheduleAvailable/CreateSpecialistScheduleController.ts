@@ -14,7 +14,9 @@ class CreateSpecialistScheduleController {
             hangoutLink,
             scheduleEventId,
             createEvent,
-            rating
+            rating,
+            timezone,
+            offset
         } = request.body;
 
         const { id } = request.params;
@@ -37,7 +39,9 @@ class CreateSpecialistScheduleController {
             id,
             createEvent,
             rating,
-            userRequestId
+            userRequestId,
+            timezone,
+            offset
         })
 
         const specialistSchedule =
