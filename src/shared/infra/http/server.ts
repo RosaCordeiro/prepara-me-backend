@@ -1,5 +1,7 @@
 import { app } from "./app";
+import { config } from 'dotenv'
+config()
 
-app.listen(3334, () => console.log("Server is running on 3334!"));
+app.listen(parseInt(process.env.PORT ?? '3334'), () => console.log("Server is running on 3334!"));
 
 
