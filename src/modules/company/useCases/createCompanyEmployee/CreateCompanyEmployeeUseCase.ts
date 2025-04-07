@@ -89,11 +89,12 @@ class CreateCompanyEmployeeUseCase {
 
         console.log("aqui", plan);
 
-        const planModel = await this.subscriptionPlansRepository.findById(plan);
-
-        console.log("planModel", planModel);
+        let planModel = null;
         
-        if (!id) {
+        console.log("planModel", planModel);
+        if (!id && plan) {
+            planModel = await this.subscriptionPlansRepository.findById(plan);
+
             if (!planModel) {
                 throw new AppError("Plan not found");
             }
@@ -122,7 +123,8 @@ class CreateCompanyEmployeeUseCase {
         };
 
         if (!id) {
-            cEmp["plan"] = planModel.name;
+            
+            cEmp["plan"] = planModel?.name;
 
             const companyEmployeeEmailExists =
                 await this.companyEmployeesRepository.find({
@@ -137,18 +139,18 @@ class CreateCompanyEmployeeUseCase {
             if (
                 companyEmployeeEmailExists.length > 0 ||
                 companyEmployeeDocumentExists.length > 0
-            ) {                
+            ) {
                 throw new AppError("Company Employee already exists");
             }
-    
+
             const userEmailExists = await this.usersRepository.find({
                 email,
             });
-    
+
             const userDocumentExists = await this.usersRepository.find({
                 documentId,
             });
-    
+
             if (userEmailExists.length > 0 || userDocumentExists.length > 0) {
                 throw new AppError("User already exists");
             }
