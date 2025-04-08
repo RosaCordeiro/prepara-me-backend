@@ -150,7 +150,7 @@ class CreateSpecialistScheduleUseCase {
                                             status: SpecialistScheduleStatusEnum.UNAVAILABLE
                                         })
                                     } else {
-                                        throw new AppError('Was not possible schedule your event')
+                                        throw new AppError('Was not possible schedule your event! Cód: 1')
                                     }
                                 }
                             }
@@ -169,8 +169,9 @@ class CreateSpecialistScheduleUseCase {
                                 );
 
                             if (eventScheduled.status != "200") {
+                                console.log("error create specialist schedule", eventScheduled);
                                 throw new AppError(
-                                    "Was not possible schedule your event!"
+                                    "Was not possible schedule your event! Cód: 2"
                                 );
                             }
 
@@ -183,7 +184,7 @@ class CreateSpecialistScheduleUseCase {
                             );
 
                             throw new AppError(
-                                "Was not possible schedule your event!"
+                                "Was not possible schedule your event! Cód: 3"
                             );
                         }
 
@@ -208,7 +209,7 @@ class CreateSpecialistScheduleUseCase {
                             );
 
                             throw new AppError(
-                                "Was not possible schedule your event!"
+                                "Was not possible schedule your event! Cód: 4"
                             );
                         }
 
