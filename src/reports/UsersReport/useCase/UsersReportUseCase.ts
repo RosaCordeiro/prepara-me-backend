@@ -27,7 +27,9 @@ class UsersReportUseCase {
             'Mentorias individuais',
             'Mentorias coletivas',
             'Mentorias totais',
-            "Mentorias disponíveis no plano"
+            "Mentorias disponíveis no plano",
+            "Papo Indicações",
+            "Quantidade de mentorias \"Papo Indicações\" realizadas",
         ]
         
         let data = []
@@ -47,8 +49,9 @@ class UsersReportUseCase {
                 individual_mentoring: individual,
                 collective_mentoring: collective,
                 total_mentoring: Number(individual) + Number(collective),
-                available_products: item.available_products
-
+                available_products: item.available_products,
+                has_outplacement_mentoring: item.has_outplacement_mentoring ? 'Sim' : 'Não',
+                outplacement_mentoring_realized: item.outplacement_mentoring_realized || 0,
             })
         }
         const excel = await geradorExcelTools.geradorExcel(

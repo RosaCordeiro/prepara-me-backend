@@ -32,7 +32,12 @@ class UsersReports {
                     LEFT JOIN "subscriptionPlanProducts" spp ON spp."subscriptionPlanId" = sp.id
                     WHERE ce."userId" = u.id
                         AND spp."productId" != '9ffbfd9d-82ff-43e3-806d-9928d9d4e764' 
-                ), 0) AS available_products
+                ), 0) AS available_products,
+                max(case 
+				    when ss."productId" = '746a0532-a106-4f40-bc1f-743a8910f91e' then 1 
+				    else 0 
+				end) = 1 as has_outplacement_mentoring,
+                sum(case when ss."productId" = '746a0532-a106-4f40-bc1f-743a8910f91e' and ss."dateSchedule" <= current_timestamp then 1 else 0 end) as outplacement_mentoring_realized
                 from users u 
                 left join companies c 
                     on c.id = u."companyId" 
