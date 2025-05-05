@@ -34,10 +34,10 @@ class UsersReports {
                         AND spp."productId" != '9ffbfd9d-82ff-43e3-806d-9928d9d4e764' 
                 ), 0) AS available_products,
                 max(case 
-				    when ss."productId" = '746a0532-a106-4f40-bc1f-743a8910f91e' then 1 
+				    when trim(p."name") = 'Papo Indicações' then 1 
 				    else 0 
 				end) = 1 as has_outplacement_mentoring,
-                sum(case when ss."productId" = '746a0532-a106-4f40-bc1f-743a8910f91e' and ss."dateSchedule" <= current_timestamp then 1 else 0 end) as outplacement_mentoring_realized
+                sum(case when trim(p."name") = 'Papo Indicações' and ss."dateSchedule" <= current_timestamp then 1 else 0 end) as outplacement_mentoring_realized
                 from users u 
                 left join companies c 
                     on c.id = u."companyId" 
@@ -49,6 +49,8 @@ class UsersReports {
                     on ss."userId" = u.id
                 left join "companyEmployees" ce
                     on ce."userId" = u.id
+                left join "products" p
+                    on p.id = ss."productId"
 
 
             group by
