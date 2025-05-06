@@ -24,6 +24,7 @@ class UsersReports {
                 date_part('month', url.created_at) as realocation_month,
                 extract(day from (url.created_at - u.created_at)) as realocation_time,
                 count(distinct mu) as collective_mentoring,
+                count(distinct case when ss."dateSchedule" <= current_timestamp then ss.id end) as individual_mentoring_realized,
                 count(distinct ss) as individual_mentoring,
                 COALESCE((
                     SELECT SUM(spp."availableQuantity")
@@ -51,8 +52,6 @@ class UsersReports {
                     on ce."userId" = u.id
                 left join "products" p
                     on p.id = ss."productId"
-
-
             group by
                 u.id,
                 c.name,
