@@ -6,6 +6,8 @@ interface IResponseMaterialDTO {
     slug: string;
     id?: string;
     file_url?: string;
+    image?: string;
+    image_url?: string;
 }
 
 export { IResponseMaterialDTO };

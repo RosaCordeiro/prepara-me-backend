@@ -22,6 +22,9 @@ class Material {
     @Column()
     file: string;
 
+    @Column()
+    image?: string;
+
     @CreateDateColumn()
     created_at: Date;
 
@@ -31,13 +34,15 @@ class Material {
         buttonColor: string,
         file: string,
         slug: string,
-        id?: string
+        id?: string,
+        image?: string
     ) {
         this.title = title;
         this.backgroundColor = backgroundColor;
         this.buttonColor = buttonColor;
         this.file = file;
         this.slug = slug;
+        this.image = image;
 
         if (!this.id || this.id === "") {
             this.id = uuidV4();

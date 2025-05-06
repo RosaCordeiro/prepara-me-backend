@@ -26,7 +26,8 @@ class CreateMaterialUseCase {
 
     async execute(
         content: ICreateMaterialDTO,
-        file?: string
+        file?: string,
+        image?: string
     ): Promise<Material> {
         this.validInput(content);
 
@@ -38,6 +39,16 @@ class CreateMaterialUseCase {
             content.file = newFileName;
         } else {
             delete content.file;
+        }
+
+        if (image) {
+            const newImageName = await this.storageProvider.save(
+                image,
+                "material-image"
+            );
+            content.image = newImageName;
+        } else {
+            delete content.image;
         }
 
         return await this.materialRepository.create(content);

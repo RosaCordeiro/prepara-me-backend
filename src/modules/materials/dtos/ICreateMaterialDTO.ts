@@ -5,6 +5,7 @@ interface ICreateMaterialDTO {
     slug: string;
     file?: string;
     id?: string;
+    image?: string;
 }
 
 export { ICreateMaterialDTO };

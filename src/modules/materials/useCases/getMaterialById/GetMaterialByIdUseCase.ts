@@ -21,6 +21,9 @@ class GetMaterialByIdUseCase {
         return {
             ...material,
             file_url: `${process.env.AWS_BUCKET_URL}/material/${material.file}`,
+            image_url: material.image
+                ? `${process.env.AWS_BUCKET_URL}/material-image/${material.image}`
+                : undefined,
         };
     }
 }

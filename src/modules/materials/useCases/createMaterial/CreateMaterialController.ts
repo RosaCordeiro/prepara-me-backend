@@ -4,22 +4,30 @@ import { CreateMaterialUseCase } from "./CreateMaterialUseCase";
 
 class CreateMaterialController {
     async handle(request: Request, response: Response): Promise<Response> {
-        const createMaterialUseCase = container.resolve(CreateMaterialUseCase);
-
+        const createMaterialUseCase = container.resolve(CreateMaterialUseCase);        
         if (!request.body.id || request.body.id === "") {
             console.log(request.body.id);
 
+            const file = (request.files as Express.Multer.File[]).find(item => item.fieldname === "file");
+            const image = (request.files as Express.Multer.File[]).find(item => item.fieldname === "image");            
             if (
-                request.files === undefined ||
-                request.files.length === 0 ||
-                request.files[0]?.fieldname !== "file"
+                file === undefined ||
+                file === null 
             ) {
                 return response.status(400).json("File is required");
             }
 
+            if (
+                image === undefined ||
+                image === null
+            ) {
+                return response.status(400).json("Image is required");
+            }
+
             const createMentoring = await createMaterialUseCase.execute(
                 request.body,
-                request.files[0].filename
+                file.filename,
+                image.filename
             );
 
             return response.status(201).json(createMentoring);
@@ -27,12 +35,14 @@ class CreateMaterialController {
             const body = request.body;
             const files: any = request.files;
             let file: any = undefined;
-
-            if (request.files !== undefined && files.length > 0) {
-                file = files[0].filename;
+            let image: any = undefined;
+            
+            if (files) {
+                file = files.find((item: any) => item.fieldname === "file");
+                image = files.find((item: any) => item.fieldname === "image");
             }
 
-            await createMaterialUseCase.execute(body, file);
+            await createMaterialUseCase.execute(body, file?.filename, image?.filename);
 
             return response.status(201).json({
                 message: "Mentoring updated",
