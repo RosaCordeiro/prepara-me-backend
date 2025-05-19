@@ -35,9 +35,9 @@ deploy_production:
         - git checkout .
         - git pull origin master
         - echo "Publicando $projectName"
-        - sed -i 's/\r$//' /var/www/$projetctFolderProd/scripts/deploy.sh
+        - sed -i 's/\r$//' /var/www/$projetctFolderProd/scripts/deploy_prod.sh
         - chmod +x ./scripts/deploy_prod.sh
-        - ./scripts/deploy.sh $projetctFolderProd $projectPm2NameProd
+        - ./scripts/deploy_prod.sh $projetctFolderProd $projectPm2NameProd
         - echo "Finalizando deploy..."
     tags:
         - preparame_prod
