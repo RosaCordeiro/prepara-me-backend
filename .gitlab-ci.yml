@@ -5,9 +5,10 @@ variables:
     projectName: Prepara.Me - API
     projectType: prepara_api
     projetctFolder: preparame_api
+    projetctFolderProd: preparame/api
     shouldRunCompose: "false"
     projectPm2Name: api.preparame.homolog.inf.br
-    projectPm2NameProd: api
+    projectPm2NameProd: preparame-api
 
 deploy_job:
     stage: deploy
@@ -30,13 +31,13 @@ deploy_production:
     stage: deploy
     script:
         - echo "Deploying master branch..."
-        - cd /var/www/$projetctFolder
+        - cd /var/www/$projetctFolderProd
         - git checkout .
         - git pull origin master
         - echo "Publicando $projectName"
-        - sed -i 's/\r$//' /var/www/$projetctFolder/scripts/deploy.sh
+        - sed -i 's/\r$//' /var/www/$projetctFolderProd/scripts/deploy.sh
         - chmod +x ./scripts/deploy_prod.sh
-        - ./scripts/deploy.sh $projetctFolder $projectPm2NameProd
+        - ./scripts/deploy.sh $projetctFolderProd $projectPm2NameProd
         - echo "Finalizando deploy..."
     tags:
         - preparame_prod
