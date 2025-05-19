@@ -88,7 +88,8 @@ class NPSSurveyAnswersUseCase {
             "a62a66b5-2ad4-446d-af44-95679cb9d580",
             "4c92a342-98d1-4742-9962-d9e46b93b2e1",
             "cf0ce5e8-0038-4c9f-bce5-9ba1545c786f",
-            "ded35643-7803-4019-9ed9-84c20e81af21"
+            "ded35643-7803-4019-9ed9-84c20e81af21",
+            "a6375b9e-b1fa-4eea-a970-fec411693ca9",
         ];
 
         if (EXCEPTION_COMPANY_IDS.includes(companyId)) {
