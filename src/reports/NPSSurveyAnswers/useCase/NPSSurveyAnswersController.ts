@@ -9,13 +9,16 @@ class NPSSurveyAnswersController {
         const surveyQuestionsRepository = new SurveyQuestionsRepository();
         let npsSurveyAnswersUseCaseNew = new NPSSurveyAnswersUseCase(surveyQuestionsRepository);
 
-        const results = await npsSurveyAnswersUseCaseNew.execute({
-            companyId,
-            area,
-            role,
-            period,
-            unity,
-        });
+        const results = await npsSurveyAnswersUseCaseNew.execute(
+            {
+                companyId,
+                area,
+                role,
+                period,
+                unity,
+            },
+            request.user.id
+        );
 
         return response.status(200).send(results);
     }

@@ -3,8 +3,8 @@ import { inject, injectable } from "tsyringe";
 import { NPSSurveyAnswers } from "../entities/NPSSurveyAnswers";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { getFirstAndLastDayOfMonth } from "@utils/formatDate";
-import e from "express";
 import { SurveyQuestionsRepository } from "@modules/company/infra/typeorm/repositories/SurveyQuestionRepository";
+import { UsersRepository } from "@modules/accounts/infra/typeorm/repositories/UsersRepository";
 
 @injectable()
 class NPSSurveyAnswersUseCase {
@@ -12,15 +12,30 @@ class NPSSurveyAnswersUseCase {
         @inject("SurveyQuestionsRepository")
         private surveyQuestionsRepository: SurveyQuestionsRepository
     ) {
-        this.surveyQuestionsRepository = new SurveyQuestionsRepository()
+        this.surveyQuestionsRepository = new SurveyQuestionsRepository();
     }
-    async execute({ companyId, area, role, period, unity }) {
+
+    private roleUser: string = "USER";
+
+    async execute({ companyId, area, role, period, unity }, userId) {
         const areaArray = area ? JSON.parse(area) : [];
         const roleArray = role ? JSON.parse(role) : [];
         const periodArray = period ? JSON.parse(period) : [];
         const unityArray = unity ? JSON.parse(unity) : [];
 
         const npsSurveyAnswers = new NPSSurveyAnswers();
+        const usersRepository = new UsersRepository();
+
+        try {
+            const user = await usersRepository.findById(userId);
+            if (user) {
+                this.roleUser = user.type;
+            }
+        } catch (error) {
+            console.error("Error fetching user role:", error);
+            this.roleUser = "USER";
+        }
+
         let users;
         let result;
 
@@ -64,7 +79,10 @@ class NPSSurveyAnswersUseCase {
             feelingMap: this.getFeelingMap(users, companyId),
             shutDown: this.getShutDown(users, companyId),
             realocatedCount: this.getRealocatedsNumber(users),
-            companyQuestions: await this.getAnswersCompanyQuestions(users, companyId),
+            companyQuestions: await this.getAnswersCompanyQuestions(
+                users,
+                companyId
+            ),
             general: {
                 laborRisk: this.getLaborRisk(usersAll, companyId),
                 brandRisk: this.getBrandRisk(usersAll, companyId),
@@ -88,26 +106,29 @@ class NPSSurveyAnswersUseCase {
     }
 
     async getAnswersCompanyQuestions(users: any, companyId: any) {
-        const companyQuestions = await this.surveyQuestionsRepository.listByCompanyId(companyId);
-        const usersFilterred = users.filter((user) => user.surveyQuestion !== null && user.surveyQuestion !== '');
-        
+        const companyQuestions =
+            await this.surveyQuestionsRepository.listByCompanyId(companyId);
+        const usersFilterred = users.filter(
+            (user) => user.surveyQuestion !== null && user.surveyQuestion !== ""
+        );
+
         let result = [];
-        result = companyQuestions
-       
+        result = companyQuestions;
+
         for (const user of usersFilterred) {
             const surveyQuestions = JSON.parse(user.surveyQuestion);
             for (const surveyQuestion of surveyQuestions) {
-                result = result.map((question) => { 
+                result = result.map((question) => {
                     if (question.id === surveyQuestion.questionId) {
                         question.answers = question.answers || [];
                         question.answers.push(surveyQuestion.answer);
                     }
                     return question;
-                })
+                });
             }
         }
 
-        return result
+        return result;
     }
 
     shouldCheckSurveyLimit(
@@ -115,6 +136,20 @@ class NPSSurveyAnswersUseCase {
         users: any[],
         filterUsers?: any[]
     ): boolean {
+        console.log("ROLE USER", users.length);
+
+        if (!users || users.length === 0) {
+            return true;
+        }
+
+        console.log("CHECKING SURVEY LIMIT");
+
+        if (this.roleUser === "ADMIN") {
+            return false;
+        }
+
+        console.log("ROLE USER 2", this.roleUser);
+
         const EXCEPTION_COMPANY_IDS = [
             "a62a66b5-2ad4-446d-af44-95679cb9d580",
             "4c92a342-98d1-4742-9962-d9e46b93b2e1",
@@ -124,6 +159,8 @@ class NPSSurveyAnswersUseCase {
         if (EXCEPTION_COMPANY_IDS.includes(companyId)) {
             return false;
         }
+
+        console.log("CEHGOU AQUI");
 
         const targetUsers = filterUsers || users;
         return targetUsers.filter((user) => user?.surveyAnswered).length <= 5;
@@ -140,12 +177,18 @@ class NPSSurveyAnswersUseCase {
             }
         });
 
+        if (npsSurveyAnswers.length === 0) {
+            return "N/A";
+        }
+
         let laborRisk: number = npsSurveyAnswers.reduce(
             (laborRisckTotal = 0, user) => {
                 return laborRisckTotal + user.laborRisk * 1;
             },
             0
         );
+
+        console.log("CHEGOU AQUI, laborRisk 3", laborRisk);
 
         return (10 - laborRisk / npsSurveyAnswers.length).toFixed(2);
     }
@@ -194,7 +237,7 @@ class NPSSurveyAnswersUseCase {
             return employee.userId;
         });
 
-        if (!this.shouldCheckSurveyLimit(companyId, filterUsers)) {
+        if (this.shouldCheckSurveyLimit(companyId, filterUsers)) {
             return "N/A";
         }
 
@@ -233,6 +276,10 @@ class NPSSurveyAnswersUseCase {
             }
         });
 
+        if (npsSurveyAnswers.length === 0) {
+            return "N/A";
+        }
+
         let brandRisk: number = npsSurveyAnswers.reduce(
             (brandRisckTotal = 0, user: any) => {
                 return brandRisckTotal + user.brandRisk * 1;
@@ -260,6 +307,10 @@ class NPSSurveyAnswersUseCase {
             //a interrogação eu falo que pode ser nulo e se for pega a propriedade
             //se nao voce para aqui
         }).length;
+
+        if (countUsersResponded === 0) {
+            return "N/A";
+        }
 
         const result = users.reduce(
             (accumulators: any, user: any) => {
