@@ -8,34 +8,38 @@ class Material {
     id: string;
 
     @Column()
-    slug: string;
+    slug?: string;
 
     @Column()
-    title: string;
+    title?: string;
 
     @Column()
-    backgroundColor: string;
+    backgroundColor?: string;
 
     @Column()
-    buttonColor: string;
+    buttonColor?: string;
 
     @Column()
-    file: string;
+    file?: string;
 
     @Column()
     image?: string;
+
+    @Column()
+    link?: string;
 
     @CreateDateColumn()
     created_at: Date;
 
     constructor(
-        title: string,
-        backgroundColor: string,
-        buttonColor: string,
-        file: string,
-        slug: string,
+        title?: string,
+        backgroundColor?: string,
+        buttonColor?: string,
+        slug?: string,
+        file?: string,
         id?: string,
-        image?: string
+        image?: string,
+        link?: string,
     ) {
         this.title = title;
         this.backgroundColor = backgroundColor;
@@ -43,6 +47,7 @@ class Material {
         this.file = file;
         this.slug = slug;
         this.image = image;
+        this.link = link;
 
         if (!this.id || this.id === "") {
             this.id = uuidV4();

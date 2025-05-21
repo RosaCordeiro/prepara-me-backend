@@ -26,20 +26,9 @@ class CreateMaterialUseCase {
 
     async execute(
         content: ICreateMaterialDTO,
-        file?: string,
         image?: string
     ): Promise<Material> {
         this.validInput(content);
-
-        if (file) {
-            const newFileName = await this.storageProvider.save(
-                file,
-                "material"
-            );
-            content.file = newFileName;
-        } else {
-            delete content.file;
-        }
 
         if (image) {
             const newImageName = await this.storageProvider.save(
@@ -56,35 +45,11 @@ class CreateMaterialUseCase {
 
     validInput(content: ICreateMaterialDTO): void {
         if (
-            content.slug === "" ||
-            content.slug === undefined ||
-            content.slug === null
+            content.link === "" ||
+            content.link === undefined ||
+            content.link === null
         ) {
-            throw new AppError("Slug is required");
-        }
-
-        if (
-            content.title === "" ||
-            content.title === undefined ||
-            content.title === null
-        ) {
-            throw new AppError("Title is required");
-        }
-
-        if (
-            content.backgroundColor === "" ||
-            content.backgroundColor === undefined ||
-            content.backgroundColor === null
-        ) {
-            throw new AppError("Background color is required");
-        }
-
-        if (
-            content.buttonColor === "" ||
-            content.buttonColor === undefined ||
-            content.buttonColor === null
-        ) {
-            throw new AppError("Button color is required");
+            throw new AppError("Link is required");
         }
     }
 }
