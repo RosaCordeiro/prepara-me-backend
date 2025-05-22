@@ -65,6 +65,13 @@ class CreateCompanyEmployeeBatchUseCase {
         const plans = await this.subscriptionPlansRepository.findAll();
 
         for (const row of fileRows.slice(1)) {
+            if (row[1].toString().includes(".") || row[1].toString().includes("-")) {
+                return {
+                    message: `Arquivo inválido, documento (${row[1]}) inválido. Não deve conter pontos ou traços`,
+                    success: false,
+                };
+            }
+
             if (row[3] && !row[3].includes("@")) {
                 return {
                     message: `Arquivo inválido, email (${row[3]}) inválido`,
@@ -113,12 +120,15 @@ class CreateCompanyEmployeeBatchUseCase {
                 };
             }
 
+            const documentId = row[1].toString().replace(/ /g, "");
+            const email = row[3].replace(/ /g, "");
+
             let companyEmployeeCreated =
                 await this.companyEmployeesRepository.create({
                     name: row[0],
-                    documentId: row[1],
+                    documentId,
                     phone: row[2],
-                    email: row[3],
+                    email,
                     entryDate: row[4],
                     position: row[5],
                     department: row[6],
