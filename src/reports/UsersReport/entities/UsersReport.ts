@@ -35,7 +35,12 @@ class UsersReports {
                         AND spp."productId" != '9ffbfd9d-82ff-43e3-806d-9928d9d4e764' 
                 ), 0) AS available_products,
                 max(case 
-				    when trim(p."name") = 'Papo Indicações' then 1 
+				    when exists (
+				    	select upa.id from "userProductsAvailable" upa 
+				    	inner join products p2 
+				    	 	on p2.id = upa."productId"
+				    	where p2.name = 'Papo Indicações ' and upa."userId" = u.id
+				    ) then 1 
 				    else 0 
 				end) = 1 as has_outplacement_mentoring,
                 sum(case when trim(p."name") = 'Papo Indicações' and ss."dateSchedule" <= current_timestamp then 1 else 0 end) as outplacement_mentoring_realized
