@@ -39,7 +39,7 @@ class UsersReports {
 				    	select upa.id from "userProductsAvailable" upa 
 				    	inner join products p2 
 				    	 	on p2.id = upa."productId"
-				    	where p2.name = 'Papo Indicações ' and upa."userId" = u.id
+				    	where p2.name = 'Papo Indicações' and upa."userId" = u.id
 				    ) then 1 
 				    else 0 
 				end) = 1 as has_outplacement_mentoring,
