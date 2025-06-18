@@ -4,6 +4,7 @@ import { ScheduleController } from "../../../../reports/Schedules/useCase/Schedu
 import { ResponsesReportController } from "../../../../reports/ResponsesReport/useCase/ResponsesReportController";
 import { UsersReportController } from "../../../../reports/UsersReport/useCase/UsersReportController";
 import { ensuredAuthenticated } from "../middlewares/ensureAuthenticated";
+import { ReplacementsReportController } from "../../../../reports/ReplacementsReport/useCase/ReplacementsReportController";
 
 const reportsRoutes = Router();
 
@@ -22,5 +23,12 @@ reportsRoutes.get("/responses", responsesReportController.handle);
 
 const usersReportController = new UsersReportController();
 reportsRoutes.get("/users", usersReportController.handle);
+
+const replacementsReportController = new ReplacementsReportController();
+reportsRoutes.get(
+    "/replacements",
+    ensuredAuthenticated,
+    replacementsReportController.handle
+);
 
 export { reportsRoutes };
