@@ -14,7 +14,6 @@ class UsersReportUseCase {
         const geradorExcelTools = new GeradorExcelTools()
 
         const result = await usersReport.report()
-
         const headers = [
             'Empresa',
             'Nome',
@@ -25,11 +24,15 @@ class UsersReportUseCase {
             'Tempo de recolocação em dias',
             'Respondeu pesquisa de desligamento',
             'Mentorias individuais',
-            'Mentorias coletivas'
+            'Mentorias coletivas',
+            "Papo Indicações",
+            "Quantidade de mentorias \"Papo Indicações\" realizadas",
         ]
-
+        
         let data = []
         for (let item of result) {
+            const individual = item.individual_mentoring || 0;
+            const collective = item.collective_mentoring || 0;
             data.push({
                 company: item.company,
                 name: item.name,
@@ -39,11 +42,12 @@ class UsersReportUseCase {
                 realocation_month: item.realocation_month,
                 realocation_time: item.realocation_time,
                 surveyAnswered: item.surveyAnswered ? 'Sim' : 'Não',
-                individual_mentoring: item.individual_mentoring,
-                collective_mentoring: item.collective_mentoring
+                individual_mentoring: individual,
+                collective_mentoring: collective,
+                has_outplacement_mentoring: item.has_outplacement_mentoring ? 'Sim' : 'Não',
+                outplacement_mentoring_realized: item.outplacement_mentoring_realized || 0,
             })
         }
-
         const excel = await geradorExcelTools.geradorExcel(
             headers,
             data,
