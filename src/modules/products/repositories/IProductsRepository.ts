@@ -35,6 +35,7 @@ interface IProductsRepository {
         userId: string,
         productId?: string
     ): Promise<any>;
+    findProductsAvailableByUserId(userId: string, onlyAvailables: boolean, onlyAdmin: boolean): Promise<any[]>;
 }
 
 export { IProductsRepository };

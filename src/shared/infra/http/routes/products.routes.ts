@@ -18,8 +18,12 @@ import { RemoveProductUserUseCase } from "@modules/products/useCases/removeProdu
 import { RemoveProductUserController } from "@modules/products/useCases/removeProductUser/RemoveProductUserController";
 import { ListProductByPriceController } from "@modules/products/useCases/listProductByPrice/ListProductByPriceController";
 import { ListProductByUserWithSpecialistController } from "@modules/products/useCases/listProductByUserWithSpecialist/ListProductByUserWithSpecialistController";
+import { ListProductsAvailableByUserController } from "@modules/products/useCases/listProductsAvailableByUser/ListProductsAvailableByUserController";
 
 const productsRoutes = Router();
+
+const listProductsAvailableByUserController = new ListProductsAvailableByUserController();
+productsRoutes.get("/listProductsAvailableByUser", ensuredAuthenticated, listProductsAvailableByUserController.handle);
 
 const createRequestScheduleController = new CreateRequestScheduleController();
 productsRoutes.post("/requestSchedule", createRequestScheduleController.handle);
