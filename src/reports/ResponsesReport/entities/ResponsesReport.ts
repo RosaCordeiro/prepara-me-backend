@@ -29,6 +29,8 @@ class ResponsesReport {
                 case
                     when u."companyNameSignIn" != '' and u."companyNameSignIn" is not null then
                         (select c."name" from "companyPage" cp  inner join companies c on c.id = cp."companyId" where cp.name = u."companyNameSignIn" limit 1)
+                    when ce.id is not null then
+                    	(select c2."name" from companies c2 where c2.id = ce."companyId")
                     else
                         case
                             when u."companyId" is not null then
@@ -86,8 +88,9 @@ class ResponsesReport {
                 u."feelingsMapJSON", 
                 u."laborRiskJSON", 
                 u."brandRiskJSON", 
-                u."NPSSurvey" 
+                u."NPSSurvey"
             from users u 
+            left join "companyEmployees" ce on ce."userId" = u.id
             where u."surveyAnswered" 
             ${additionalQuery};
         `);
