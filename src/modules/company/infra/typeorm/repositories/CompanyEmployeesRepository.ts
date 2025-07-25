@@ -107,7 +107,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         const roles = rolesCompanyEmployee
             .map((ce) => ce.position)
             .filter((c) => c !== null && c !== undefined && c !== "");
-        const uniqueRoles = [...new Set(roles)];
+        const uniqueRoles = [...new Set(roles)].sort((a, b) => a.localeCompare(b));
 
         const periods = companyEmployee
             .map((ce) => ce.entryDate)
