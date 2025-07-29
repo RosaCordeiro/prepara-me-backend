@@ -58,26 +58,32 @@ class NPSSurveyAnswersUseCase {
         }
 
         let usersAll = await npsSurveyAnswers.reportAllusers();
+        
+        //só aplico a exceção se não tiver filtros de cargo ou área para manter o anonimato
+        const shouldApplyException: boolean = areaArray.length === 0 && roleArray.length === 0;
 
-        const lessThanFive = this.shouldCheckSurveyLimit(companyId, users);
-
+        console.log('shouldApplyException', shouldApplyException);
+        console.log('users length', users.length);
+        
+        const lessThanFive = this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException);
+        
         return {
             lessThanFive,
-            laborRisk: this.getLaborRisk(users, companyId),
-            brandRisk: this.getBrandRisk(users, companyId),
-            nps: this.getNps(users, companyId),
+            laborRisk: this.getLaborRisk(users, companyId, shouldApplyException),
+            brandRisk: this.getBrandRisk(users, companyId, shouldApplyException),
+            nps: this.getNps(users, companyId, shouldApplyException),
             realocateds: result
                 ? this.getRealocateds(result, companyId)
                 : "N/A",
-            termination: this.getTermination(users, companyId),
+            termination: this.getTermination(users, companyId, shouldApplyException),
             laborIssues: result
-                ? this.getLaborIssues(result, companyId)
+                ? this.getLaborIssues(result, companyId, shouldApplyException)
                 : "N/A",
             welcomed: result
                 ? this.getWelcomed(result, companyId, users)
                 : "N/A",
-            feelingMap: this.getFeelingMap(users, companyId),
-            shutDown: this.getShutDown(users, companyId),
+            feelingMap: this.getFeelingMap(users, companyId, shouldApplyException),
+            shutDown: this.getShutDown(users, companyId, shouldApplyException),
             realocatedCount: this.getRealocatedsNumber(users),
             companyQuestions: await this.getAnswersCompanyQuestions(
                 users,
@@ -134,10 +140,10 @@ class NPSSurveyAnswersUseCase {
     shouldCheckSurveyLimit(
         companyId: string,
         users: any[],
-        filterUsers?: any[]
+        filterUsers?: any[],
+        shouldApplyException: boolean = true
     ): boolean {
         console.log("ROLE USER", users.length);
-
         if (!users || users.length === 0) {
             return true;
         }
@@ -149,25 +155,27 @@ class NPSSurveyAnswersUseCase {
         }
 
         console.log("ROLE USER 2", this.roleUser);
-
+        
         const EXCEPTION_COMPANY_IDS = [
             "a62a66b5-2ad4-446d-af44-95679cb9d580",
             "4c92a342-98d1-4742-9962-d9e46b93b2e1",
             "cf0ce5e8-0038-4c9f-bce5-9ba1545c786f",
+            "a6375b9e-b1fa-4eea-a970-fec411693ca9"
         ];
-
-        if (EXCEPTION_COMPANY_IDS.includes(companyId)) {
+        
+        if (EXCEPTION_COMPANY_IDS.includes(companyId) && shouldApplyException) {            
             return false;
         }
-
+        
         console.log("CEHGOU AQUI");
-
+        
         const targetUsers = filterUsers || users;
+        
         return targetUsers.filter((user) => user?.surveyAnswered).length <= 5;
     }
 
-    getLaborRisk(users: any, companyId: any) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
+    getLaborRisk(users: any, companyId: any, shouldApplyException: boolean = true) {
+        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
             return "N/A";
         }
 
@@ -193,8 +201,8 @@ class NPSSurveyAnswersUseCase {
         return (10 - laborRisk / npsSurveyAnswers.length).toFixed(2);
     }
 
-    getTermination(users: any, companyId) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
+    getTermination(users: any, companyId, shouldApplyException: boolean = true) {
+        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
             return "N/A";
         }
         const laborRiskData = [];
@@ -232,12 +240,12 @@ class NPSSurveyAnswersUseCase {
         );
     }
 
-    getLaborIssues(users: any, companyId) {
+    getLaborIssues(users: any, companyId, shouldApplyException: boolean = true) {
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
 
-        if (this.shouldCheckSurveyLimit(companyId, filterUsers)) {
+        if (this.shouldCheckSurveyLimit(companyId, filterUsers, null, shouldApplyException)) {
             return "N/A";
         }
 
@@ -266,8 +274,8 @@ class NPSSurveyAnswersUseCase {
         return ((laborRiskAlerts.length / users.length) * 100).toFixed(2) + "%";
     }
 
-    getBrandRisk(users: any, companyId: any) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
+    getBrandRisk(users: any, companyId: any, shouldApplyException: boolean = true) {
+        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
             return "N/A";
         }
         const npsSurveyAnswers = users.filter((npsSurvey) => {
@@ -290,8 +298,8 @@ class NPSSurveyAnswersUseCase {
         return (10 - brandRisk / npsSurveyAnswers.length).toFixed(2);
     }
 
-    getNps(users: any, companyId: any) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
+    getNps(users: any, companyId: any, shouldApplyException: boolean = true) {
+        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
             return "N/A";
         }
         /*  try { */
@@ -307,7 +315,6 @@ class NPSSurveyAnswersUseCase {
             //a interrogação eu falo que pode ser nulo e se for pega a propriedade
             //se nao voce para aqui
         }).length;
-
         if (countUsersResponded === 0) {
             return "N/A";
         }
@@ -340,7 +347,6 @@ class NPSSurveyAnswersUseCase {
             },
             { npsAnswersLassThanSeven: 0, npsAnswersMoreThanEight: 0 }
         );
-
         return (
             (result.npsAnswersMoreThanEight / countUsersResponded -
                 result.npsAnswersLassThanSeven / countUsersResponded) *
@@ -374,8 +380,8 @@ class NPSSurveyAnswersUseCase {
         return `${countAccepted}/${empployee.length}`;
     }
 
-    getFeelingMap(users: any, companyId) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
+    getFeelingMap(users: any, companyId, shouldApplyException: boolean = true) {
+        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
             return [];
         }
         const feelingsMapData = [];
@@ -426,8 +432,8 @@ class NPSSurveyAnswersUseCase {
         return feelingsMapData;
     }
 
-    getShutDown(users: any, companyId) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
+    getShutDown(users: any, companyId, shouldApplyException: boolean = true) {
+        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
             return [];
         }
         const laborRiskData = [];
