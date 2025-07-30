@@ -59,8 +59,8 @@ class NPSSurveyAnswersUseCase {
 
         let usersAll = await npsSurveyAnswers.reportAllusers();
         
-        //só aplico a exceção se não tiver filtros de cargo ou área para manter o anonimato
-        const shouldApplyException: boolean = areaArray.length === 0 && roleArray.length === 0;
+        //só aplico a exceção se não tiver filtros de cargo, área e unidade para manter o anonimato
+        const shouldApplyException: boolean = areaArray.length === 0 && roleArray.length === 0 && unityArray.length === 0;
 
         console.log('shouldApplyException', shouldApplyException);
         console.log('users length', users.length);
