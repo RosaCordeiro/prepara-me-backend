@@ -27,7 +27,6 @@ class UsersReportUseCase {
             'Mentorias individuais',
             'Mentorias coletivas',
             'Mentorias individuais realizadas',
-            "Quantidade mentorias pacote",
             "Papo Indicações",
             "Quantidade de mentorias \"Papo Indicações\" realizadas",
         ]
@@ -49,7 +48,6 @@ class UsersReportUseCase {
                 individual_mentoring: individual,
                 collective_mentoring: collective,
                 individual_mentoring_realized: item.individual_mentoring_realized,
-                available_products: item.available_products,
                 has_outplacement_mentoring: item.has_outplacement_mentoring ? 'Sim' : 'Não',
                 outplacement_mentoring_realized: item.outplacement_mentoring_realized || 0,
             })
