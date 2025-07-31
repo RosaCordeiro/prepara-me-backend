@@ -29,11 +29,6 @@ class UsersReports {
 	                	when ss."dateSchedule" <= current_timestamp and p.name not in ('Papo Prepara.me', 'Conversa com Prepara.me') then ss.id 
 	                end
                 ) as individual_mentoring_realized,
-                count(
-                	distinct case 
-                		when p.name not in ('Papo Prepara.me', 'Conversa com Prepara.me') then ss.id
-                	end
-                	) as individual_mentoring,
                 COALESCE((
                     SELECT SUM(spp."availableQuantity")
                     FROM "companyEmployees" ce
@@ -41,8 +36,8 @@ class UsersReports {
                     LEFT JOIN "subscriptionPlanProducts" spp ON spp."subscriptionPlanId" = sp.id
                     INNER JOIN "products" p2 ON p2.id = spp."productId"
                     WHERE ce."userId" = u.id
-                        AND p2.name <> 'Papo Prepara.me' AND p2.name <> 'Conversa com Prepara.me'
-                ), 0) AS available_products,
+                        AND p2.name not in ('Papo Prepara.me', 'Conversa com Prepara.me')
+                ), 0) as individual_mentoring,
                 max(case 
 				    when exists (
 				    	select upa.id from "userProductsAvailable" upa 
