@@ -7,6 +7,8 @@ import { CompanyEmployeesRepository } from "@modules/company/infra/typeorm/repos
 import { container } from "tsyringe";
 import { CompanyPageRepository } from "@modules/company/infra/typeorm/repositories/CompanyPageRepository";
 import { ICompanyPageRepository } from "@modules/company/repositories/ICompanyPageRepository";
+import { SurveyQuestionsRepository } from "@modules/company/infra/typeorm/repositories/SurveyQuestionRepository";
+import { ISurveyQuestionsRepository } from "@modules/company/repositories/ISurveyQuestionsRepository";
 
 container.registerSingleton<ICompaniesRepository>(
     "CompaniesRepository",
@@ -26,4 +28,9 @@ container.registerSingleton<ICompanySubscriptionPlansRepository>(
 container.registerSingleton<ICompanyPageRepository>(
     "CompanyPageRepository",
     CompanyPageRepository
+);
+
+container.registerSingleton<ISurveyQuestionsRepository>(
+    "SurveyQuestionsRepository",
+    SurveyQuestionsRepository
 );

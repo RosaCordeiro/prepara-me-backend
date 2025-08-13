@@ -4,11 +4,10 @@ stages:
 variables:
     projectName: Prepara.Me - API
     projectType: prepara_api
-    projetctFolder: preparame_api
-    projetctFolderProd: preparame/api
+    projetctFolder: preparame/api
     shouldRunCompose: "false"
-    projectPm2Name: api.preparame.homolog.inf.br
-    projectPm2NameProd: preparame-api
+    projectPm2Name: app-preparame-api
+    projectPm2NameProd: api
 
 deploy_job:
     stage: deploy
@@ -23,7 +22,7 @@ deploy_job:
         - ./scripts/deploy.sh $projetctFolder $projectPm2Name
         - echo "Finalizando deploy..."
     tags:
-        - homolog_sso
+        - nodedso_homolog
     only:
         - develop
 

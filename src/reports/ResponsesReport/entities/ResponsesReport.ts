@@ -1,5 +1,4 @@
 import { User } from "@modules/accounts/infra/typeorm/entities/User";
-
 import { getRepository, Repository } from "typeorm";
 
 class ResponsesReport {
@@ -88,7 +87,8 @@ class ResponsesReport {
                 u."feelingsMapJSON", 
                 u."laborRiskJSON", 
                 u."brandRiskJSON", 
-                u."NPSSurvey"
+                u."NPSSurvey",
+                u."surveyQuestion"
             from users u 
             left join "companyEmployees" ce on ce."userId" = u.id
             where u."surveyAnswered" 

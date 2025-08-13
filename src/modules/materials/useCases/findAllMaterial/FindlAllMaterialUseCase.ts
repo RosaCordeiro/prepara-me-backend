@@ -11,7 +11,13 @@ class FindAllMaterialUseCase {
     ) {}
 
     async execute(): Promise<IResponseMaterialDTO[]> {
-        return await this.materialRepository.findAll();
+        const result = await this.materialRepository.findAll();
+        result.map((item) => {
+            item['image_url'] = item.image
+                ? `${process.env.AWS_BUCKET_URL}/material-image/${item.image}`
+                : null;
+        })
+        return result;
     }
 }
 

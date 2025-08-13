@@ -153,6 +153,9 @@ class User {
     brandRiskJSON: string;
 
     @Column()
+    surveyQuestion: string;
+
+    @Column()
     expiresDate: Date;
 
     @Column()
@@ -181,6 +184,7 @@ class User {
         feelingsMapJSON: string,
         brandRisk: number,
         laborRiskJSON: string,
+        surveyQuestion: string,
         brandRiskJSON: string,
         laborRiskAlert: UserLaborRiskAlertEnum,
         expiresDate: Date,
@@ -214,6 +218,7 @@ class User {
         this.feelingsMapJSON = feelingsMapJSON;
         this.brandRisk = brandRisk;
         this.laborRiskJSON = laborRiskJSON;
+        this.surveyQuestion = surveyQuestion;
         this.brandRiskJSON = brandRiskJSON;
         this.laborRiskAlert = laborRiskAlert;
         this.expiresDate = expiresDate;

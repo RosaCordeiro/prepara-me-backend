@@ -8,7 +8,7 @@ class UsersReportUseCase {
     constructor(
         @inject("DayjsDateProvider")
         private dateProvider: IDateProvider
-    ) {}
+    ) { }
     async execute() {
         const usersReport = new UsersReports()
         const geradorExcelTools = new GeradorExcelTools()
@@ -23,12 +23,14 @@ class UsersReportUseCase {
             'Mês de recolocação',
             'Tempo de recolocação em dias',
             'Respondeu pesquisa de desligamento',
+            "Acolhimento",
             'Mentorias individuais',
             'Mentorias coletivas',
+            'Mentorias individuais realizadas',
             "Papo Indicações",
             "Quantidade de mentorias \"Papo Indicações\" realizadas",
         ]
-        
+
         let data = []
         for (let item of result) {
             const individual = item.individual_mentoring || 0;
@@ -38,12 +40,14 @@ class UsersReportUseCase {
                 name: item.name,
                 entry_date: this.dateProvider.formatDateTime(item.entry_date, "DD/MM/YYYY"),
                 entry_month: item.entry_month,
-                realocation_date: item.realocation_date ? this.dateProvider.formatDateTime(item.realocation_date, "DD/MM/YYYY") : '', 
+                realocation_date: item.realocation_date ? this.dateProvider.formatDateTime(item.realocation_date, "DD/MM/YYYY") : '',
                 realocation_month: item.realocation_month,
                 realocation_time: item.realocation_time,
                 surveyAnswered: item.surveyAnswered ? 'Sim' : 'Não',
+                reception: item.accepted ? 'Sim' : 'Não',
                 individual_mentoring: individual,
                 collective_mentoring: collective,
+                individual_mentoring_realized: item.individual_mentoring_realized,
                 has_outplacement_mentoring: item.has_outplacement_mentoring ? 'Sim' : 'Não',
                 outplacement_mentoring_realized: item.outplacement_mentoring_realized || 0,
             })

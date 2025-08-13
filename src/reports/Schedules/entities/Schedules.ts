@@ -345,7 +345,13 @@ class Schedules {
                 from "userProductsAvailable" upa 
                 inner join users u on u.id = upa."userId"  
                 inner join products p on p.id = upa."productId" 
-                left join "userProductsAvailableLog" upal on upal."userProductsAvailableId" = upa.id	
+                left join lateral (
+				  select *
+				  from "userProductsAvailableLog" upal
+				  where upal."userProductsAvailableId" = upa.id
+				  order by upal.id desc
+				  limit 1
+				) upal on true	
                 where upa."availableQuantity" > 0	
                 
                 union 

@@ -20,6 +20,7 @@ interface IUserResponseDTO {
     brandRisk: number;
     laborRiskJSON: string;
     brandRiskJSON: string;
+    surveyQuestion?: string;
     laborRiskAlert: Object;
     expiresDate: Date;
     expiryDateFormated?: string;

@@ -116,13 +116,6 @@ class UserProductsAvailableRepository
     }
 
     async update(id: string, productId: string): Promise<UserProductAvailable> {
-        const exists = await this.repositoryLog.findOne({
-            userProductsAvailableId: id,
-        });
-
-        if (exists) {
-            throw new AppError("User product available already updated");
-        }
 
         const userProductAvailable = await this.repository.findOne(id);
 

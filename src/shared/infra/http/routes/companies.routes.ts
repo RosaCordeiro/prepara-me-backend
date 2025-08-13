@@ -23,9 +23,45 @@ import { CreateCompanyEmployeeBatchController } from "@modules/company/useCases/
 import { uploadFileXlsx } from "../middlewares/uploadFileXlsx";
 import { DownloadCompanyExcelModelController } from "@modules/company/useCases/downloadCompanyExcelModel/DownloadCompanyExcelModel";
 import { GetCompanyParametersController } from "@modules/company/useCases/getCompanyParameters/GetCompanyParametersController";
+import { CreateSurveyQuestionController } from "@modules/company/useCases/createSurveyQuestion/createSurveyQuestionController";
+import { GetSurveyQuestionController } from "@modules/company/useCases/getSurveyQuestion/getSurveyQuestionController";
+import { DeleteSurveyQuestionController } from "@modules/company/useCases/deleteSurveyQuestion/deleteSurveyQuestionController";
+import { UpdateSurveyQuestionController } from "@modules/company/useCases/uptadeSurveyQuestion/UpdateSurveyQuestionController";
+import { GetSurveyQuestionByIdController } from "@modules/company/useCases/getSurveyQuestionById/getSurveyQuestionByIdController";
+
 
 const companiesRoutes = Router();
 const uploadImage = multer(uploadConfig);
+
+//Nova rota: Armazenamento de perguntas
+const createSurveyQuestionsController = new CreateSurveyQuestionController()
+companiesRoutes.post("/surveyquestions", createSurveyQuestionsController.handle)
+
+
+//Nova rota: Leitura de perguntas
+const getSurveyQuestionController = new GetSurveyQuestionController();
+companiesRoutes.get(
+    "/surveyquestions",
+    getSurveyQuestionController.handle
+);
+
+const getSurveyQuestionByIdController = new GetSurveyQuestionByIdController();
+companiesRoutes.get(
+    "/surveyquestions/:id",
+    getSurveyQuestionByIdController.handle
+);
+
+//Nova rota: Deletar de perguntas
+const deleteSurveyQuestionController = new DeleteSurveyQuestionController();
+companiesRoutes.delete(
+    "/surveyquestions/:id",
+    ensuredAuthenticated, 
+    deleteSurveyQuestionController.handle
+);
+
+const updateSurveyQuestionController = new UpdateSurveyQuestionController();
+companiesRoutes.put("/surveyquestions/:id", updateSurveyQuestionController.handle);
+
 
 const getCompanyParametersController = new GetCompanyParametersController();
 companiesRoutes.get(
@@ -38,8 +74,7 @@ companiesRoutes.get(
 const createCompanyPageController = new CreateCompanyPageController();
 companiesRoutes.post(
     "/page",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     uploadImage.any(),
     createCompanyPageController.handle
 );
@@ -50,8 +85,7 @@ companiesRoutes.get("/page/:name", getCompanyPageByNameController.handle);
 const getCompanyPageByIdController = new GetCompanyPageByIdController();
 companiesRoutes.get(
     "/pageById/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     getCompanyPageByIdController.handle
 );
 
@@ -64,8 +98,7 @@ companiesRoutes.post(
 const createCompanyEmployeeController = new CreateCompanyEmployeeController();
 companiesRoutes.post(
     "/:id/employees",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     createCompanyEmployeeController.handle
 );
 
@@ -73,8 +106,7 @@ const createCompanyEmployeeBatchController =
     new CreateCompanyEmployeeBatchController();
 companiesRoutes.post(
     "/employees/batch",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     uploadFileXlsx,
     createCompanyEmployeeBatchController.handle
 );
@@ -83,39 +115,34 @@ const downloadCompanyExcelModelController =
     new DownloadCompanyExcelModelController();
 companiesRoutes.get(
     "/employees/batch/download",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     downloadCompanyExcelModelController.handle
 );
 
 const listCompanyEmployeeController = new ListCompanyEmployeeController();
 companiesRoutes.get(
     "/employees",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     listCompanyEmployeeController.handle
 );
 
 companiesRoutes.get(
     "/employees/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     listCompanyEmployeeController.handle
 );
 
 const removeCompanyEmployeeController = new RemoveCompanyEmployeeController();
 companiesRoutes.delete(
     "/employees/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     removeCompanyEmployeeController.handle
 );
 
 const acceptCompanyEmployeeController = new AcceptCompanyEmployeeController();
 companiesRoutes.put(
     "/employees/:id/accept",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     acceptCompanyEmployeeController.handle
 );
 
@@ -123,8 +150,7 @@ const realocateCompanyEmployeeController =
     new RealocateCompanyEmployeeController();
 companiesRoutes.put(
     "/employees/:id/realocate",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     realocateCompanyEmployeeController.handle
 );
 
@@ -132,8 +158,7 @@ const createCompanySubscriptionPlanController =
     new CreateCompanySubscriptionPlanController();
 companiesRoutes.post(
     "/:id/subscriptionPlans",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     createCompanySubscriptionPlanController.handle
 );
 
@@ -141,15 +166,13 @@ const listCompanySubscriptionPlanController =
     new ListCompanySubscriptionPlanController();
 companiesRoutes.get(
     "/subscriptionPlans",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     listCompanySubscriptionPlanController.handle
 );
 
 companiesRoutes.get(
     "/subscriptionPlans/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     listCompanySubscriptionPlanController.handle
 );
 
@@ -157,43 +180,39 @@ const removeCompanySubscriptionPlanController =
     new RemoveCompanySubscriptionPlanController();
 companiesRoutes.delete(
     "/subscriptionPlans/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     removeCompanySubscriptionPlanController.handle
 );
 
 const listCompanyController = new ListCompanyController();
 companiesRoutes.get(
     "/",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     listCompanyController.handle
 );
 
 companiesRoutes.get(
     "/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     listCompanyController.handle
 );
 
 const createCompanyController = new CreateCompanyController();
 companiesRoutes.post(
     "/",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     createCompanyController.handle
 );
 
 const removeCompanyControllerController = new RemoveCompanyController();
 companiesRoutes.delete(
     "/:id",
-    ensuredAuthenticated,
-    ensureAdmin,
+    
     removeCompanyControllerController.handle
 );
 
 const listVacanciesController = new ListVacanciesController();
 companiesRoutes.get("/vacancies/:companyName", listVacanciesController.handle);
+
 
 export { companiesRoutes };

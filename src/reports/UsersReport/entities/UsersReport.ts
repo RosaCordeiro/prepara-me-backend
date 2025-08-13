@@ -24,16 +24,20 @@ class UsersReports {
                 date_part('month', url.created_at) as realocation_month,
                 extract(day from (url.created_at - u.created_at)) as realocation_time,
                 count(distinct mu) as collective_mentoring,
-                count(distinct case when ss."dateSchedule" <= current_timestamp then ss.id end) as individual_mentoring_realized,
-                count(distinct ss) as individual_mentoring,
+                count(
+                	distinct case 
+	                	when ss."dateSchedule" <= current_timestamp and p.name not in ('Papo Prepara.me', 'Conversa com Prepara.me') then ss.id 
+	                end
+                ) as individual_mentoring_realized,
                 COALESCE((
                     SELECT SUM(spp."availableQuantity")
                     FROM "companyEmployees" ce
                     LEFT JOIN "subscriptionPlans" sp ON sp.name = ce."plan" 
                     LEFT JOIN "subscriptionPlanProducts" spp ON spp."subscriptionPlanId" = sp.id
+                    INNER JOIN "products" p2 ON p2.id = spp."productId"
                     WHERE ce."userId" = u.id
-                        AND spp."productId" != '9ffbfd9d-82ff-43e3-806d-9928d9d4e764' 
-                ), 0) AS available_products,
+                        AND p2.name not in ('Papo Prepara.me', 'Conversa com Prepara.me')
+                ), 0) as individual_mentoring,
                 max(case 
 				    when exists (
 				    	select upa.id from "userProductsAvailable" upa 

@@ -319,6 +319,25 @@ class ProductsRepository implements IProductsRepository {
     async remove(id: string): Promise<void> {
         this.repository.delete(id);
     }
+
+    async findProductsAvailableByUserId(userId: string, onlyAvailables: boolean, onlyAdmin: boolean): Promise<any[]> {
+        let where = `where upa."userId" = '${userId}' `;
+        if (onlyAvailables) {
+            where += ` and upa."availableQuantity" > 0`;
+        }
+        if (onlyAdmin !== undefined && onlyAdmin !== null) {   
+            where += ` and p."onlyAdmin" = ${onlyAdmin}`;      
+        }
+        const productsQuery = `
+            select 
+            upa.*,
+            p."name"
+            from "userProductsAvailable" upa 
+            inner join products p on p.id = upa."productId"
+            ${where}`
+
+        return await this.repository.query(productsQuery)
+    }
 }
 
 export { ProductsRepository };
