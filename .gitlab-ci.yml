@@ -7,7 +7,7 @@ variables:
     projetctFolder: preparame/api
     shouldRunCompose: "false"
     projectPm2Name: app-preparame-api
-    projectPm2NameProd: api
+    projectPm2NameProd: preparame-api
     projetctFolderProd: preparame/api
 
 deploy_job:
