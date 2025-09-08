@@ -58,31 +58,54 @@ class NPSSurveyAnswersUseCase {
         }
 
         let usersAll = await npsSurveyAnswers.reportAllusers();
-        
-        //só aplico a exceção se não tiver filtros de cargo, área e unidade para manter o anonimato
-        const shouldApplyException: boolean = areaArray.length === 0 && roleArray.length === 0 && unityArray.length === 0;
 
-        console.log('shouldApplyException', shouldApplyException);
-        console.log('users length', users.length);
-        
-        const lessThanFive = this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException);
-        
+        //só aplico a exceção se não tiver filtros de cargo, área e unidade para manter o anonimato
+        const shouldApplyException: boolean =
+            areaArray.length === 0 &&
+            roleArray.length === 0 &&
+            unityArray.length === 0;
+
+        console.log("shouldApplyException", shouldApplyException);
+        console.log("users length", users.length);
+
+        const lessThanFive = this.shouldCheckSurveyLimit(
+            companyId,
+            users,
+            null,
+            shouldApplyException
+        );
+
         return {
             lessThanFive,
-            laborRisk: this.getLaborRisk(users, companyId, shouldApplyException),
-            brandRisk: this.getBrandRisk(users, companyId, shouldApplyException),
+            laborRisk: this.getLaborRisk(
+                users,
+                companyId,
+                shouldApplyException
+            ),
+            brandRisk: this.getBrandRisk(
+                users,
+                companyId,
+                shouldApplyException
+            ),
             nps: this.getNps(users, companyId, shouldApplyException),
-            realocateds: result
-                ? this.getRealocateds(result, companyId)
-                : "N/A",
-            termination: this.getTermination(users, companyId, shouldApplyException),
+            realocateds: this.getRealocateds(result || users, companyId),
+
+            termination: this.getTermination(
+                users,
+                companyId,
+                shouldApplyException
+            ),
             laborIssues: result
                 ? this.getLaborIssues(result, companyId, shouldApplyException)
                 : "N/A",
             welcomed: result
                 ? this.getWelcomed(result, companyId, users)
                 : "N/A",
-            feelingMap: this.getFeelingMap(users, companyId, shouldApplyException),
+            feelingMap: this.getFeelingMap(
+                users,
+                companyId,
+                shouldApplyException
+            ),
             shutDown: this.getShutDown(users, companyId, shouldApplyException),
             realocatedCount: this.getRealocatedsNumber(users),
             companyQuestions: await this.getAnswersCompanyQuestions(
@@ -155,27 +178,38 @@ class NPSSurveyAnswersUseCase {
         }
 
         console.log("ROLE USER 2", this.roleUser);
-        
+
         const EXCEPTION_COMPANY_IDS = [
             "a62a66b5-2ad4-446d-af44-95679cb9d580",
             "4c92a342-98d1-4742-9962-d9e46b93b2e1",
             "cf0ce5e8-0038-4c9f-bce5-9ba1545c786f",
-            "a6375b9e-b1fa-4eea-a970-fec411693ca9"
+            "a6375b9e-b1fa-4eea-a970-fec411693ca9",
         ];
-        
-        if (EXCEPTION_COMPANY_IDS.includes(companyId) && shouldApplyException) {            
+
+        if (EXCEPTION_COMPANY_IDS.includes(companyId) && shouldApplyException) {
             return false;
         }
-        
+
         console.log("CEHGOU AQUI");
-        
+
         const targetUsers = filterUsers || users;
-        
+
         return targetUsers.filter((user) => user?.surveyAnswered).length <= 5;
     }
 
-    getLaborRisk(users: any, companyId: any, shouldApplyException: boolean = true) {
-        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
+    getLaborRisk(
+        users: any,
+        companyId: any,
+        shouldApplyException: boolean = true
+    ) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                users,
+                null,
+                shouldApplyException
+            )
+        ) {
             return "N/A";
         }
 
@@ -201,8 +235,19 @@ class NPSSurveyAnswersUseCase {
         return (10 - laborRisk / npsSurveyAnswers.length).toFixed(2);
     }
 
-    getTermination(users: any, companyId, shouldApplyException: boolean = true) {
-        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
+    getTermination(
+        users: any,
+        companyId,
+        shouldApplyException: boolean = true
+    ) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                users,
+                null,
+                shouldApplyException
+            )
+        ) {
             return "N/A";
         }
         const laborRiskData = [];
@@ -240,12 +285,23 @@ class NPSSurveyAnswersUseCase {
         );
     }
 
-    getLaborIssues(users: any, companyId, shouldApplyException: boolean = true) {
+    getLaborIssues(
+        users: any,
+        companyId,
+        shouldApplyException: boolean = true
+    ) {
         const filterUsers = users.filter((employee: any) => {
             return employee.userId;
         });
 
-        if (this.shouldCheckSurveyLimit(companyId, filterUsers, null, shouldApplyException)) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                filterUsers,
+                null,
+                shouldApplyException
+            )
+        ) {
             return "N/A";
         }
 
@@ -274,8 +330,19 @@ class NPSSurveyAnswersUseCase {
         return ((laborRiskAlerts.length / users.length) * 100).toFixed(2) + "%";
     }
 
-    getBrandRisk(users: any, companyId: any, shouldApplyException: boolean = true) {
-        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
+    getBrandRisk(
+        users: any,
+        companyId: any,
+        shouldApplyException: boolean = true
+    ) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                users,
+                null,
+                shouldApplyException
+            )
+        ) {
             return "N/A";
         }
         const npsSurveyAnswers = users.filter((npsSurvey) => {
@@ -299,7 +366,14 @@ class NPSSurveyAnswersUseCase {
     }
 
     getNps(users: any, companyId: any, shouldApplyException: boolean = true) {
-        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                users,
+                null,
+                shouldApplyException
+            )
+        ) {
             return "N/A";
         }
         /*  try { */
@@ -355,16 +429,18 @@ class NPSSurveyAnswersUseCase {
     }
 
     getRealocateds(users: any, companyId) {
-        const filterUsers = users.filter((employee: any) => {
-            return employee.userId;
-        });
+        const filterUsers = users[0]?.user
+            ? users.filter((employee: any) => employee.userId)
+            : users;
+        console.log("FILTER USERS", filterUsers);
 
         if (filterUsers.length === 0) {
             return "0%";
         }
 
         const realocateds = filterUsers.filter((user: any) => {
-            return user.user?.realocated == "REALOCATED";
+            const status = user.user?.realocated || user.realocated;
+            return status === "REALOCATED";
         });
 
         return (
@@ -381,7 +457,14 @@ class NPSSurveyAnswersUseCase {
     }
 
     getFeelingMap(users: any, companyId, shouldApplyException: boolean = true) {
-        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                users,
+                null,
+                shouldApplyException
+            )
+        ) {
             return [];
         }
         const feelingsMapData = [];
@@ -433,7 +516,14 @@ class NPSSurveyAnswersUseCase {
     }
 
     getShutDown(users: any, companyId, shouldApplyException: boolean = true) {
-        if (this.shouldCheckSurveyLimit(companyId, users, null, shouldApplyException)) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                users,
+                null,
+                shouldApplyException
+            )
+        ) {
             return [];
         }
         const laborRiskData = [];
