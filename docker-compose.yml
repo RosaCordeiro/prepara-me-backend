@@ -46,8 +46,8 @@ services:
         depends_on:
             database:
                 condition: service_healthy
-        entrypoint: ["./scripts/docker-entrypoint.sh"]
-        command: ["npm", "run", "dev"]
+    entrypoint: ["bash", "/usr/app/scripts/docker-entrypoint.sh"]
+    command: ["npm", "run", "dev"]
 
 networks:
     app-network:
