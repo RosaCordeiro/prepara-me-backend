@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Função para exibir mensagens de status
 show_status() {
@@ -11,7 +11,6 @@ show_status "Iniciando o processo de restauração do banco de dados..."
 CONTAINER_NAME="database_preparame"
 
 show_status "Conectando ao container $CONTAINER_NAME..."
-
 
 # Caminho para a pasta de DUMPs
 DUMPS_PATH="dumps"
