@@ -1,3 +1,76 @@
+# Dependencies
 node_modules
+npm-debug.log*
+package-lock.json
+
+# Build outputs
+dist
+build
+.nyc_output
+coverage
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Configuration files
+ormconfig.json
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
 .git
-.vscode 
+.gitignore
+
+# Docker files (keeping current ones)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Test files
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+jest.config.ts
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp/*
+!tmp/.gitkeep
+
+# Database dumps
+dumps/*
+
+# Coverage reports
+coverage/*
+
+# ESLint
+.eslintrc.*
+.eslintignore
+
+# Prettier
+.prettierrc
+.prettierignore
+
+# TypeScript
+*.tsbuildinfo 
