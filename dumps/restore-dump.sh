@@ -45,6 +45,12 @@ fi
 
 
 # Conecta ao container e restaura o dump do PostgreSQL
-docker exec -i $CONTAINER_NAME /usr/bin/psql --host=localhost --port=5432 --username=docker -Fp -d preparame <  "./dumps/$DUMP_FILE"
+show_status "Iniciando restauração do dump: $DUMP_FILE"
+docker-compose exec -T database psql -U docker -d preparame < "./dumps/$DUMP_FILE"
 
-show_status "Restauração concluída."
+if [ $? -eq 0 ]; then
+    show_status "✅ Restauração concluída com sucesso!"
+else
+    show_status "❌ Erro durante a restauração do dump"
+    exit 1
+fi
