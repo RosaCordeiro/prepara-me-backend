@@ -190,7 +190,7 @@ class NPSSurveyAnswersUseCase {
             return false;
         }
 
-        console.log("CEHGOU AQUI");
+        console.log("CHEGOU AQUI");
 
         const targetUsers = filterUsers || users;
 
@@ -279,7 +279,7 @@ class NPSSurveyAnswersUseCase {
                         if (curr.answer === 0) return acc + 1;
                         return acc;
                     }, 0) /
-                        users.length) *
+                    users.length) *
                 100
             ).toFixed(2) + "%"
         );
@@ -290,27 +290,56 @@ class NPSSurveyAnswersUseCase {
         companyId,
         shouldApplyException: boolean = true
     ) {
-        const filterUsers = users.filter((employee: any) => {
-            return employee.userId;
+        console.log("-- [getLaborIssues] INPUT users:", users?.length);
+        console.log("-- [getLaborIssues] roleUser:", this.roleUser);
+        console.log("-- [getLaborIssues] shouldApplyException:", shouldApplyException);
+
+
+        if (this.roleUser === "ADMIN" || this.roleUser === "COMPANY_ADMIN") {
+            console.log("-- ADMIN / COMPANY_ADMIN ignoram anonimato");
+            shouldApplyException = false;
+        }
+
+
+        const normalizedUsers = users.map((employee: any) => {
+            if (employee?.user) return employee.user;
+            return employee;
         });
 
+        console.log(
+            "-- [getLaborIssues] normalizedUsers (users reais extraídos):",
+            normalizedUsers.length
+        );
+
+
+        const filterUsers = normalizedUsers.filter((user: any) => user?.id);
+
+        console.log(
+            "-- [getLaborIssues] filterUsers (válidos para cálculo):",
+            filterUsers.length
+        );
+
+
         if (
-            this.shouldCheckSurveyLimit(
-                companyId,
-                filterUsers,
-                null,
-                shouldApplyException
-            )
+            shouldApplyException &&
+            this.shouldCheckSurveyLimit(companyId, filterUsers, null, shouldApplyException)
         ) {
+
             return "N/A";
         }
 
+
         const laborRiskAlerts = filterUsers.filter((user: any) => {
-            return user?.user?.laborRiskAlert == "ALERT";
+            return user?.laborRiskAlert === "ALERT";
         });
+
+        console.log(
+            `-- [getLaborIssues] ALERTS: ${laborRiskAlerts.length}/${filterUsers.length}`
+        );
+
+
         return (
-            ((laborRiskAlerts.length / filterUsers.length) * 100).toFixed(2) +
-            "%"
+            ((laborRiskAlerts.length / filterUsers.length) * 100).toFixed(2) + "%"
         );
     }
 
