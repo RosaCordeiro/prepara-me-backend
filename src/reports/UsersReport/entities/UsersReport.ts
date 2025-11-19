@@ -2,13 +2,16 @@ import { User } from "@modules/accounts/infra/typeorm/entities/User";
 import { getRepository, Repository } from "typeorm";
 
 class UsersReports {
-    private repository: Repository<User>
+    private repository: Repository<User>;
 
     constructor() {
         this.repository = getRepository(User);
     }
 
-    async report () {
+    async report() {
+        const excludeProducts =
+            "'2c6971b1-db05-4abd-9213-e0b1cb0663e1', 'df6194cb-c473-4f96-9af7-12343e45344f'";
+
         const response = await this.repository.query(
             `
             select 
@@ -26,7 +29,7 @@ class UsersReports {
                 count(distinct mu) as collective_mentoring,
                 count(
                 	distinct case 
-	                	when ss."dateSchedule" <= current_timestamp and p.name not in ('Papo Prepara.me', 'Conversa com Prepara.me') then ss.id 
+	                	when ss."dateSchedule" <= current_timestamp and ss."productId" not in (${excludeProducts}) then ss.id 
 	                end
                 ) as individual_mentoring_realized,
                 COALESCE((
@@ -36,7 +39,7 @@ class UsersReports {
                     LEFT JOIN "subscriptionPlanProducts" spp ON spp."subscriptionPlanId" = sp.id
                     INNER JOIN "products" p2 ON p2.id = spp."productId"
                     WHERE ce."userId" = u.id
-                        AND p2.name not in ('Papo Prepara.me', 'Conversa com Prepara.me')
+                        AND p2.id not in (${excludeProducts})
                 ), 0) as individual_mentoring,
                 max(case 
 				    when exists (
@@ -66,10 +69,10 @@ class UsersReports {
                 c.name,
                 url.created_at
             `
-        )
+        );
 
-        return response
+        return response;
     }
 }
 
-export { UsersReports }
+export { UsersReports };
