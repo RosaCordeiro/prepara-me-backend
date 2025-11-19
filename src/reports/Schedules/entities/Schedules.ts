@@ -144,7 +144,22 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,  
+                    end as recolocacao,
+                        case
+        when u."companyId" is not null then
+            COALESCE(
+                (
+                    select 
+                        ce."manualCompany"  
+                    from "companyEmployees" ce 
+                    where "userId" = U.id   
+                    limit 1
+                ),
+                ''
+            )
+        else 
+            null
+    end as manual_company,  
                     (
                         select 
                             created_at 
@@ -309,7 +324,22 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,   
+                    end as recolocacao,
+                        case
+        when u."companyId" is not null then
+            COALESCE(
+                (
+                    select 
+                        ce."manualCompany"  
+                    from "companyEmployees" ce 
+                    where "userId" = U.id   
+                    limit 1
+                ),
+                ''
+            )
+        else 
+            null
+    end as manual_company,   
                     (
                         select 
                             created_at 
@@ -469,7 +499,22 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,   
+                    end as recolocacao,
+                        case
+        when u."companyId" is not null then
+            COALESCE(
+                (
+                    select 
+                        ce."manualCompany"  
+                    from "companyEmployees" ce 
+                    where "userId" = U.id   
+                    limit 1
+                ),
+                ''
+            )
+        else 
+            null
+    end as manual_company,   
                     (
                         select 
                             created_at 
@@ -627,7 +672,23 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,    
+                    end as recolocacao,
+                        case
+        when u."companyId" is not null then
+            COALESCE(
+                (
+                    select 
+                        ce."manualCompany"  
+                    from "companyEmployees" ce 
+                    where "userId" = U.id   
+                    limit 1
+                ),
+                ''
+            )
+        else 
+            null
+    end as manual_company,    
+                    
                     (
                         select 
                             created_at 
@@ -780,7 +841,22 @@ class Schedules {
                             end
                         else 
                             '-'
-                    end as recolocacao,    
+                    end as recolocacao,
+                        case
+        when u."companyId" is not null then
+            COALESCE(
+                (
+                    select 
+                        ce."manualCompany"  
+                    from "companyEmployees" ce 
+                    where "userId" = U.id   
+                    limit 1
+                ),
+                ''
+            )
+        else 
+            null
+    end as manual_company,    
                     (
                         select 
                             created_at 

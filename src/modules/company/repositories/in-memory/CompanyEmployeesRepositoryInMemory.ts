@@ -3,10 +3,22 @@ import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyE
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { CompanyEmployeeMap } from "@modules/company/mapper/CompanyEmployeeMap";
 import { ICompanyEmployeesRepository } from "../ICompanyEmployeesRepository";
+import { IGetParametersResponseDTO } from "@modules/company/dtos/IGetParametersResponseDTO";
 
 class CompanyEmployeesRepositoryInMemory
     implements ICompanyEmployeesRepository
 {
+    findById(id: string): Promise<CompanyEmployee> {
+        throw new Error("Method not implemented.");
+    }
+    getParameters(
+        id: string,
+        period?: any,
+        unity?: any,
+        area?: any
+    ): Promise<IGetParametersResponseDTO> {
+        throw new Error("Method not implemented.");
+    }
     accept(id: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
@@ -48,7 +60,8 @@ class CompanyEmployeesRepositoryInMemory
                 id,
                 easyRegister,
                 accepted,
-                realocate
+                realocate,
+                ma
             );
 
             this.companyEmployees[companyEmployeeIndex] = companyEmployee;

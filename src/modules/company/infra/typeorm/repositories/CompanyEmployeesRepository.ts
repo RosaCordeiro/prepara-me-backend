@@ -107,7 +107,9 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         const roles = rolesCompanyEmployee
             .map((ce) => ce.position)
             .filter((c) => c !== null && c !== undefined && c !== "");
-        const uniqueRoles = [...new Set(roles)].sort((a, b) => a.localeCompare(b));
+        const uniqueRoles = [...new Set(roles)].sort((a, b) =>
+            a.localeCompare(b)
+        );
 
         const periods = companyEmployee
             .map((ce) => ce.entryDate)
@@ -146,9 +148,10 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         return response.affected === 1;
     }
 
-    async realocate(id: string): Promise<boolean> {
+    async realocate(id: string, manualCompany: string): Promise<boolean> {
         const response = await this.repository.update(id, {
             realocate: true,
+            manualCompany: manualCompany,
         });
 
         return response.affected === 1;

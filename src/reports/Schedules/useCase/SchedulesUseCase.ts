@@ -35,6 +35,7 @@ class SchedulesUseCase {
             "Especialista",
             "Nota Especialista",
             "Recolocação",
+            "Empresa [Manual]",
             "Data Recolocação",
             "Data Envio Relatório",
             "Data Cancelamento",

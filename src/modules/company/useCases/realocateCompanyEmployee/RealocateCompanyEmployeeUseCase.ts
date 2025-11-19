@@ -19,13 +19,17 @@ class RealocateCompanyEmployeeUseCase {
         private usersRealocatedLogRepository: IUsersRealocatedLogRepository
     ) {}
 
-    async execute(id: string): Promise<boolean> {
+    async execute(id: string, manualCompany: string): Promise<boolean> {
         if (!id) {
             throw new AppError("Id is required!");
         }
 
+        if (!manualCompany) {
+            throw new AppError("Manual company is required!");
+        }
+
         try {
-            await this.companyEmployeesRepository.realocate(id);
+            await this.companyEmployeesRepository.realocate(id, manualCompany);
             const companyEmployee =
                 await this.companyEmployeesRepository.findById(id);
 
