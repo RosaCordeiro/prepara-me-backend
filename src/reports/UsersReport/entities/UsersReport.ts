@@ -24,7 +24,8 @@ class UsersReports {
                 date_part('month', u.created_at) as entry_month,
                 u."surveyAnswered",
                 url.created_at as realocation_date,
-                date_part('month', url.created_at) as realocation_month,
+                date_part('month', url.created_at) as realocation_month,               
+                ce."manualCompany" as manual_company,  
                 extract(day from (url.created_at - u.created_at)) as realocation_time,
                 count(distinct mu) as collective_mentoring,
                 count(
@@ -67,7 +68,8 @@ class UsersReports {
             group by
                 u.id,
                 c.name,
-                url.created_at
+                url.created_at,
+                ce."manualCompany"
             `
         );
 

@@ -54,6 +54,9 @@ class CompanyEmployee {
     realocate: boolean;
 
     @Column()
+    manualCompany: string;
+
+    @Column()
     entryDate: Date;
 
     @Column()
@@ -88,7 +91,8 @@ class CompanyEmployee {
         department: string,
         plan: string,
         unity: string,
-        packageDeclined: boolean
+        packageDeclined: boolean,
+        manualCompany: string
     ) {
         if (id) {
             this.id = id;
@@ -119,6 +123,7 @@ class CompanyEmployee {
         this.plan = plan;
         this.unity = unity;
         this.packageDeclined = packageDeclined;
+        this.manualCompany = manualCompany;
     }
 }
 

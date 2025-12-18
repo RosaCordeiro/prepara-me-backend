@@ -21,7 +21,7 @@ interface ICompanyEmployeesRepository {
     findById(id: string): Promise<CompanyEmployee>;
     remove(id: string): Promise<string>;
     accept(id: string): Promise<boolean>;
-    realocate(id: string): Promise<boolean>;
+    realocate(id: string, manualCompany: string): Promise<boolean>;
     getParameters(
         id: string,
         period?: any,
