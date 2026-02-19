@@ -4,7 +4,7 @@ import { SurveyQuestionsRepository } from "@modules/company/infra/typeorm/reposi
 
 class NPSSurveyAnswersController {
     async handle(request: Request, response: Response): Promise<Response> {
-        const { companyId, area, role, period, unity } = request.query;
+        const { companyId, area, role, period, unity, dismissalType } = request.query;
 
         const surveyQuestionsRepository = new SurveyQuestionsRepository();
         let npsSurveyAnswersUseCaseNew = new NPSSurveyAnswersUseCase(surveyQuestionsRepository);
@@ -16,6 +16,7 @@ class NPSSurveyAnswersController {
                 role,
                 period,
                 unity,
+                dismissalType,
             },
             request.user.id
         );

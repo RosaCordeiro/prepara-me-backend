@@ -3,6 +3,7 @@ interface IGetParametersResponseDTO {
     unity: string[];
     area: string[];
     role: string[];
+    dismissalType: string[];
 }
 
 export { IGetParametersResponseDTO };

@@ -14,7 +14,8 @@ class NPSSurveyAnswers {
         area: string[],
         role: string[],
         period: Date[][],
-        unity: string[]
+        unity: string[],
+        dismissalType: string[] = []
     ) {
 
         console.log("Company ID:", companyId);
@@ -54,6 +55,12 @@ class NPSSurveyAnswers {
         if (unity.length > 0) {
             NPSSurveyAnswers.andWhere(
                 `ce.unity IN (${unity.map((u) => `'${u}'`).join(",")})`
+            );
+        }
+
+        if (dismissalType.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.dismissalType IN (${dismissalType.map((dt) => `'${dt}'`).join(",")})`
             );
         }
 

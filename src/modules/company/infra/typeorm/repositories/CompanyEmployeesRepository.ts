@@ -1,5 +1,6 @@
 import { ICompanyEmployeeResponseDTO } from "@modules/company/dtos/ICompanyEmployeeResponseDTO";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
+import { IUpdateCompanyEmployeeDTO } from "@modules/company/dtos/IUpdateCompanyEmployeeDTO";
 import { CompanyEmployeeMap } from "@modules/company/mapper/CompanyEmployeeMap";
 import { ICompanyEmployeesRepository } from "@modules/company/repositories/ICompanyEmployeesRepository";
 import { getRepository, In, IsNull, Not, Repository } from "typeorm";
@@ -25,7 +26,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         id: string,
         period?: any,
         unity?: any,
-        area?: any
+        area?: any,
+        dismissalType?: any
     ): Promise<IGetParametersResponseDTO> {
         console.log("id", id);
 
@@ -88,14 +90,21 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             );
         } */
 
-        const companyEmployee = await query.getMany();
-
         if (area) {
             area = JSON.parse(area);
             query.andWhere(
                 `ce.department IN (${area.map((a) => `'${a}'`).join(",")})`
             );
         }
+
+        if (dismissalType) {
+            dismissalType = JSON.parse(dismissalType);
+            query.andWhere(
+                `ce.dismissalType IN (${dismissalType.map((dt) => `'${dt}'`).join(",")})`
+            );
+        }
+
+        const companyEmployee = await query.getMany();
 
         const rolesCompanyEmployee = await query.getMany();
 
@@ -130,11 +139,17 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
 
         const uniqueUnities = [...new Set(unities)];
 
+        const dismissalTypes = companyEmployee
+            .map((ce) => ce.dismissalType)
+            .filter((c) => c !== null && c !== undefined && c !== "");
+        const uniqueDismissalTypes = [...new Set(dismissalTypes)];
+
         return {
             period: uniquePeriods,
             unity: uniqueUnities,
             area: uniqueAreas,
             role: uniqueRoles,
+            dismissalType: uniqueDismissalTypes,
         };
     }
 
@@ -199,6 +214,42 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         return companyEmployee;
     }
 
+    async update({
+        id,
+        name,
+        documentId,
+        email,
+        phone,
+        entryDate,
+        position,
+        department,
+        plan,
+        unity,
+        dismissalType,
+    }: IUpdateCompanyEmployeeDTO): Promise<CompanyEmployee> {
+        const companyEmployee = await this.repository.findOne(id);
+
+        if (!companyEmployee) {
+            throw new Error("Company Employee not found");
+        }
+
+        // Atualiza apenas os campos que foram informados
+        if (name !== undefined) companyEmployee.name = name;
+        if (documentId !== undefined) companyEmployee.documentId = documentId;
+        if (email !== undefined) companyEmployee.email = email;
+        if (phone !== undefined) companyEmployee.phone = phone;
+        if (entryDate !== undefined) companyEmployee.entryDate = entryDate;
+        if (position !== undefined) companyEmployee.position = position;
+        if (department !== undefined) companyEmployee.department = department;
+        if (plan !== undefined) companyEmployee.plan = plan;
+        if (unity !== undefined) companyEmployee.unity = unity;
+        if (dismissalType !== undefined) companyEmployee.dismissalType = dismissalType;
+
+        await this.repository.save(companyEmployee);
+
+        return companyEmployee;
+    }
+
     async find({
         name,
         documentId,
@@ -209,6 +260,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         companyId,
         id,
         department,
+        dismissalType,
     }): Promise<ICompanyEmployeeResponseDTO[]> {
         const companyEmployeesQuery = this.repository
             .createQueryBuilder("ce")
@@ -269,6 +321,12 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             if (department) {
                 companyEmployeesQuery.andWhere("ce.department = :department", {
                     department: department,
+                });
+            }
+
+            if (dismissalType) {
+                companyEmployeesQuery.andWhere("ce.dismissalType = :dismissalType", {
+                    dismissalType: dismissalType,
                 });
             }
         }

@@ -1,4 +1,5 @@
 import { IUserResponseDTO } from "@modules/accounts/dtos/IUserResponseDTO";
+import { DismissalTypeEnum } from "@modules/company/enums/DismissalTypeEnum";
 import { Company } from "../infra/typeorm/entities/Company";
 
 interface ICompanyEmployeeResponseDTO {
@@ -20,6 +21,7 @@ interface ICompanyEmployeeResponseDTO {
     planId?: any;
     packageDeclined: boolean;
     manualCompany: string;
+    dismissalType?: DismissalTypeEnum;
 }
 
 export { ICompanyEmployeeResponseDTO };

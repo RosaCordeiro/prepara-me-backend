@@ -20,6 +20,7 @@ class CreateCompanyEmployeeController {
             unity,
             accepted,
             packageDeclined,
+            dismissalType,
         } = request.body;
 
         const { id: companyId } = request.params;
@@ -47,6 +48,7 @@ class CreateCompanyEmployeeController {
             unity,
             accepted,
             packageDeclined,
+            dismissalType,
         });
 
         return response.status(201).send(companyEmployee);

@@ -24,6 +24,7 @@ class CompanyEmployeeMap {
         unity,
         packageDeclined,
         manualCompany,
+        dismissalType,
     }: CompanyEmployee): ICompanyEmployeeResponseDTO {
         let easyRegisterMapped = "";
 
@@ -67,6 +68,7 @@ class CompanyEmployeeMap {
                     ? false
                     : packageDeclined,
             manualCompany,
+            dismissalType,
         });
 
         return companyEmployee;

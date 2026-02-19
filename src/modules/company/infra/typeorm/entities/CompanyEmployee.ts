@@ -8,6 +8,7 @@ import {
     PrimaryColumn,
 } from "typeorm";
 import { v4 as uuidV4 } from "uuid";
+import { DismissalTypeEnum } from "@modules/company/enums/DismissalTypeEnum";
 import { Company } from "./Company";
 
 @Entity("companyEmployees")
@@ -74,6 +75,9 @@ class CompanyEmployee {
     @Column()
     packageDeclined: boolean;
 
+    @Column({ type: "enum", enum: DismissalTypeEnum, nullable: true })
+    dismissalType: DismissalTypeEnum;
+
     constructor(
         name: string,
         subscribeToken: string,
@@ -92,7 +96,8 @@ class CompanyEmployee {
         plan: string,
         unity: string,
         packageDeclined: boolean,
-        manualCompany: string
+        manualCompany: string,
+        dismissalType?: DismissalTypeEnum
     ) {
         if (id) {
             this.id = id;
@@ -124,6 +129,7 @@ class CompanyEmployee {
         this.unity = unity;
         this.packageDeclined = packageDeclined;
         this.manualCompany = manualCompany;
+        this.dismissalType = dismissalType;
     }
 }
 

@@ -1,5 +1,6 @@
 import { ICompanyEmployeeResponseDTO } from "@modules/company/dtos/ICompanyEmployeeResponseDTO";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
+import { IUpdateCompanyEmployeeDTO } from "@modules/company/dtos/IUpdateCompanyEmployeeDTO";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { CompanyEmployeeMap } from "@modules/company/mapper/CompanyEmployeeMap";
 import { ICompanyEmployeesRepository } from "../ICompanyEmployeesRepository";
@@ -15,7 +16,8 @@ class CompanyEmployeesRepositoryInMemory
         id: string,
         period?: any,
         unity?: any,
-        area?: any
+        area?: any,
+        dismissalType?: any
     ): Promise<IGetParametersResponseDTO> {
         throw new Error("Method not implemented.");
     }
@@ -86,6 +88,46 @@ class CompanyEmployeesRepositoryInMemory
 
             return companyEmployee;
         }
+    }
+
+    async update({
+        id,
+        name,
+        documentId,
+        email,
+        phone,
+        entryDate,
+        position,
+        department,
+        plan,
+        unity,
+        dismissalType,
+    }: IUpdateCompanyEmployeeDTO): Promise<CompanyEmployee> {
+        const employeeIndex = this.companyEmployees.findIndex(
+            (employee) => employee.id === id
+        );
+
+        if (employeeIndex === -1) {
+            throw new Error("Company Employee not found");
+        }
+
+        const employee = this.companyEmployees[employeeIndex];
+
+        // Atualiza apenas os campos que foram informados
+        if (name !== undefined) employee.name = name;
+        if (documentId !== undefined) employee.documentId = documentId;
+        if (email !== undefined) employee.email = email;
+        if (phone !== undefined) employee.phone = phone;
+        if (entryDate !== undefined) employee.entryDate = entryDate;
+        if (position !== undefined) employee.position = position;
+        if (department !== undefined) employee.department = department;
+        if (plan !== undefined) employee.plan = plan;
+        if (unity !== undefined) employee.unity = unity;
+        if (dismissalType !== undefined) employee.dismissalType = dismissalType;
+
+        this.companyEmployees[employeeIndex] = employee;
+
+        return employee;
     }
 
     async find({
