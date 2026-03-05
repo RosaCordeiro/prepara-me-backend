@@ -25,6 +25,11 @@ class CompanyEmployeeMap {
         packageDeclined,
         manualCompany,
         dismissalType,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
     }: CompanyEmployee): ICompanyEmployeeResponseDTO {
         let easyRegisterMapped = "";
 
@@ -39,8 +44,8 @@ class CompanyEmployeeMap {
 
         user = {
             ...user,
-            avatarUrl: user?.avatarUrl,
-        };
+            avatarUrl: user?.avatarUrl || undefined,
+        } as any;
 
         const companyEmployee = instanceToInstance({
             id,
@@ -50,11 +55,7 @@ class CompanyEmployeeMap {
             subscribeToken,
             phone,
             email,
-            user: user
-                ? process.env.NODE_ENV === "test"
-                    ? user
-                    : UserMap.toDTO(user)
-                : null,
+            user: user ? UserMap.toDTO(user) : null,
             easyRegister: { label: easyRegisterMapped, value: easyRegister },
             accepted,
             realocate,
@@ -69,6 +70,11 @@ class CompanyEmployeeMap {
                     : packageDeclined,
             manualCompany,
             dismissalType,
+            gender,
+            etnia,
+            pcd,
+            city,
+            state,
         });
 
         return companyEmployee;

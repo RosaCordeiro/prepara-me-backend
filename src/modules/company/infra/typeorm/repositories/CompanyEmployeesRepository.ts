@@ -93,14 +93,14 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         if (area) {
             area = JSON.parse(area);
             query.andWhere(
-                `ce.department IN (${area.map((a) => `'${a}'`).join(",")})`
+                `ce.department IN (${area.map((a: string) => `'${a}'`).join(",")})`
             );
         }
 
         if (dismissalType) {
             dismissalType = JSON.parse(dismissalType);
             query.andWhere(
-                `ce.dismissalType IN (${dismissalType.map((dt) => `'${dt}'`).join(",")})`
+                `ce.dismissalType IN (${dismissalType.map((dt: string) => `'${dt}'`).join(",")})`
             );
         }
 
@@ -109,40 +109,82 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         const rolesCompanyEmployee = await query.getMany();
 
         const areas = companyEmployee
-            .map((ce) => ce.department)
-            .filter((c) => c !== null && c !== undefined && c !== "");
+            .map((ce: CompanyEmployee) => ce.department)
+            .filter((c: string | undefined) => c !== null && c !== undefined && c !== "") as string[];
         const uniqueAreas = [...new Set(areas)];
 
         const roles = rolesCompanyEmployee
-            .map((ce) => ce.position)
-            .filter((c) => c !== null && c !== undefined && c !== "");
-        const uniqueRoles = [...new Set(roles)].sort((a, b) =>
+            .map((ce: CompanyEmployee) => ce.position)
+            .filter((c: string | undefined) => c !== null && c !== undefined && c !== "") as string[];
+        const uniqueRoles = [...new Set(roles)].sort((a: string, b: string) =>
             a.localeCompare(b)
         );
 
         const periods = companyEmployee
-            .map((ce) => ce.entryDate)
-            .filter((c) => c !== null && c !== undefined);
+            .map((ce: CompanyEmployee) => ce.entryDate)
+            .filter((c: Date | undefined) => c !== null && c !== undefined);
 
         const formattedDates = formatDates(periods);
 
-        const uniquePeriods = [...new Set(formattedDates)].sort((a, b) => {
+        const uniquePeriods = [...new Set(formattedDates)].sort((a: string, b: string) => {
             const yearA = parseInt(a.split(" ")[2]);
             const yearB = parseInt(b.split(" ")[2]);
             return yearA - yearB;
         });
 
         const unities = companyEmployee
-            .map((ce) => ce.unity)
-            .filter((c) => c !== null && c !== undefined && c !== "");
+            .map((ce: CompanyEmployee) => ce.unity)
+            .filter((c: string | undefined) => c !== null && c !== undefined && c !== "") as string[];
         console.log("unities", unities);
 
         const uniqueUnities = [...new Set(unities)];
 
         const dismissalTypes = companyEmployee
-            .map((ce) => ce.dismissalType)
-            .filter((c) => c !== null && c !== undefined && c !== "");
+            .map((ce: CompanyEmployee) => ce.dismissalType)
+            .filter((c: any) => c !== null && c !== undefined && c !== "") as string[];
         const uniqueDismissalTypes = [...new Set(dismissalTypes)];
+
+        const genders = companyEmployee
+            .map((ce: CompanyEmployee) => ce.gender)
+            .filter((c: string | undefined) => c !== null && c !== undefined && c !== "") as string[];
+        const uniqueGenders = [...new Set(genders)];
+
+        const etnias = companyEmployee
+            .map((ce: CompanyEmployee) => ce.etnia)
+            .filter((c: string | undefined) => c !== null && c !== undefined && c !== "") as string[];
+        const uniqueEtnias = [...new Set(etnias)];
+
+        const pcds = companyEmployee
+            .map((ce: CompanyEmployee) => ce.pcd)
+            .filter((c: boolean | undefined) => c !== null && c !== undefined)
+            .map((c: boolean) => c ? "Sim" : "Não") as string[];
+        const uniquePcds = [...new Set(pcds)];
+
+        const cities = companyEmployee
+            .map((ce: CompanyEmployee) => {
+                if (!ce.city) return null;
+                try {
+                    const parsed = JSON.parse(ce.city);
+                    return parsed.value || parsed.label || ce.city;
+                } catch {
+                    return ce.city;
+                }
+            })
+            .filter((c: string | null) => c !== null && c !== undefined && c !== "") as string[];
+        const uniqueCities = [...new Set(cities)];
+
+        const states = companyEmployee
+            .map((ce: CompanyEmployee) => {
+                if (!ce.state) return null;
+                try {
+                    const parsed = JSON.parse(ce.state);
+                    return parsed.value || parsed.label || ce.state;
+                } catch {
+                    return ce.state;
+                }
+            })
+            .filter((c: string | null) => c !== null && c !== undefined && c !== "") as string[];
+        const uniqueStates = [...new Set(states)];
 
         return {
             period: uniquePeriods,
@@ -150,6 +192,11 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             area: uniqueAreas,
             role: uniqueRoles,
             dismissalType: uniqueDismissalTypes,
+            gender: uniqueGenders,
+            etnia: uniqueEtnias,
+            pcd: uniquePcds,
+            city: uniqueCities,
+            state: uniqueStates,
         };
     }
 
@@ -189,6 +236,11 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         unity,
         accepted,
         packageDeclined,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const companyEmployee = this.repository.create({
             companyId,
@@ -207,6 +259,11 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             unity,
             accepted,
             packageDeclined,
+            gender,
+            etnia,
+            pcd,
+            city,
+            state,
         });
 
         await this.repository.save(companyEmployee);
@@ -226,6 +283,11 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         plan,
         unity,
         dismissalType,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
     }: IUpdateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const companyEmployee = await this.repository.findOne(id);
 
@@ -244,6 +306,11 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         if (plan !== undefined) companyEmployee.plan = plan;
         if (unity !== undefined) companyEmployee.unity = unity;
         if (dismissalType !== undefined) companyEmployee.dismissalType = dismissalType;
+        if (gender !== undefined) companyEmployee.gender = gender;
+        if (etnia !== undefined) companyEmployee.etnia = etnia;
+        if (pcd !== undefined) companyEmployee.pcd = pcd;
+        if (city !== undefined) companyEmployee.city = city;
+        if (state !== undefined) companyEmployee.state = state;
 
         await this.repository.save(companyEmployee);
 
@@ -261,6 +328,17 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         id,
         department,
         dismissalType,
+    }: {
+        name?: string;
+        documentId?: string;
+        userId?: string;
+        notUserId?: string;
+        phone?: string;
+        email?: string;
+        companyId?: string;
+        id?: string;
+        department?: string;
+        dismissalType?: string;
     }): Promise<ICompanyEmployeeResponseDTO[]> {
         const companyEmployeesQuery = this.repository
             .createQueryBuilder("ce")
@@ -334,7 +412,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         const companyEmployees = await companyEmployeesQuery.getMany();
 
         const companyEmployeesMapped = companyEmployees.map(
-            (companyEmployee) => {
+            (companyEmployee: CompanyEmployee) => {
                 return CompanyEmployeeMap.toDTO(companyEmployee);
             }
         );

@@ -12,6 +12,11 @@ interface IUpdateCompanyEmployeeDTO {
     plan?: string;
     unity?: string;
     dismissalType?: DismissalTypeEnum;
+    gender?: string;
+    etnia?: string;
+    pcd?: boolean;
+    city?: string;
+    state?: string;
 }
 
 export { IUpdateCompanyEmployeeDTO };

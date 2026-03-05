@@ -22,6 +22,11 @@ interface ICompanyEmployeeResponseDTO {
     packageDeclined: boolean;
     manualCompany: string;
     dismissalType?: DismissalTypeEnum;
+    gender?: string;
+    etnia?: string;
+    pcd?: boolean;
+    city?: string;
+    state?: string;
 }
 
 export { ICompanyEmployeeResponseDTO };

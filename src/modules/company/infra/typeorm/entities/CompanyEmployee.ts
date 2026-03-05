@@ -43,7 +43,7 @@ class CompanyEmployee {
 
     @OneToOne(() => User)
     @JoinColumn()
-    user: User;
+    user?: User;
 
     @Column()
     easyRegister: string;
@@ -76,7 +76,22 @@ class CompanyEmployee {
     packageDeclined: boolean;
 
     @Column({ type: "enum", enum: DismissalTypeEnum, nullable: true })
-    dismissalType: DismissalTypeEnum;
+    dismissalType?: DismissalTypeEnum;
+
+    @Column({ nullable: true })
+    gender?: string;
+
+    @Column({ nullable: true })
+    etnia?: string;
+
+    @Column({ nullable: true })
+    pcd?: boolean;
+
+    @Column({ nullable: true })
+    city?: string;
+
+    @Column({ nullable: true })
+    state?: string;
 
     constructor(
         name: string,
@@ -97,21 +112,15 @@ class CompanyEmployee {
         unity: string,
         packageDeclined: boolean,
         manualCompany: string,
-        dismissalType?: DismissalTypeEnum
+        dismissalType?: DismissalTypeEnum,
+        gender?: string,
+        etnia?: string,
+        pcd?: boolean,
+        city?: string,
+        state?: string
     ) {
-        if (id) {
-            this.id = id;
-        }
-
-        if (!this.id) {
-            this.id = uuidV4();
-        }
-
-        if (!this.accepted) {
-            this.accepted = false;
-        } else {
-            this.accepted = accepted;
-        }
+        this.id = id || uuidV4();
+        this.accepted = accepted !== undefined ? accepted : false;
 
         this.name = name;
         this.subscribeToken = subscribeToken;
@@ -129,7 +138,12 @@ class CompanyEmployee {
         this.unity = unity;
         this.packageDeclined = packageDeclined;
         this.manualCompany = manualCompany;
-        this.dismissalType = dismissalType;
+        if (dismissalType !== undefined) this.dismissalType = dismissalType;
+        if (gender !== undefined) this.gender = gender;
+        if (etnia !== undefined) this.etnia = etnia;
+        if (pcd !== undefined) this.pcd = pcd;
+        if (city !== undefined) this.city = city;
+        if (state !== undefined) this.state = state;
     }
 }
 

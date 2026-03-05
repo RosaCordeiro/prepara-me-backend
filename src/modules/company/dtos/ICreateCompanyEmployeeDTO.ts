@@ -19,6 +19,11 @@ interface ICreateCompanyEmployeeDTO {
     unity?: string;
     packageDeclined?: boolean;
     dismissalType?: DismissalTypeEnum;
+    gender?: string;
+    etnia?: string;
+    pcd?: boolean;
+    city?: string;
+    state?: string;
 }
 
 export { ICreateCompanyEmployeeDTO };

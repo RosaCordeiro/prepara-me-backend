@@ -41,29 +41,49 @@ class CompanyEmployeesRepositoryInMemory
         easyRegister,
         accepted,
         realocate,
+        entryDate,
+        position,
+        department,
+        plan,
+        unity,
+        packageDeclined,
+        dismissalType,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         if (id) {
-            let companyEmployees = this.companyEmployees;
-
-            let companyEmployeeIndex = companyEmployees.findIndex(
-                (companyEmployee) => {
-                    return companyEmployee.id === id;
-                }
-            )[0];
+            const companyEmployeeIndex = this.companyEmployees.findIndex(
+                (companyEmployee) => companyEmployee.id === id
+            );
 
             const companyEmployee = new CompanyEmployee(
                 name,
                 subscribeToken,
                 companyId,
-                documentId,
-                phone,
-                email,
-                userId,
+                documentId || "",
+                phone || "",
+                email || "",
+                userId || "",
                 id,
-                easyRegister,
-                accepted,
-                realocate,
-                ma
+                easyRegister || "",
+                accepted || false,
+                realocate || false,
+                entryDate || new Date(),
+                position || "",
+                department || "",
+                plan || "",
+                unity || "",
+                packageDeclined || false,
+                "",
+                dismissalType,
+                gender,
+                etnia,
+                pcd,
+                city,
+                state
             );
 
             this.companyEmployees[companyEmployeeIndex] = companyEmployee;
@@ -74,14 +94,27 @@ class CompanyEmployeesRepositoryInMemory
                 name,
                 subscribeToken,
                 companyId,
-                documentId,
-                phone,
-                email,
-                userId,
-                id,
-                easyRegister,
-                accepted,
-                realocate
+                documentId || "",
+                phone || "",
+                email || "",
+                userId || "",
+                id || "",
+                easyRegister || "",
+                accepted || false,
+                realocate || false,
+                entryDate || new Date(),
+                position || "",
+                department || "",
+                plan || "",
+                unity || "",
+                packageDeclined || false,
+                "",
+                dismissalType,
+                gender,
+                etnia,
+                pcd,
+                city,
+                state
             );
 
             this.companyEmployees.push(companyEmployee);
@@ -102,6 +135,11 @@ class CompanyEmployeesRepositoryInMemory
         plan,
         unity,
         dismissalType,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
     }: IUpdateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const employeeIndex = this.companyEmployees.findIndex(
             (employee) => employee.id === id
@@ -124,6 +162,11 @@ class CompanyEmployeesRepositoryInMemory
         if (plan !== undefined) employee.plan = plan;
         if (unity !== undefined) employee.unity = unity;
         if (dismissalType !== undefined) employee.dismissalType = dismissalType;
+        if (gender !== undefined) employee.gender = gender;
+        if (etnia !== undefined) employee.etnia = etnia;
+        if (pcd !== undefined) employee.pcd = pcd;
+        if (city !== undefined) employee.city = city;
+        if (state !== undefined) employee.state = state;
 
         this.companyEmployees[employeeIndex] = employee;
 
@@ -139,6 +182,15 @@ class CompanyEmployeesRepositoryInMemory
         phone,
         email,
         id,
+    }: {
+        name?: string;
+        documentId?: string;
+        companyId?: string;
+        userId?: string;
+        notUserId?: string;
+        phone?: string;
+        email?: string;
+        id?: string;
     }): Promise<ICompanyEmployeeResponseDTO[]> {
         let companyEmployees = this.companyEmployees;
 

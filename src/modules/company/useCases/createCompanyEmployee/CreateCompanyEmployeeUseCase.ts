@@ -45,6 +45,11 @@ class CreateCompanyEmployeeUseCase {
         accepted,
         packageDeclined,
         dismissalType,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         console.log({
             companyId,
@@ -64,6 +69,11 @@ class CreateCompanyEmployeeUseCase {
             accepted,
             packageDeclined,
             dismissalType,
+            gender,
+            etnia,
+            pcd,
+            city,
+            state,
         });
 
         /* if (1 === 1) {
@@ -124,6 +134,11 @@ class CreateCompanyEmployeeUseCase {
             accepted,
             packageDeclined,
             dismissalType,
+            gender,
+            etnia,
+            pcd,
+            city,
+            state,
         };
 
         if (!id) {
@@ -179,6 +194,11 @@ class CreateCompanyEmployeeUseCase {
             if (accepted !== undefined) updateData.accepted = accepted;
             if (packageDeclined !== undefined) updateData.packageDeclined = packageDeclined;
             if (dismissalType !== undefined) updateData.dismissalType = dismissalType;
+            if (gender !== undefined) updateData.gender = gender;
+            if (etnia !== undefined) updateData.etnia = etnia;
+            if (pcd !== undefined) updateData.pcd = pcd;
+            if (city !== undefined) updateData.city = city;
+            if (state !== undefined) updateData.state = state;
 
             const updatedEmployee = await this.companyEmployeesRepository.update({
                 id,
@@ -266,6 +286,11 @@ class CreateCompanyEmployeeUseCase {
                     unity: companyEmployeeCreated.unity,
                     packageDeclined: companyEmployeeCreated.packageDeclined,
                     dismissalType: companyEmployeeCreated.dismissalType,
+                    gender: companyEmployeeCreated.gender,
+                    etnia: companyEmployeeCreated.etnia,
+                    pcd: companyEmployeeCreated.pcd,
+                    city: companyEmployeeCreated.city,
+                    state: companyEmployeeCreated.state,
                 });
 
             if (!id && plan && planModel.subscriptionPlanProduct)

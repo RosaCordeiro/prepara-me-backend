@@ -21,6 +21,11 @@ class CreateCompanyEmployeeController {
             accepted,
             packageDeclined,
             dismissalType,
+            gender,
+            etnia,
+            pcd,
+            city,
+            state,
         } = request.body;
 
         const { id: companyId } = request.params;
@@ -49,6 +54,11 @@ class CreateCompanyEmployeeController {
             accepted,
             packageDeclined,
             dismissalType,
+            gender,
+            etnia,
+            pcd: pcd !== undefined && pcd !== null ? (pcd === true || pcd === 'true' || pcd === 1) : undefined,
+            city,
+            state,
         });
 
         return response.status(201).send(companyEmployee);
