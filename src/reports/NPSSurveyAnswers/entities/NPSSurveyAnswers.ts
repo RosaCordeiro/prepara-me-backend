@@ -15,7 +15,12 @@ class NPSSurveyAnswers {
         role: string[],
         period: Date[][],
         unity: string[],
-        dismissalType: string[] = []
+        dismissalType: string[] = [],
+        gender: string[] = [],
+        etnia: string[] = [],
+        pcd: string[] = [],
+        city: string[] = [],
+        state: string[] = []
     ) {
 
         console.log("Company ID:", companyId);
@@ -61,6 +66,37 @@ class NPSSurveyAnswers {
         if (dismissalType.length > 0) {
             NPSSurveyAnswers.andWhere(
                 `ce.dismissalType IN (${dismissalType.map((dt) => `'${dt}'`).join(",")})`
+            );
+        }
+
+        if (gender.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.gender IN (${gender.map((g) => `'${g}'`).join(",")})`
+            );
+        }
+
+        if (etnia.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.etnia IN (${etnia.map((e) => `'${e}'`).join(",")})`
+            );
+        }
+
+        if (pcd.length > 0) {
+            const pcdBooleans = pcd.map((p) => p === "Sim" ? "true" : "false");
+            NPSSurveyAnswers.andWhere(
+                `ce.pcd IN (${pcdBooleans.join(",")})`
+            );
+        }
+
+        if (city.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.city IN (${city.map((c) => `'${c}'`).join(",")})`
+            );
+        }
+
+        if (state.length > 0) {
+            NPSSurveyAnswers.andWhere(
+                `ce.state IN (${state.map((s) => `'${s}'`).join(",")})`
             );
         }
 

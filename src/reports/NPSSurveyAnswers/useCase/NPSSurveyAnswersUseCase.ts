@@ -17,12 +17,17 @@ class NPSSurveyAnswersUseCase {
 
     private roleUser: string = "USER";
 
-    async execute({ companyId, area, role, period, unity, dismissalType }, userId) {
+    async execute({ companyId, area, role, period, unity, dismissalType, gender, etnia, pcd, city, state }, userId) {
         const areaArray = area ? JSON.parse(area) : [];
         const roleArray = role ? JSON.parse(role) : [];
         const periodArray = period ? JSON.parse(period) : [];
         const unityArray = unity ? JSON.parse(unity) : [];
         const dismissalTypeArray = dismissalType ? JSON.parse(dismissalType) : [];
+        const genderArray = gender ? JSON.parse(gender) : [];
+        const etniaArray = etnia ? JSON.parse(etnia) : [];
+        const pcdArray = pcd ? JSON.parse(pcd) : [];
+        const cityArray = city ? JSON.parse(city) : [];
+        const stateArray = state ? JSON.parse(state) : [];
 
         const npsSurveyAnswers = new NPSSurveyAnswers();
         const usersRepository = new UsersRepository();
@@ -53,7 +58,12 @@ class NPSSurveyAnswersUseCase {
                 roleArray,
                 periodArray.map((p) => getFirstAndLastDayOfMonth(p)),
                 unityArray,
-                dismissalTypeArray
+                dismissalTypeArray,
+                genderArray,
+                etniaArray,
+                pcdArray,
+                cityArray,
+                stateArray
             );
 
             users = result.map((r) => r.user);
@@ -66,7 +76,12 @@ class NPSSurveyAnswersUseCase {
             areaArray.length === 0 &&
             roleArray.length === 0 &&
             unityArray.length === 0 &&
-            dismissalTypeArray.length === 0;
+            dismissalTypeArray.length === 0 &&
+            genderArray.length === 0 &&
+            etniaArray.length === 0 &&
+            pcdArray.length === 0 &&
+            cityArray.length === 0 &&
+            stateArray.length === 0;
 
         console.log("shouldApplyException", shouldApplyException);
         console.log("users length", users.length);
