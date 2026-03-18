@@ -8,6 +8,7 @@ import {
     PrimaryColumn,
 } from "typeorm";
 import { v4 as uuidV4 } from "uuid";
+import { DismissalTypeEnum } from "@modules/company/enums/DismissalTypeEnum";
 import { Company } from "./Company";
 
 @Entity("companyEmployees")
@@ -42,7 +43,7 @@ class CompanyEmployee {
 
     @OneToOne(() => User)
     @JoinColumn()
-    user: User;
+    user?: User;
 
     @Column()
     easyRegister: string;
@@ -74,6 +75,24 @@ class CompanyEmployee {
     @Column()
     packageDeclined: boolean;
 
+    @Column({ type: "enum", enum: DismissalTypeEnum, nullable: true })
+    dismissalType?: DismissalTypeEnum;
+
+    @Column({ nullable: true })
+    gender?: string;
+
+    @Column({ nullable: true })
+    etnia?: string;
+
+    @Column({ nullable: true })
+    pcd?: boolean;
+
+    @Column({ nullable: true })
+    city?: string;
+
+    @Column({ nullable: true })
+    state?: string;
+
     constructor(
         name: string,
         subscribeToken: string,
@@ -92,21 +111,16 @@ class CompanyEmployee {
         plan: string,
         unity: string,
         packageDeclined: boolean,
-        manualCompany: string
+        manualCompany: string,
+        dismissalType?: DismissalTypeEnum,
+        gender?: string,
+        etnia?: string,
+        pcd?: boolean,
+        city?: string,
+        state?: string
     ) {
-        if (id) {
-            this.id = id;
-        }
-
-        if (!this.id) {
-            this.id = uuidV4();
-        }
-
-        if (!this.accepted) {
-            this.accepted = false;
-        } else {
-            this.accepted = accepted;
-        }
+        this.id = id || uuidV4();
+        this.accepted = accepted !== undefined ? accepted : false;
 
         this.name = name;
         this.subscribeToken = subscribeToken;
@@ -124,6 +138,12 @@ class CompanyEmployee {
         this.unity = unity;
         this.packageDeclined = packageDeclined;
         this.manualCompany = manualCompany;
+        if (dismissalType !== undefined) this.dismissalType = dismissalType;
+        if (gender !== undefined) this.gender = gender;
+        if (etnia !== undefined) this.etnia = etnia;
+        if (pcd !== undefined) this.pcd = pcd;
+        if (city !== undefined) this.city = city;
+        if (state !== undefined) this.state = state;
     }
 }
 

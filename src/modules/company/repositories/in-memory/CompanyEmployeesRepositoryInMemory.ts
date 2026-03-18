@@ -1,5 +1,6 @@
 import { ICompanyEmployeeResponseDTO } from "@modules/company/dtos/ICompanyEmployeeResponseDTO";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
+import { IUpdateCompanyEmployeeDTO } from "@modules/company/dtos/IUpdateCompanyEmployeeDTO";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { CompanyEmployeeMap } from "@modules/company/mapper/CompanyEmployeeMap";
 import { ICompanyEmployeesRepository } from "../ICompanyEmployeesRepository";
@@ -15,7 +16,8 @@ class CompanyEmployeesRepositoryInMemory
         id: string,
         period?: any,
         unity?: any,
-        area?: any
+        area?: any,
+        dismissalType?: any
     ): Promise<IGetParametersResponseDTO> {
         throw new Error("Method not implemented.");
     }
@@ -39,29 +41,49 @@ class CompanyEmployeesRepositoryInMemory
         easyRegister,
         accepted,
         realocate,
+        entryDate,
+        position,
+        department,
+        plan,
+        unity,
+        packageDeclined,
+        dismissalType,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         if (id) {
-            let companyEmployees = this.companyEmployees;
-
-            let companyEmployeeIndex = companyEmployees.findIndex(
-                (companyEmployee) => {
-                    return companyEmployee.id === id;
-                }
-            )[0];
+            const companyEmployeeIndex = this.companyEmployees.findIndex(
+                (companyEmployee) => companyEmployee.id === id
+            );
 
             const companyEmployee = new CompanyEmployee(
                 name,
                 subscribeToken,
                 companyId,
-                documentId,
-                phone,
-                email,
-                userId,
+                documentId || "",
+                phone || "",
+                email || "",
+                userId || "",
                 id,
-                easyRegister,
-                accepted,
-                realocate,
-                ma
+                easyRegister || "",
+                accepted || false,
+                realocate || false,
+                entryDate || new Date(),
+                position || "",
+                department || "",
+                plan || "",
+                unity || "",
+                packageDeclined || false,
+                "",
+                dismissalType,
+                gender,
+                etnia,
+                pcd,
+                city,
+                state
             );
 
             this.companyEmployees[companyEmployeeIndex] = companyEmployee;
@@ -72,20 +94,83 @@ class CompanyEmployeesRepositoryInMemory
                 name,
                 subscribeToken,
                 companyId,
-                documentId,
-                phone,
-                email,
-                userId,
-                id,
-                easyRegister,
-                accepted,
-                realocate
+                documentId || "",
+                phone || "",
+                email || "",
+                userId || "",
+                id || "",
+                easyRegister || "",
+                accepted || false,
+                realocate || false,
+                entryDate || new Date(),
+                position || "",
+                department || "",
+                plan || "",
+                unity || "",
+                packageDeclined || false,
+                "",
+                dismissalType,
+                gender,
+                etnia,
+                pcd,
+                city,
+                state
             );
 
             this.companyEmployees.push(companyEmployee);
 
             return companyEmployee;
         }
+    }
+
+    async update({
+        id,
+        name,
+        documentId,
+        email,
+        phone,
+        entryDate,
+        position,
+        department,
+        plan,
+        unity,
+        dismissalType,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
+    }: IUpdateCompanyEmployeeDTO): Promise<CompanyEmployee> {
+        const employeeIndex = this.companyEmployees.findIndex(
+            (employee) => employee.id === id
+        );
+
+        if (employeeIndex === -1) {
+            throw new Error("Company Employee not found");
+        }
+
+        const employee = this.companyEmployees[employeeIndex];
+
+        // Atualiza apenas os campos que foram informados
+        if (name !== undefined) employee.name = name;
+        if (documentId !== undefined) employee.documentId = documentId;
+        if (email !== undefined) employee.email = email;
+        if (phone !== undefined) employee.phone = phone;
+        if (entryDate !== undefined) employee.entryDate = entryDate;
+        if (position !== undefined) employee.position = position;
+        if (department !== undefined) employee.department = department;
+        if (plan !== undefined) employee.plan = plan;
+        if (unity !== undefined) employee.unity = unity;
+        if (dismissalType !== undefined) employee.dismissalType = dismissalType;
+        if (gender !== undefined) employee.gender = gender;
+        if (etnia !== undefined) employee.etnia = etnia;
+        if (pcd !== undefined) employee.pcd = pcd;
+        if (city !== undefined) employee.city = city;
+        if (state !== undefined) employee.state = state;
+
+        this.companyEmployees[employeeIndex] = employee;
+
+        return employee;
     }
 
     async find({
@@ -97,6 +182,15 @@ class CompanyEmployeesRepositoryInMemory
         phone,
         email,
         id,
+    }: {
+        name?: string;
+        documentId?: string;
+        companyId?: string;
+        userId?: string;
+        notUserId?: string;
+        phone?: string;
+        email?: string;
+        id?: string;
     }): Promise<ICompanyEmployeeResponseDTO[]> {
         let companyEmployees = this.companyEmployees;
 

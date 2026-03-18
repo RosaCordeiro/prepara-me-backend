@@ -5,6 +5,7 @@ import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
 import { IUserProductsAvailableRepository } from "@modules/accounts/repositories/IUserProductsAvailableRepository";
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
+import { IUpdateCompanyEmployeeDTO } from "@modules/company/dtos/IUpdateCompanyEmployeeDTO";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { ICompanyEmployeesRepository } from "@modules/company/repositories/ICompanyEmployeesRepository";
 import { ISubscriptionPlansRepository } from "@modules/products/repositories/ISubscriptionPlansRepository";
@@ -43,6 +44,12 @@ class CreateCompanyEmployeeUseCase {
         unity,
         accepted,
         packageDeclined,
+        dismissalType,
+        gender,
+        etnia,
+        pcd,
+        city,
+        state,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         console.log({
             companyId,
@@ -61,6 +68,12 @@ class CreateCompanyEmployeeUseCase {
             unity,
             accepted,
             packageDeclined,
+            dismissalType,
+            gender,
+            etnia,
+            pcd,
+            city,
+            state,
         });
 
         /* if (1 === 1) {
@@ -90,7 +103,7 @@ class CreateCompanyEmployeeUseCase {
         console.log("aqui", plan);
 
         let planModel = null;
-        
+
         console.log("planModel", planModel);
         if (!id && plan) {
             planModel = await this.subscriptionPlansRepository.findById(plan);
@@ -120,10 +133,15 @@ class CreateCompanyEmployeeUseCase {
             unity,
             accepted,
             packageDeclined,
+            dismissalType,
+            gender,
+            etnia,
+            pcd,
+            city,
+            state,
         };
 
         if (!id) {
-            
             cEmp["plan"] = planModel?.name;
 
             const companyEmployeeEmailExists =
@@ -154,6 +172,40 @@ class CreateCompanyEmployeeUseCase {
             if (userEmailExists.length > 0 || userDocumentExists.length > 0) {
                 throw new AppError("User already exists");
             }
+        } else {
+            // Lógica de UPDATE quando ID é fornecido
+            const existingEmployee = await this.companyEmployeesRepository.findById(id);
+            
+            if (!existingEmployee) {
+                throw new AppError("Company Employee not found");
+            }
+
+            // Atualiza apenas os campos fornecidos
+            const updateData: any = {};
+            if (name !== undefined) updateData.name = name;
+            if (documentId !== undefined) updateData.documentId = documentId;
+            if (email !== undefined) updateData.email = email;
+            if (phone !== undefined) updateData.phone = phone;
+            if (entryDate !== undefined) updateData.entryDate = entryDate;
+            if (position !== undefined) updateData.position = position;
+            if (department !== undefined) updateData.department = department;
+            if (plan !== undefined) updateData.plan = plan;
+            if (unity !== undefined) updateData.unity = unity;
+            if (accepted !== undefined) updateData.accepted = accepted;
+            if (packageDeclined !== undefined) updateData.packageDeclined = packageDeclined;
+            if (dismissalType !== undefined) updateData.dismissalType = dismissalType;
+            if (gender !== undefined) updateData.gender = gender;
+            if (etnia !== undefined) updateData.etnia = etnia;
+            if (pcd !== undefined) updateData.pcd = pcd;
+            if (city !== undefined) updateData.city = city;
+            if (state !== undefined) updateData.state = state;
+
+            const updatedEmployee = await this.companyEmployeesRepository.update({
+                id,
+                ...updateData,
+            });
+
+            return updatedEmployee;
         }
 
         let companyEmployeeCreated =
@@ -192,6 +244,7 @@ class CreateCompanyEmployeeUseCase {
                 ),
                 periodTest: new Date(),
                 subscribeToken: companyEmployeeCreated.subscribeToken,
+                dismissalType: companyEmployeeCreated.dismissalType,
             });
 
             const userCreated = await this.usersRepository.create({
@@ -232,6 +285,12 @@ class CreateCompanyEmployeeUseCase {
                     plan: companyEmployeeCreated.plan,
                     unity: companyEmployeeCreated.unity,
                     packageDeclined: companyEmployeeCreated.packageDeclined,
+                    dismissalType: companyEmployeeCreated.dismissalType,
+                    gender: companyEmployeeCreated.gender,
+                    etnia: companyEmployeeCreated.etnia,
+                    pcd: companyEmployeeCreated.pcd,
+                    city: companyEmployeeCreated.city,
+                    state: companyEmployeeCreated.state,
                 });
 
             if (!id && plan && planModel.subscriptionPlanProduct)

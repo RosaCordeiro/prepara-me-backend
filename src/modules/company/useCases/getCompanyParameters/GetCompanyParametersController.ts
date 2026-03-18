@@ -6,7 +6,7 @@ class GetCompanyParametersController {
     async handle(request: Request, response: Response): Promise<Response> {
         const { id } = request.params;
 
-        const { period, unity, area } = request.query;
+        const { period, unity, area, dismissalType } = request.query;
 
         const getCompanyParametersUseCase = container.resolve(
             GetCompanyParametersUseCase
@@ -16,7 +16,8 @@ class GetCompanyParametersController {
             id,
             period,
             unity,
-            area
+            area,
+            dismissalType
         );
 
         return response.status(200).send(companies);
