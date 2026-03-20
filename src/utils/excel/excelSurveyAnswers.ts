@@ -13,27 +13,36 @@ export class GeradorExcelSurveyAnswersTools {
             const ws = wb.addWorksheet("Respostas");
 
             const headers = [
-                "CPF",
+                "ID",
+                "Nome",
                 "Email",
-                "NPS (0-10)",
-                "Risco Trabalhista (0-10)",
-                "Risco de Marca (0-10)",
-                "Survey Respondido (Sim/Não)",
-                "Alerta Risco Trabalhista (ALERT/NORMAL)",
-                "Realocado (REALOCATED/NOT_REALOCATED)",
-                "Labor Risk JSON",
-                "Feelings Map JSON",
-                "Brand Risk JSON",
-                "Survey Question JSON",
-                "Departamento",
-                "Cargo",
+                "Origem",
+                "Empresa",
+                "Período",
                 "Unidade",
-                "Tipo de Demissão",
-                "Gênero",
-                "Etnia",
-                "PCD (Sim/Não)",
-                "Cidade",
-                "Estado",
+                "Área",
+                "Cargo",
+                "Alíviado(a). Já queria sair da empresa.",
+                "Surpreso(a). Não esperava pela demissão.",
+                "Injustiçado(a). Minha demissão foi injusta.",
+                "Bravo(a). Não concordo em como a demissão aconteceu.",
+                "Desesperado(a). Preciso me recolocar urgente.",
+                "Inseguro(a). Estou com a autoestima abalada com a demissão.",
+                "Inseguro(a). Não sei quais os passos para me recolocar.",
+                "Triste. Gostava muito do meu trabalho.",
+                "Triste. Gostava muito da empresa.",
+                "Triste. Gostava muito da minha equipe de trabalho.",
+                "Indiferente. Nem feliz e nem triste.",
+                "Indiferente. Ainda tentando entender tudo que aconteceu.",
+                "O quanto você recomenda a empresa para seus amigos e familiares trabalharem?",
+                "O quanto você se sentia respeitado na empresa, de forma geral?",
+                "O quanto você se sentia respeitado pelos seus líderes?",
+                "O quanto você gostaria de voltar a trabalhar nesta empresa no futuro?",
+                "O quanto você achou que seu processo de demissão foi respeitoso?",
+                "O quanto você se sentia seguro fisicamente na empresa?",
+                "O quanto você se sentia seguro emocionalmente na empresa?",
+                "O quanto você gostava do pacote de benefícios e remuneração da empresa?",
+                "Os cálculos da rescisão estão corretos?",
             ];
 
             for (let i = 0; i < headers.length; i++) {
@@ -49,10 +58,10 @@ export class GeradorExcelSurveyAnswersTools {
             const path = join(
                 __dirname,
                 "../../../tmp",
-                `Modelo Respostas Survey.xlsx`
+                `Modelo Respostas.xlsx`
             );
 
-            wb.write(path, function (err: any, status: any) {
+            wb.write(path, function (err: any, _status: any) {
                 if (err !== undefined && err !== null) {
                     resolve({
                         success: false,

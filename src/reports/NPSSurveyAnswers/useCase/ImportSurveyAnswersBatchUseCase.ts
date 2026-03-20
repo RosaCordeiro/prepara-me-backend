@@ -3,36 +3,74 @@ import { UsersRepository } from "@modules/accounts/infra/typeorm/repositories/Us
 import { CompanyEmployeesRepository } from "@modules/company/infra/typeorm/repositories/CompanyEmployeesRepository";
 import { User } from "@modules/accounts/infra/typeorm/entities/User";
 import { UserLaborRiskAlertEnum } from "@modules/accounts/enums/UserLaborRiskAlertEnum";
-import { UserRealocatedEnum } from "@modules/accounts/enums/UserRealocatedEnum";
-import { DismissalTypeEnum } from "@modules/company/enums/DismissalTypeEnum";
 
 interface ImportResult {
     success: number;
     errors: { row: number; reason: string }[];
 }
 
+
 const HEADERS = [
-    "CPF",
+    "ID",
+    "Nome",
     "Email",
-    "NPS (0-10)",
-    "Risco Trabalhista (0-10)",
-    "Risco de Marca (0-10)",
-    "Survey Respondido (Sim/Não)",
-    "Alerta Risco Trabalhista (ALERT/NORMAL)",
-    "Realocado (REALOCATED/NOT_REALOCATED)",
-    "Labor Risk JSON",
-    "Feelings Map JSON",
-    "Brand Risk JSON",
-    "Survey Question JSON",
-    "Departamento",
-    "Cargo",
+    "Origem",
+    "Empresa",
+    "Período",
     "Unidade",
-    "Tipo de Demissão",
-    "Gênero",
-    "Etnia",
-    "PCD (Sim/Não)",
-    "Cidade",
-    "Estado",
+    "Área",
+    "Cargo",
+    "Alíviado(a). Já queria sair da empresa.",
+    "Surpreso(a). Não esperava pela demissão.",
+    "Injustiçado(a). Minha demissão foi injusta.",
+    "Bravo(a). Não concordo em como a demissão aconteceu.",
+    "Desesperado(a). Preciso me recolocar urgente.",
+    "Inseguro(a). Estou com a autoestima abalada com a demissão.",
+    "Inseguro(a). Não sei quais os passos para me recolocar.",
+    "Triste. Gostava muito do meu trabalho.",
+    "Triste. Gostava muito da empresa.",
+    "Triste. Gostava muito da minha equipe de trabalho.",
+    "Indiferente. Nem feliz e nem triste.",
+    "Indiferente. Ainda tentando entender tudo que aconteceu.",
+    "O quanto você recomenda a empresa para seus amigos e familiares trabalharem?",
+    "O quanto você se sentia respeitado na empresa, de forma geral?",
+    "O quanto você se sentia respeitado pelos seus líderes?",
+    "O quanto você gostaria de voltar a trabalhar nesta empresa no futuro?",
+    "O quanto você achou que seu processo de demissão foi respeitoso?",
+    "O quanto você se sentia seguro fisicamente na empresa?",
+    "O quanto você se sentia seguro emocionalmente na empresa?",
+    "O quanto você gostava do pacote de benefícios e remuneração da empresa?",
+    "Os cálculos da rescisão estão corretos?",
+];
+
+const FEELINGS_KEYS = [
+    "Alíviado(a). Já queria sair da empresa.",
+    "Surpreso(a). Não esperava pela demissão.",
+    "Injustiçado(a). Minha demissão foi injusta.",
+    "Bravo(a). Não concordo em como a demissão aconteceu.",
+    "Desesperado(a). Preciso me recolocar urgente.",
+    "Inseguro(a). Estou com a autoestima abalada com a demissão.",
+    "Inseguro(a). Não sei quais os passos para me recolocar.",
+    "Triste. Gostava muito do meu trabalho.",
+    "Triste. Gostava muito da empresa.",
+    "Triste. Gostava muito da minha equipe de trabalho.",
+    "Indiferente. Nem feliz e nem triste.",
+    "Indiferente. Ainda tentando entender tudo que aconteceu.",
+];
+
+const LABOR_RISK_QUESTIONS = [
+    "O quanto você se sentia respeitado na empresa, de forma geral?",
+    "O quanto você se sentia respeitado pelos seus líderes?",
+    "O quanto você gostaria de voltar a trabalhar nesta empresa no futuro?",
+    "O quanto você achou que seu processo de demissão foi respeitoso?",
+    "O quanto você se sentia seguro fisicamente na empresa?",
+    "O quanto você se sentia seguro emocionalmente na empresa?",
+    "O quanto você gostava do pacote de benefícios e remuneração da empresa?",
+    "Os cálculos da rescisão estão corretos?",
+];
+
+const BRAND_RISK_QUESTIONS = [
+    "O quanto você recomenda a empresa para seus amigos e familiares trabalharem?",
 ];
 
 class ImportSurveyAnswersBatchUseCase {
@@ -42,7 +80,8 @@ class ImportSurveyAnswersBatchUseCase {
     async execute(filePath: string): Promise<ImportResult> {
         const rows: any[][] = await readXlsxFile(filePath);
 
-        if (rows[0].length !== HEADERS.length) {
+
+        if (rows[0].length < HEADERS.length) {
             return { success: 0, errors: [{ row: 0, reason: "Cabeçalho inválido: número de colunas incorreto" }] };
         }
 
@@ -59,114 +98,91 @@ class ImportSurveyAnswersBatchUseCase {
             const rowNum = i + 1;
 
             try {
-                const cpf = row[0] ? row[0].toString().replace(/\D/g, "") : "";
-                const email = row[1] ? row[1].toString().trim() : "";
+                const userId = row[0] ? row[0].toString().trim() : "";
+                const email = row[2] ? row[2].toString().trim() : "";
 
-                if (!cpf && !email) {
-                    result.errors.push({ row: rowNum, reason: "CPF e Email ausentes — ao menos um é obrigatório" });
+                if (!userId && !email) {
+                    result.errors.push({ row: rowNum, reason: "ID e Email ausentes — ao menos um é obrigatório" });
                     continue;
                 }
 
-                let user = cpf
-                    ? await this.usersRepository.findByDocument(cpf)
-                    : null;
+                let user: User | null = null;
+
+                if (userId) {
+                    user = await this.usersRepository.findById(userId);
+                }
 
                 if (!user && email) {
                     user = await this.usersRepository.findByEmail(email);
                 }
 
                 if (!user) {
-                    result.errors.push({ row: rowNum, reason: `Usuário não encontrado (CPF: ${cpf}, Email: ${email})` });
+                    result.errors.push({ row: rowNum, reason: `Usuário não encontrado (ID: ${userId}, Email: ${email})` });
                     continue;
                 }
 
-                const nps = row[2] !== null && row[2] !== undefined ? Number(row[2]) : undefined;
-                const laborRisk = row[3] !== null && row[3] !== undefined ? Number(row[3]) : undefined;
-                const brandRisk = row[4] !== null && row[4] !== undefined ? Number(row[4]) : undefined;
 
-                if (nps !== undefined && (isNaN(nps) || nps < 0 || nps > 10)) {
-                    result.errors.push({ row: rowNum, reason: `NPS inválido: ${row[2]}` });
-                    continue;
-                }
-                if (laborRisk !== undefined && (isNaN(laborRisk) || laborRisk < 0 || laborRisk > 10)) {
-                    result.errors.push({ row: rowNum, reason: `Risco Trabalhista inválido: ${row[3]}` });
-                    continue;
-                }
-                if (brandRisk !== undefined && (isNaN(brandRisk) || brandRisk < 0 || brandRisk > 10)) {
-                    result.errors.push({ row: rowNum, reason: `Risco de Marca inválido: ${row[4]}` });
-                    continue;
-                }
+                const feelingsMap = FEELINGS_KEYS.map((feeling, idx) => {
+                    const val = row[9 + idx];
+                    return {
+                        feeling,
+                        checked: val ? val.toString().trim().toLowerCase() === "sim" : false,
+                    };
+                });
 
-                const surveyAnswered = row[5]?.toString().trim().toLowerCase() === "sim";
 
-                const laborRiskAlertRaw = row[6]?.toString().trim().toUpperCase();
-                if (laborRiskAlertRaw && !Object.values(UserLaborRiskAlertEnum).includes(laborRiskAlertRaw as UserLaborRiskAlertEnum)) {
-                    result.errors.push({ row: rowNum, reason: `Alerta Risco Trabalhista inválido: ${row[6]}` });
-                    continue;
-                }
+                const nps = row[21] !== null && row[21] !== undefined ? Number(row[21]) : undefined;
 
-                const realocatedRaw = row[7]?.toString().trim().toUpperCase();
-                if (realocatedRaw && !Object.values(UserRealocatedEnum).includes(realocatedRaw as UserRealocatedEnum)) {
-                    result.errors.push({ row: rowNum, reason: `Realocado inválido: ${row[7]}` });
-                    continue;
-                }
 
-                const jsonFields = [
-                    { value: row[8], name: "Labor Risk JSON" },
-                    { value: row[9], name: "Feelings Map JSON" },
-                    { value: row[10], name: "Brand Risk JSON" },
-                    { value: row[11], name: "Survey Question JSON" },
-                ];
+                const laborRisk = LABOR_RISK_QUESTIONS.map((question, idx) => {
+                    const val = row[22 + idx];
+                    let answer: any = val !== null && val !== undefined ? val : null;
 
-                let jsonError = false;
-                for (const field of jsonFields) {
-                    if (field.value) {
-                        try { JSON.parse(field.value.toString()); } catch {
-                            result.errors.push({ row: rowNum, reason: `${field.name} inválido: não é um JSON válido` });
-                            jsonError = true;
-                            break;
-                        }
+                    if (question === "Os cálculos da rescisão estão corretos?" && answer !== null) {
+                        answer = answer.toString().trim().toLowerCase() === "sim" ? 10 : 0;
                     }
-                }
-                if (jsonError) continue;
+                    return { index: idx, question, answer: answer !== null ? Number(answer) : null };
+                });
+
+                const brandRisk = BRAND_RISK_QUESTIONS.map((question, idx) => ({
+                    index: idx,
+                    question,
+                    answer: nps !== undefined ? nps : null,
+                }));
+
+
+                const laborRiskAnswers = laborRisk.filter(q => q.answer !== null && q.answer !== undefined && q.question !== "Os cálculos da rescisão estão corretos?");
+                const laborRiskAvg = laborRiskAnswers.length > 0
+                    ? laborRiskAnswers.reduce((acc, q) => acc + (q.answer as number), 0) / laborRiskAnswers.length
+                    : undefined;
+
+                const brandRiskAvg = nps !== undefined ? nps : undefined;
 
                 // Upsert User
-                const userUpdate: Partial<User> = {};
+                const userUpdate: Partial<User> = {
+                    surveyAnswered: true,
+                    feelingsMapJSON: JSON.stringify(feelingsMap),
+                    laborRiskJSON: JSON.stringify(laborRisk),
+                    brandRiskJSON: JSON.stringify(brandRisk),
+                    laborRiskAlert: laborRiskAvg !== undefined && laborRiskAvg <= 5
+                        ? UserLaborRiskAlertEnum.ALERT
+                        : UserLaborRiskAlertEnum.NORMAL,
+                };
+
                 if (nps !== undefined) userUpdate.NPSSurvey = nps;
-                if (laborRisk !== undefined) userUpdate.laborRisk = laborRisk;
-                if (brandRisk !== undefined) userUpdate.brandRisk = brandRisk;
-                if (row[5] !== null && row[5] !== undefined) userUpdate.surveyAnswered = surveyAnswered;
-                if (laborRiskAlertRaw) userUpdate.laborRiskAlert = laborRiskAlertRaw as UserLaborRiskAlertEnum;
-                if (realocatedRaw) userUpdate.realocated = realocatedRaw as UserRealocatedEnum;
-                if (row[8]) userUpdate.laborRiskJSON = row[8].toString();
-                if (row[9]) userUpdate.feelingsMapJSON = row[9].toString();
-                if (row[10]) userUpdate.brandRiskJSON = row[10].toString();
-                if (row[11]) userUpdate.surveyQuestion = row[11].toString();
+                if (laborRiskAvg !== undefined) userUpdate.laborRisk = laborRiskAvg;
+                if (brandRiskAvg !== undefined) userUpdate.brandRisk = brandRiskAvg;
 
-                const userRepo = (this.usersRepository as any).repository;
-                await userRepo.update(user.id, userUpdate);
+                await (this.usersRepository as any).repository.update(user.id, userUpdate);
 
-                // Upsert CompanyEmployee
+                // Upsert CompanyEmployee 
                 const employees = await this.companyEmployeesRepository.find({ userId: user.id });
-
                 if (employees.length > 0) {
-                    const dismissalTypeRaw = row[15]?.toString().trim().toLowerCase();
-                    if (dismissalTypeRaw && !Object.values(DismissalTypeEnum).includes(dismissalTypeRaw as DismissalTypeEnum)) {
-                        result.errors.push({ row: rowNum, reason: `Tipo de Demissão inválido: ${dismissalTypeRaw}` });
-                        continue;
-                    }
-
                     await this.companyEmployeesRepository.update({
                         id: employees[0].id,
-                        department: row[12]?.toString() || undefined,
-                        position: row[13]?.toString() || undefined,
-                        unity: row[14]?.toString() || undefined,
-                        dismissalType: dismissalTypeRaw as DismissalTypeEnum || undefined,
-                        gender: row[16]?.toString() || undefined,
-                        etnia: row[17]?.toString() || undefined,
-                        pcd: row[18] !== null && row[18] !== undefined ? row[18].toString().trim().toLowerCase() === "sim" : undefined,
-                        city: row[19]?.toString() || undefined,
-                        state: row[20]?.toString() || undefined,
+                        unity: row[6] ? row[6].toString() : undefined,
+                        department: row[7] ? row[7].toString() : undefined,
+                        position: row[8] ? row[8].toString() : undefined,
                     });
                 }
 
