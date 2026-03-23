@@ -9,6 +9,16 @@ interface ImportResult {
     errors: { row: number; reason: string }[];
 }
 
+interface ParsedRow {
+    user: User;
+    employeeId: string | null;
+    userUpdate: Partial<User>;
+    employeeUpdate: {
+        unity?: string;
+        department?: string;
+        position?: string;
+    };
+}
 
 const HEADERS = [
     "ID",
@@ -58,19 +68,16 @@ const FEELINGS_KEYS = [
     "Indiferente. Ainda tentando entender tudo que aconteceu.",
 ];
 
-const LABOR_RISK_QUESTIONS = [
-    "O quanto você se sentia respeitado na empresa, de forma geral?",
-    "O quanto você se sentia respeitado pelos seus líderes?",
-    "O quanto você gostaria de voltar a trabalhar nesta empresa no futuro?",
-    "O quanto você achou que seu processo de demissão foi respeitoso?",
-    "O quanto você se sentia seguro fisicamente na empresa?",
-    "O quanto você se sentia seguro emocionalmente na empresa?",
-    "O quanto você gostava do pacote de benefícios e remuneração da empresa?",
-    "Os cálculos da rescisão estão corretos?",
-];
 
-const BRAND_RISK_QUESTIONS = [
-    "O quanto você recomenda a empresa para seus amigos e familiares trabalharem?",
+const LABOR_RISK_QUESTIONS = [
+    { index: 0, question: "O quanto você se sentia respeitado na empresa, de forma geral?" },
+    { index: 1, question: "O quanto você se sentia respeitado pelos seus líderes?" },
+    { index: 2, question: "O quanto você gostaria de voltar a trabalhar nesta empresa no futuro?" },
+    { index: 3, question: "O quanto você achou que seu processo de demissão foi respeitoso?" },
+    { index: 4, question: "O quanto você se sentia seguro fisicamente na empresa?" },
+    { index: 5, question: "O quanto você se sentia seguro emocionalmente na empresa?" },
+    { index: 6, question: "O quanto você gostava do pacote de benefícios e remuneração da empresa?" },
+    { index: 9, question: "Os cálculos da rescisão estão corretos?" },
 ];
 
 class ImportSurveyAnswersBatchUseCase {
@@ -79,7 +86,6 @@ class ImportSurveyAnswersBatchUseCase {
 
     async execute(filePath: string): Promise<ImportResult> {
         const rows: any[][] = await readXlsxFile(filePath);
-
 
         if (rows[0].length < HEADERS.length) {
             return { success: 0, errors: [{ row: 0, reason: "Cabeçalho inválido: número de colunas incorreto" }] };
@@ -91,109 +97,145 @@ class ImportSurveyAnswersBatchUseCase {
             }
         }
 
-        const result: ImportResult = { success: 0, errors: [] };
+        const errors: { row: number; reason: string }[] = [];
+        const parsedRows: ParsedRow[] = [];
 
-        for (let i = 1; i < rows.length; i++) {
+
+        let lastDataRow = rows.length - 1;
+        while (lastDataRow >= 1 && rows[lastDataRow].every((cell) => cell === null || cell === undefined || cell === "")) {
+            lastDataRow--;
+        }
+
+
+        for (let i = 1; i <= lastDataRow; i++) {
             const row = rows[i];
             const rowNum = i + 1;
 
-            try {
-                const userId = row[0] ? row[0].toString().trim() : "";
-                const email = row[2] ? row[2].toString().trim() : "";
+            const userId = row[0] != null ? row[0].toString().trim() : "";
+            const name = row[1] != null ? row[1].toString().trim() : "";
+            const email = row[2] != null ? row[2].toString().trim() : "";
+            const origin = row[3] != null ? row[3].toString().trim() : "";
 
-                if (!userId && !email) {
-                    result.errors.push({ row: rowNum, reason: "ID e Email ausentes — ao menos um é obrigatório" });
-                    continue;
-                }
+            const missingFields: string[] = [];
+            if (!userId) missingFields.push("ID");
+            if (!name) missingFields.push("Nome");
+            if (!email) missingFields.push("Email");
+            if (!origin) missingFields.push("Origem");
 
-                let user: User | null = null;
+            if (missingFields.length > 0) {
+                errors.push({ row: rowNum, reason: `Campos obrigatórios ausentes: ${missingFields.join(", ")}` });
+                continue;
+            }
 
-                if (userId) {
-                    user = await this.usersRepository.findById(userId);
-                }
+            let user: User | null = null;
 
-                if (!user && email) {
-                    user = await this.usersRepository.findByEmail(email);
-                }
+            if (userId) user = await this.usersRepository.findById(userId);
+            if (!user && email) user = await this.usersRepository.findByEmail(email);
 
-                if (!user) {
-                    result.errors.push({ row: rowNum, reason: `Usuário não encontrado (ID: ${userId}, Email: ${email})` });
-                    continue;
-                }
+            if (!user) {
+                errors.push({ row: rowNum, reason: `Usuário não encontrado (ID: ${userId}, Email: ${email})` });
+                continue;
+            }
 
+            const nps = row[21] !== null && row[21] !== undefined ? Number(row[21]) : undefined;
 
-                const feelingsMap = FEELINGS_KEYS.map((feeling, idx) => {
-                    const val = row[9 + idx];
-                    return {
-                        feeling,
-                        checked: val ? val.toString().trim().toLowerCase() === "sim" : false,
-                    };
-                });
-
-
-                const nps = row[21] !== null && row[21] !== undefined ? Number(row[21]) : undefined;
+            if (nps !== undefined && (isNaN(nps) || nps < 0 || nps > 10)) {
+                errors.push({ row: rowNum, reason: `NPS inválido: ${row[21]} — deve ser entre 0 e 10` });
+                continue;
+            }
 
 
-                const laborRisk = LABOR_RISK_QUESTIONS.map((question, idx) => {
-                    const val = row[22 + idx];
-                    let answer: any = val !== null && val !== undefined ? val : null;
-
-                    if (question === "Os cálculos da rescisão estão corretos?" && answer !== null) {
-                        answer = answer.toString().trim().toLowerCase() === "sim" ? 10 : 0;
+            let riskError = false;
+            for (let q = 0; q < LABOR_RISK_QUESTIONS.length - 1; q++) {
+                const val = row[22 + q];
+                if (val !== null && val !== undefined && val !== "") {
+                    const num = Number(val);
+                    if (isNaN(num) || num < 0 || num > 10) {
+                        errors.push({ row: rowNum, reason: `Valor inválido na coluna "${LABOR_RISK_QUESTIONS[q].question}": ${val} — deve ser entre 0 e 10` });
+                        riskError = true;
+                        break;
                     }
-                    return { index: idx, question, answer: answer !== null ? Number(answer) : null };
-                });
-
-                const brandRisk = BRAND_RISK_QUESTIONS.map((question, idx) => ({
-                    index: idx,
-                    question,
-                    answer: nps !== undefined ? nps : null,
-                }));
-
-
-                const laborRiskAnswers = laborRisk.filter(q => q.answer !== null && q.answer !== undefined && q.question !== "Os cálculos da rescisão estão corretos?");
-                const laborRiskAvg = laborRiskAnswers.length > 0
-                    ? laborRiskAnswers.reduce((acc, q) => acc + (q.answer as number), 0) / laborRiskAnswers.length
-                    : undefined;
-
-                const brandRiskAvg = nps !== undefined ? nps : undefined;
-
-                // Upsert User
-                const userUpdate: Partial<User> = {
-                    surveyAnswered: true,
-                    feelingsMapJSON: JSON.stringify(feelingsMap),
-                    laborRiskJSON: JSON.stringify(laborRisk),
-                    brandRiskJSON: JSON.stringify(brandRisk),
-                    laborRiskAlert: laborRiskAvg !== undefined && laborRiskAvg <= 5
-                        ? UserLaborRiskAlertEnum.ALERT
-                        : UserLaborRiskAlertEnum.NORMAL,
-                };
-
-                if (nps !== undefined) userUpdate.NPSSurvey = nps;
-                if (laborRiskAvg !== undefined) userUpdate.laborRisk = laborRiskAvg;
-                if (brandRiskAvg !== undefined) userUpdate.brandRisk = brandRiskAvg;
-
-                await (this.usersRepository as any).repository.update(user.id, userUpdate);
-
-                // Upsert CompanyEmployee 
-                const employees = await this.companyEmployeesRepository.find({ userId: user.id });
-                if (employees.length > 0) {
-                    await this.companyEmployeesRepository.update({
-                        id: employees[0].id,
-                        unity: row[6] ? row[6].toString() : undefined,
-                        department: row[7] ? row[7].toString() : undefined,
-                        position: row[8] ? row[8].toString() : undefined,
-                    });
                 }
+            }
+            if (riskError) continue;
 
-                result.success++;
-            } catch (error) {
-                const message = error instanceof Error ? error.message : String(error);
-                result.errors.push({ row: rowNum, reason: `Erro inesperado: ${message}` });
+
+            const feelingsMap = FEELINGS_KEYS.map((feeling, idx) => {
+                const val = row[9 + idx];
+                return { feeling, checked: val ? val.toString().trim().toLowerCase() === "sim" : false };
+            });
+
+
+            const laborRisk = LABOR_RISK_QUESTIONS.map((item, idx) => {
+                const val = row[22 + idx];
+                let answer: number | null = val !== null && val !== undefined && val !== "" ? Number(val) : null;
+                if (item.question === "Os cálculos da rescisão estão corretos?" && answer !== null) {
+                    answer = val?.toString().trim().toLowerCase() === "sim" ? 10 : 0;
+                }
+                return { index: item.index, question: item.question, answer };
+            });
+
+            const brandRisk = [{
+                index: 0,
+                question: "O quanto você recomenda a empresa para seus amigos e familiares trabalharem?",
+                answer: nps ?? null,
+            }];
+
+            const laborRiskAnswers = laborRisk.filter(q =>
+                q.answer !== null &&
+                q.answer !== undefined &&
+                q.index !== 9
+            );
+            const laborRiskAvg = laborRiskAnswers.length > 0
+                ? laborRiskAnswers.reduce((acc, q) => acc + (q.answer as number), 0) / laborRiskAnswers.length
+                : undefined;
+
+            const userUpdate: Partial<User> = {
+                surveyAnswered: true,
+                feelingsMapJSON: JSON.stringify(feelingsMap),
+                laborRiskJSON: JSON.stringify(laborRisk),
+                brandRiskJSON: JSON.stringify(brandRisk),
+                laborRiskAlert: laborRiskAvg !== undefined && laborRiskAvg <= 5
+                    ? UserLaborRiskAlertEnum.ALERT
+                    : UserLaborRiskAlertEnum.NORMAL,
+            };
+
+            if (nps !== undefined) userUpdate.NPSSurvey = nps;
+            if (laborRiskAvg !== undefined) userUpdate.laborRisk = laborRiskAvg;
+            if (nps !== undefined) userUpdate.brandRisk = nps;
+
+            const employees = await this.companyEmployeesRepository.find({ userId: user.id });
+
+            parsedRows.push({
+                user,
+                employeeId: employees.length > 0 ? employees[0].id : null,
+                userUpdate,
+                employeeUpdate: {
+                    unity: row[6] ? row[6].toString() : undefined,
+                    department: row[7] ? row[7].toString() : undefined,
+                    position: row[8] ? row[8].toString() : undefined,
+                },
+            });
+        }
+
+        // se houver qualquer erro, não salva nada
+        if (errors.length > 0) {
+            return { success: 0, errors };
+        }
+
+
+        for (const parsed of parsedRows) {
+            await (this.usersRepository as any).repository.update(parsed.user.id, parsed.userUpdate);
+
+            if (parsed.employeeId) {
+                await this.companyEmployeesRepository.update({
+                    id: parsed.employeeId,
+                    ...parsed.employeeUpdate,
+                });
             }
         }
 
-        return result;
+        return { success: parsedRows.length, errors: [] };
     }
 }
 
