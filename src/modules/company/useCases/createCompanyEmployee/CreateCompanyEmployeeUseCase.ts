@@ -5,26 +5,20 @@ import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
 import { IUserProductsAvailableRepository } from "@modules/accounts/repositories/IUserProductsAvailableRepository";
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
-import { IUpdateCompanyEmployeeDTO } from "@modules/company/dtos/IUpdateCompanyEmployeeDTO";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { ICompanyEmployeesRepository } from "@modules/company/repositories/ICompanyEmployeesRepository";
 import { ISubscriptionPlansRepository } from "@modules/products/repositories/ISubscriptionPlansRepository";
 import { AppError } from "@shared/errors/AppError";
 import { hash } from "bcryptjs";
-import { checkPrimeSync } from "crypto";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 class CreateCompanyEmployeeUseCase {
     constructor(
-        @inject("CompanyEmployeesRepository")
-        private companyEmployeesRepository: ICompanyEmployeesRepository,
-        @inject("UsersRepository")
-        private usersRepository: IUsersRepository,
-        @inject("UserProductsAvailableRepository")
-        private userProductsAvailableRepository: IUserProductsAvailableRepository,
-        @inject("SubscriptionPlansRepository")
-        private subscriptionPlansRepository: ISubscriptionPlansRepository
+        @inject("CompanyEmployeesRepository") private companyEmployeesRepository: ICompanyEmployeesRepository,
+        @inject("UsersRepository") private usersRepository: IUsersRepository,
+        @inject("UserProductsAvailableRepository") private userProductsAvailableRepository: IUserProductsAvailableRepository,
+        @inject("SubscriptionPlansRepository") private subscriptionPlansRepository: ISubscriptionPlansRepository
     ) {}
 
     async execute({
@@ -76,10 +70,6 @@ class CreateCompanyEmployeeUseCase {
             state,
         });
 
-        /* if (1 === 1) {
-            throw new AppError("Teste");
-        } */
-
         if (!name) {
             throw new AppError("Name can't be null");
         }
@@ -117,7 +107,7 @@ class CreateCompanyEmployeeUseCase {
             }
         }
 
-        const cEmp = {
+        const cEmp: ICreateCompanyEmployeeDTO = {
             companyId,
             documentId,
             name,
@@ -130,6 +120,7 @@ class CreateCompanyEmployeeUseCase {
             entryDate,
             position,
             department,
+            plan: undefined,
             unity,
             accepted,
             packageDeclined,
@@ -142,7 +133,7 @@ class CreateCompanyEmployeeUseCase {
         };
 
         if (!id) {
-            cEmp["plan"] = planModel?.name;
+            cEmp.plan = planModel?.name;
 
             const companyEmployeeEmailExists =
                 await this.companyEmployeesRepository.find({
@@ -173,14 +164,12 @@ class CreateCompanyEmployeeUseCase {
                 throw new AppError("User already exists");
             }
         } else {
-            // Lógica de UPDATE quando ID é fornecido
             const existingEmployee = await this.companyEmployeesRepository.findById(id);
-            
+
             if (!existingEmployee) {
                 throw new AppError("Company Employee not found");
             }
 
-            // Atualiza apenas os campos fornecidos
             const updateData: any = {};
             if (name !== undefined) updateData.name = name;
             if (documentId !== undefined) updateData.documentId = documentId;
@@ -189,7 +178,10 @@ class CreateCompanyEmployeeUseCase {
             if (entryDate !== undefined) updateData.entryDate = entryDate;
             if (position !== undefined) updateData.position = position;
             if (department !== undefined) updateData.department = department;
-            if (plan !== undefined) updateData.plan = plan;
+            if (plan !== undefined) {
+                const resolvedPlan = await this.subscriptionPlansRepository.findById(plan);
+                updateData.plan = resolvedPlan ? resolvedPlan.name : plan;
+            }
             if (unity !== undefined) updateData.unity = unity;
             if (accepted !== undefined) updateData.accepted = accepted;
             if (packageDeclined !== undefined) updateData.packageDeclined = packageDeclined;
@@ -293,7 +285,7 @@ class CreateCompanyEmployeeUseCase {
                     state: companyEmployeeCreated.state,
                 });
 
-            if (!id && plan && planModel.subscriptionPlanProduct)
+            if (!id && plan && planModel?.subscriptionPlanProduct)
                 for (const product of planModel.subscriptionPlanProduct) {
                     console.log("product", product);
 
