@@ -99,6 +99,13 @@ class CreateCompanyEmployeeUseCase {
             planModel = await this.subscriptionPlansRepository.findById(plan);
 
             if (!planModel) {
+                const plansByName = await this.subscriptionPlansRepository.find({ name: plan });
+                if (plansByName.length > 0) {
+                    planModel = await this.subscriptionPlansRepository.findById(plansByName[0].id);
+                }
+            }
+
+            if (!planModel) {
                 throw new AppError("Plan not found");
             }
 
@@ -179,8 +186,30 @@ class CreateCompanyEmployeeUseCase {
             if (position !== undefined) updateData.position = position;
             if (department !== undefined) updateData.department = department;
             if (plan !== undefined) {
-                const resolvedPlan = await this.subscriptionPlansRepository.findById(plan);
-                updateData.plan = resolvedPlan ? resolvedPlan.name : plan;
+                let resolvedPlan = await this.subscriptionPlansRepository.findById(plan);
+
+                if (!resolvedPlan) {
+                    const plansByName = await this.subscriptionPlansRepository.find({ name: plan });
+                    if (plansByName.length > 0) {
+                        resolvedPlan = await this.subscriptionPlansRepository.findById(plansByName[0].id);
+                    }
+                }
+
+                if (resolvedPlan) {
+                    updateData.plan = resolvedPlan.name;
+
+                    if (existingEmployee.userId && resolvedPlan.subscriptionPlanProduct?.length > 0) {
+                        for (const product of resolvedPlan.subscriptionPlanProduct) {
+                            await this.userProductsAvailableRepository.create({
+                                userId: existingEmployee.userId,
+                                productId: product.productId,
+                                availableQuantity: product.availableQuantity,
+                            });
+                        }
+                    }
+                } else {
+                    updateData.plan = plan;
+                }
             }
             if (unity !== undefined) updateData.unity = unity;
             if (accepted !== undefined) updateData.accepted = accepted;
