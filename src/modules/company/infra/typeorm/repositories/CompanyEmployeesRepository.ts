@@ -417,26 +417,26 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             }
         );
 
-        if (companyEmployeesMapped.length === 1) {
-            console.log(
-                "companyEmployeesMapped[0].plan",
-                companyEmployeesMapped[0].plan
-            );
+        const subscriptionPlansRepository: ISubscriptionPlansRepository =
+            new SubscriptionPlansRepository();
 
-            const subscriptionPlansRepository: ISubscriptionPlansRepository =
-                new SubscriptionPlansRepository();
+        for (const employee of companyEmployeesMapped) {
+            if (!employee.plan || employee.plan === "null") {
+                employee.planId = null;
+                continue;
+            }
 
             try {
-                const plan = await subscriptionPlansRepository.find({
-                    name: companyEmployeesMapped[0].plan,
+                const plans = await subscriptionPlansRepository.find({
+                    name: employee.plan,
                 });
 
-                console.log(`await plan`, plan[0]);
-
-                companyEmployeesMapped[0].planId = {
-                    id: plan[0].id,
-                    name: plan[0].name,
-                };
+                if (plans.length > 0) {
+                    employee.planId = {
+                        id: plans[0].id,
+                        name: plans[0].name,
+                    };
+                }
             } catch (error) {
                 console.log(`PLANO NÃO ENCONTRADO`, error);
             }

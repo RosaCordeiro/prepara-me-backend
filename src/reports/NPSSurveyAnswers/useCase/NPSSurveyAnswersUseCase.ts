@@ -1,23 +1,16 @@
-import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
-import { inject, injectable } from "tsyringe";
 import { NPSSurveyAnswers } from "../entities/NPSSurveyAnswers";
 import { CompanyEmployee } from "@modules/company/infra/typeorm/entities/CompanyEmployee";
 import { getFirstAndLastDayOfMonth } from "@utils/formatDate";
 import { SurveyQuestionsRepository } from "@modules/company/infra/typeorm/repositories/SurveyQuestionRepository";
+import { SurveyQuestion } from "@modules/company/infra/typeorm/entities/SurveyQuestions";
 import { UsersRepository } from "@modules/accounts/infra/typeorm/repositories/UsersRepository";
 
-@injectable()
 class NPSSurveyAnswersUseCase {
-    constructor(
-        @inject("SurveyQuestionsRepository")
-        private surveyQuestionsRepository: SurveyQuestionsRepository
-    ) {
-        this.surveyQuestionsRepository = new SurveyQuestionsRepository();
-    }
+    private surveyQuestionsRepository = new SurveyQuestionsRepository();
 
     private roleUser: string = "USER";
 
-    async execute({ companyId, area, role, period, unity, dismissalType, gender, etnia, pcd, city, state }, userId) {
+    async execute({ companyId, area, role, period, unity, dismissalType, gender, etnia, pcd, city, state }: { companyId: string; area: string; role: string; period: string; unity: string; dismissalType: string; gender: string; etnia: string; pcd: string; city: string; state: string }, userId: string) {
         const areaArray = area ? JSON.parse(area) : [];
         const roleArray = role ? JSON.parse(role) : [];
         const periodArray = period ? JSON.parse(period) : [];
@@ -56,7 +49,7 @@ class NPSSurveyAnswersUseCase {
                 companyId,
                 areaArray,
                 roleArray,
-                periodArray.map((p) => getFirstAndLastDayOfMonth(p)),
+                periodArray.map((p: string) => getFirstAndLastDayOfMonth(p)),
                 unityArray,
                 dismissalTypeArray,
                 genderArray,
@@ -66,7 +59,7 @@ class NPSSurveyAnswersUseCase {
                 stateArray
             );
 
-            users = result.map((r) => r.user);
+            users = result.map((r: any) => r.user);
         }
 
         let usersAll = await npsSurveyAnswers.reportAllusers();
@@ -89,7 +82,7 @@ class NPSSurveyAnswersUseCase {
         const lessThanFive = this.shouldCheckSurveyLimit(
             companyId,
             users,
-            null,
+            undefined,
             shouldApplyException
         );
 
@@ -156,21 +149,19 @@ class NPSSurveyAnswersUseCase {
         const companyQuestions =
             await this.surveyQuestionsRepository.listByCompanyId(companyId);
         const usersFilterred = users.filter(
-            (user) => user.surveyQuestion !== null && user.surveyQuestion !== ""
+            (user: any) => user.surveyQuestion !== null && user.surveyQuestion !== ""
         );
 
-        let result = [];
-        result = companyQuestions;
+        const result: (SurveyQuestion & { answers?: any[] })[] = [...companyQuestions];
 
         for (const user of usersFilterred) {
             const surveyQuestions = JSON.parse(user.surveyQuestion);
             for (const surveyQuestion of surveyQuestions) {
-                result = result.map((question) => {
+                result.forEach((question) => {
                     if (question.id === surveyQuestion.questionId) {
                         question.answers = question.answers || [];
                         question.answers.push(surveyQuestion.answer);
                     }
-                    return question;
                 });
             }
         }
@@ -225,14 +216,14 @@ class NPSSurveyAnswersUseCase {
             this.shouldCheckSurveyLimit(
                 companyId,
                 users,
-                null,
+                undefined,
                 shouldApplyException
             )
         ) {
             return "N/A";
         }
 
-        const npsSurveyAnswers = users.filter((npsSurvey) => {
+        const npsSurveyAnswers = users.filter((npsSurvey: any) => {
             if (npsSurvey) {
                 return npsSurvey.surveyAnswered;
             }
@@ -242,35 +233,32 @@ class NPSSurveyAnswersUseCase {
             return "N/A";
         }
 
-        let laborRisk: number = npsSurveyAnswers.reduce(
-            (laborRisckTotal = 0, user) => {
+        const laborRisk: number = npsSurveyAnswers.reduce(
+            (laborRisckTotal: number, user: any) => {
                 return laborRisckTotal + user.laborRisk * 1;
             },
             0
         );
-
-        console.log("CHEGOU AQUI, laborRisk 3", laborRisk);
 
         return (10 - laborRisk / npsSurveyAnswers.length).toFixed(2);
     }
 
     getTermination(
         users: any,
-        companyId,
+        companyId: any,
         shouldApplyException: boolean = true
     ) {
         if (
             this.shouldCheckSurveyLimit(
                 companyId,
                 users,
-                null,
+                undefined,
                 shouldApplyException
             )
         ) {
             return "N/A";
         }
-        const laborRiskData = [];
-        const lastAnswers = [];
+        const lastAnswers: any[] = [];
 
         for (const user of users) {
             //of serve para desmembrar um array e listar direto em uma variável
@@ -306,7 +294,7 @@ class NPSSurveyAnswersUseCase {
 
     getLaborIssues(
         users: any,
-        companyId,
+        companyId: any,
         shouldApplyException: boolean = true
     ) {
         console.log("-- [getLaborIssues] INPUT users:", users?.length);
@@ -341,7 +329,7 @@ class NPSSurveyAnswersUseCase {
 
         if (
             shouldApplyException &&
-            this.shouldCheckSurveyLimit(companyId, filterUsers, null, shouldApplyException)
+            this.shouldCheckSurveyLimit(companyId, filterUsers, undefined, shouldApplyException)
         ) {
 
             return "N/A";
@@ -362,7 +350,7 @@ class NPSSurveyAnswersUseCase {
         );
     }
 
-    getLaborIssuesAllUsers(users: any, companyId) {
+    getLaborIssuesAllUsers(users: any, companyId: any) {
         if (this.shouldCheckSurveyLimit(companyId, users)) {
             return "N/A";
         }
@@ -387,13 +375,13 @@ class NPSSurveyAnswersUseCase {
             this.shouldCheckSurveyLimit(
                 companyId,
                 users,
-                null,
+                undefined,
                 shouldApplyException
             )
         ) {
             return "N/A";
         }
-        const npsSurveyAnswers = users.filter((npsSurvey) => {
+        const npsSurveyAnswers = users.filter((npsSurvey: any) => {
             if (npsSurvey) {
                 return npsSurvey.surveyAnswered;
             }
@@ -418,7 +406,7 @@ class NPSSurveyAnswersUseCase {
             this.shouldCheckSurveyLimit(
                 companyId,
                 users,
-                null,
+                undefined,
                 shouldApplyException
             )
         ) {
@@ -476,7 +464,7 @@ class NPSSurveyAnswersUseCase {
         ).toFixed(2);
     }
 
-    getRealocateds(users: any, companyId) {
+    getRealocateds(users: any, companyId: any) {
         const filterUsers = users[0]?.user
             ? users.filter((employee: any) => employee.userId)
             : users;
@@ -496,7 +484,7 @@ class NPSSurveyAnswersUseCase {
         );
     }
 
-    getWelcomed(empployee: CompanyEmployee[], companyId, users) {
+    getWelcomed(empployee: CompanyEmployee[], companyId: any, users: any) {
         const countAccepted = empployee.filter(
             (user: CompanyEmployee) => user.accepted
         ).length;
@@ -504,18 +492,18 @@ class NPSSurveyAnswersUseCase {
         return `${countAccepted}/${empployee.length}`;
     }
 
-    getFeelingMap(users: any, companyId, shouldApplyException: boolean = true) {
+    getFeelingMap(users: any, companyId: any, shouldApplyException: boolean = true) {
         if (
             this.shouldCheckSurveyLimit(
                 companyId,
                 users,
-                null,
+                undefined,
                 shouldApplyException
             )
         ) {
             return [];
         }
-        const feelingsMapData = [];
+        const feelingsMapData: any[] = [];
 
         const usersResponded = users.filter((user: any) => {
             return user?.surveyAnswered === true;
@@ -563,23 +551,19 @@ class NPSSurveyAnswersUseCase {
         return feelingsMapData;
     }
 
-    getShutDown(users: any, companyId, shouldApplyException: boolean = true) {
+    getShutDown(users: any, companyId: any, shouldApplyException: boolean = true) {
         if (
             this.shouldCheckSurveyLimit(
                 companyId,
                 users,
-                null,
+                undefined,
                 shouldApplyException
             )
         ) {
             return [];
         }
-        const laborRiskData = [];
-        const lastAnswers = [];
-
-        const countUsersResponded = users.filter((user: any) => {
-            return user?.surveyAnswered;
-        }).length;
+        const laborRiskData: any[] = [];
+        const lastAnswers: any[] = [];
 
         for (const user of users) {
             if (user?.laborRiskJSON === undefined) {
@@ -605,22 +589,23 @@ class NPSSurveyAnswersUseCase {
                     );
 
                     if (findLaborRisk >= 0) {
-                        laborRiskData[findLaborRisk].count +=
-                            laborRiskMapped.answer * 1;
+                        if (laborRiskMapped.answer !== null && laborRiskMapped.answer !== undefined) {
+                            laborRiskData[findLaborRisk].count += laborRiskMapped.answer * 1;
+                            laborRiskData[findLaborRisk].respondents += 1;
+                        }
                     } else {
                         laborRiskData.push({
                             ...laborRiskMapped,
-                            count: laborRiskMapped.answer * 1,
+                            count: laborRiskMapped.answer !== null && laborRiskMapped.answer !== undefined ? laborRiskMapped.answer * 1 : 0,
+                            respondents: laborRiskMapped.answer !== null && laborRiskMapped.answer !== undefined ? 1 : 0,
                         });
                     }
                 }
             }
         }
         laborRiskData.forEach((laborRisk) => {
-            laborRisk.count = (laborRisk.count / countUsersResponded).toFixed(
-                2
-            );
-
+            laborRisk.count = (laborRisk.count / laborRisk.respondents).toFixed(2);
+            delete laborRisk.respondents;
             return laborRisk;
         });
         return laborRiskData;
