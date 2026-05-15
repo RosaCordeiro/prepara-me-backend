@@ -13,7 +13,6 @@ export class GeradorExcelSurveyAnswersTools {
             const ws = wb.addWorksheet("Respostas");
 
             const headers = [
-                "ID",
                 "Nome",
                 "Email",
                 "Origem",
