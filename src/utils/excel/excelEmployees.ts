@@ -26,6 +26,11 @@ export class GeradorExcelEmployeeTools {
                 "Plano",
                 "Unidade",
                 "Pacote Recusado",
+                "Gênero",
+                "Etnia",
+                "PCD",
+                "Cidade",
+                "Estado",
             ];
 
             const wb = new xl.Workbook();
@@ -67,6 +72,54 @@ export class GeradorExcelEmployeeTools {
                 showDropDown: true,
                 sqref: "K2:K10000",
                 formulas: ["Sim, Não"],
+            });
+
+            ws.addDataValidation({
+                type: "list",
+                allowBlank: true,
+                prompt: "PCD",
+                errorTitle: "PCD inválido",
+                error: "Selecione uma opção válida",
+                showDropDown: true,
+                sqref: "N2:N10000",
+                formulas: ["Sim, Não"],
+            });
+
+            ws.addDataValidation({
+                type: "list",
+                allowBlank: true,
+                prompt: "Gênero",
+                errorTitle: "Gênero inválido",
+                error: "Selecione uma opção válida",
+                showDropDown: true,
+                sqref: "L2:L10000",
+                formulas: [
+                    "Masculino,Feminino,Não Binário,Prefiro não informar",
+                ],
+            });
+
+            ws.addDataValidation({
+                type: "list",
+                allowBlank: true,
+                prompt: "Etnia",
+                errorTitle: "Etnia inválida",
+                error: "Selecione uma opção válida",
+                showDropDown: true,
+                sqref: "M2:M10000",
+                formulas: [
+                    "Branca,Preta,Parda,Amarela,Indígena,Prefiro não informar",
+                ],
+            });
+
+            ws.addDataValidation({
+                type: "list",
+                allowBlank: true,
+                prompt: "Escolha um plano",
+                errorTitle: "Plano inválido",
+                error: "Escolha um plano válido",
+                showDropDown: true,
+                sqref: "I2:I10000",
+                formulas: [`${plans.map((plan) => plan.name).sort()}`],
             });
 
             const path = join(

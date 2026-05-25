@@ -50,15 +50,15 @@ class CreateCompanyEmployeeBatchUseCase {
         ];
 
         const fileRows: any[][] = await readXlsxFile(`${files[0].filepath}`);
-        if (fileRows[0].length !== headers.length) {
+        if (fileRows[0].length < 11) {
             return {
                 message: "Arquivo inválido",
                 success: false,
             };
         }
 
-        for (let i = 0; i < headers.length; i++) {
-            if (fileRows[0][i] !== headers[i]) {
+        for (let i = 0; i < fileRows[0].length; i++) {
+            if (fileRows[0][i]?.toString().trim() !== headers[i]) {
                 return {
                     message: "Arquivo inválido",
                     success: false,
@@ -70,7 +70,10 @@ class CreateCompanyEmployeeBatchUseCase {
         const plans = await this.subscriptionPlansRepository.findAll();
 
         for (const row of fileRows.slice(1)) {
-            if (row[1].toString().includes(".") || row[1].toString().includes("-")) {
+            if (
+                row[1].toString().includes(".") ||
+                row[1].toString().includes("-")
+            ) {
                 return {
                     message: `Arquivo inválido, documento (${row[1]}) inválido. Não deve conter pontos ou traços`,
                     success: false,
@@ -145,11 +148,11 @@ class CreateCompanyEmployeeBatchUseCase {
                     plan: row[8],
                     unity: row[9],
                     packageDeclined: row[10] === "Sim" ? true : false,
-                    gender: row[11],
-                    etnia: row[12],
+                    gender: row[11] || null,
+                    etnia: row[12] || null,
                     pcd: row[13] === "Sim" ? true : false,
-                    city: row[14],
-                    state: row[15],
+                    city: row[14] || null,
+                    state: row[15] || null,
                 });
 
             console.log("companyEmployeeCreated", companyEmployeeCreated);
