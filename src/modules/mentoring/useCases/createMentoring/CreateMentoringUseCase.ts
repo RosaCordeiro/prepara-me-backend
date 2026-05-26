@@ -56,20 +56,28 @@ class CreateMentoringUseCase {
         //aqui ele salva o arquivo no storageProvider, passando o file e o nome da pasta
         content.image = newFileName;
 
-        const dateMasked = this.dateProvider.formatDateTime(
-            content.date,
-            "YYYY-MM-DDThh:mm:ssfff:00"
-            //aqui ele formata a data para o formato que o google calendar aceita porque
-            //se nao acredito que daria alguma forma de conflito
-        );
+        const rawDate = content.date; // "2026-05-27T12:00"
 
-        const newDate = new Date(dateMasked);
-        newDate.setHours(newDate.getHours() - 2);
+        const startDate = new Date(`${rawDate}:00`); // "2026-05-27T12:00:00"
 
-        const dateMaskedEnd = this.dateProvider.formatDateTime(
-            newDate,
-            "YYYY-MM-DDThh:mm:ssfff:00"
-        );
+        console.log("startDate parsed:", startDate);
+        console.log("startDate válida?", !isNaN(startDate.getTime()));
+
+        const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+        console.log("EndDate", endDate);
+
+        const formatToISO = (date: Date): string => {
+            const pad = (n: number) => String(n).padStart(2, "0");
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+                date.getDate()
+            )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+                date.getSeconds()
+            )}-03:00`;
+            //                                                                                                                                                              ^^^^^^
+        };
+
+        const dateMasked = formatToISO(startDate);
+        const dateMaskedEnd = formatToISO(endDate);
 
         const event = await this.scheduleGoogle.scheduleEvent(
             `${content.title}`,
@@ -80,9 +88,6 @@ class CreateMentoringUseCase {
             "America/Sao_Paulo",
             [{ email: specialist.user.email }]
         );
-        //nessa parte ele chama o metodo scheduleEvent do scheduleGoogle
-        //que como retorno ele passa as informacoes do evento que foi criado
-        //que sao o link do meet e o id do evento
 
         console.log("event", event);
 

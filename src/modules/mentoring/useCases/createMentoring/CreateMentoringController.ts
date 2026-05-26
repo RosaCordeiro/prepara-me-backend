@@ -7,7 +7,7 @@ class CreateMentoringController {
     async handle(request: Request, response: Response): Promise<Response> {
         //handle e chamado quando uma requisicao e feita para a rota
         //o metodo handle tem dois argumentos request e response
-        //request e o que vem do cliente e response e o que vai ser enviado para o cliente 
+        //request e o que vem do cliente e response e o que vai ser enviado para o cliente
         //o metodo handle tem que ser async pois ele pode demorar para responder
         const createMentoringUseCase = container.resolve(
             CreateMentoringUseCase
@@ -19,24 +19,24 @@ class CreateMentoringController {
         //sao usadas para obter metodos para a classe createMentoringUseCase e editMentoringUseCase
         //ou seja, essas classes indicam logicas para criar e editacao de mentoria
 
-        if (!request.body.id || request.body.id === "") {
+        if (
+            !request.body.id ||
+            request.body.id === "" ||
+            request.body.id === "null" ||
+            request.body.id === "undefined"
+        ) {
+            console.log(request.body);
+            console.log("ID:", request.body.id, typeof request.body.id);
             //aqui verifica se o id existe ou se ele e string vazia
             console.log("create");
             if (
                 request.files === undefined ||
                 request.files.length === 0 ||
                 request.files[0]?.fieldname !== "image"
-                //nesse caso ele verifica se o arquivo existe, se o tamanho do array de arquivos e 0 
-                //ou se o nome do campo do arquivo e diferente de image
-                //caso alguma dessas condicoes seja verdadeira ele retorna um erro
             ) {
                 //erro esse que fala que a imagem e obrigatoria
                 return response.status(400).json("Image is required");
             }
-
-            //se a verificacao for bem sucedida ele chama o metodo execute 
-            //do createMentoringUseCase e passa como argumento e passa o request.body 
-            //e o nome do arquivo para a requisicao 
 
             const createMentoring = await createMentoringUseCase.execute(
                 request.body,
@@ -44,8 +44,6 @@ class CreateMentoringController {
                 //aqui ele passa o nome do arquivo para a requisicao
                 //o nome do arquivo e obtido do request.files[0].filename
             );
-
-
 
             return response.status(201).json(createMentoring);
         } else {
@@ -56,7 +54,7 @@ class CreateMentoringController {
             const body = request.body;
             const files: any = request.files;
 
-            //aqui ele verifica se o arquivo existe e 
+            //aqui ele verifica se o arquivo existe e
             //se o tamanho do array de arquivos e maior que 0
             //caso seja verdadeiro ele passa o nome do arquivo para o body da requiscao
             if (request.files !== undefined && files.length > 0) {
@@ -77,4 +75,3 @@ class CreateMentoringController {
 
 //parte que ele exporta a classe CreateMentoringController que pode ser usada em outro arquivo
 export { CreateMentoringController };
-
