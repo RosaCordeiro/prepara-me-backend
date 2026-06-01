@@ -17,7 +17,7 @@ class SubscriptionPlanProduct {
 
     @ManyToOne(() => Product, (product) => product.subscriptionPlanProduct)
     product: Product;
-    
+
     @Column()
     subscriptionPlanId: string;
 
@@ -30,10 +30,15 @@ class SubscriptionPlanProduct {
     constructor(
         subscriptionPlanId: string,
         productId: string,
-        availableQuantity: number
-    ){
+        availableQuantity: number,
+        id?: string
+    ) {
         if (!this.id) {
             this.id = uuidV4();
+        }
+
+        if (id) {
+            this.id = id;
         }
 
         this.subscriptionPlanId = subscriptionPlanId;

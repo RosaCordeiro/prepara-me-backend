@@ -14,14 +14,35 @@ class CreateSpecialistScheduleController {
             hangoutLink,
             scheduleEventId,
             createEvent,
-            rating
+            rating,
+            timezone,
+            offset
         } = request.body;
 
         const { id } = request.params;
 
+        const userRequestId = request.user.id
+
         const createSpecialistScheduleUseCase = container.resolve(
             CreateSpecialistScheduleUseCase
         );
+
+        console.log('dateSchedule', {
+            dateSchedule,
+            specialistId,
+            status,
+            productId,
+            userId,
+            comments,
+            hangoutLink,
+            scheduleEventId,
+            id,
+            createEvent,
+            rating,
+            userRequestId,
+            timezone,
+            offset
+        })
 
         const specialistSchedule =
             await createSpecialistScheduleUseCase.execute({
@@ -35,7 +56,8 @@ class CreateSpecialistScheduleController {
                 scheduleEventId,
                 id,
                 createEvent,
-                rating
+                rating,
+                userRequestId
             });
 
         return response.status(201).json(specialistSchedule);

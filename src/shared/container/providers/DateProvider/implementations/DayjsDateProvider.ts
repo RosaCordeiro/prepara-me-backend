@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import timezone from 'dayjs/plugin/timezone';
 
 import { IDateProvider } from "../IDateProvider";
 
@@ -134,6 +135,13 @@ class DayjsDateProvider implements IDateProvider {
 
     addHours(hours: number, date?: Date): Date {
         return dayjs(date).add(hours, "hour").toDate();
+    }
+
+    addMinutes(minutes: number, date?: Date): Date {
+        return dayjs(date).add(minutes, "minutes").toDate();
+    }
+    subtractMinutes(minutes: number, date: Date): Date {
+        return dayjs(date).subtract(minutes, "minutes").toDate();
     }
 
     addDays(days: number, date?: Date): Date {

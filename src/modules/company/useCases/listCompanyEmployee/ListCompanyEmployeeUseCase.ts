@@ -8,7 +8,18 @@ class ListCompanyEmployeeUseCase {
         private companyEmployeesRepository: ICompanyEmployeesRepository
     ) {}
 
-    async execute({ name, documentId, userId, notUserId, phone, email, companyId, id }) {
+    async execute({
+        name,
+        documentId,
+        userId,
+        notUserId,
+        phone,
+        email,
+        companyId,
+        id,
+        department,
+        dismissalType,
+    }) {
         const companyEmployees = await this.companyEmployeesRepository.find({
             name,
             documentId,
@@ -18,10 +29,13 @@ class ListCompanyEmployeeUseCase {
             email,
             companyId,
             id,
+            department,
+            dismissalType,
         });
+
+        console.log("companyEmployees", companyEmployees);
 
         return companyEmployees;
     }
 }
 export { ListCompanyEmployeeUseCase };
-

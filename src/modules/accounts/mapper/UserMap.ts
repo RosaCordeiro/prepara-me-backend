@@ -1,3 +1,4 @@
+import { CompanyPageRepository } from "@modules/company/infra/typeorm/repositories/CompanyPageRepository";
 import { DayjsDateProvider } from "@shared/container/providers/DateProvider/implementations/DayjsDateProvider";
 import { instanceToInstance } from "class-transformer";
 
@@ -30,10 +31,12 @@ class UserMap {
         brandRisk,
         laborRiskJSON,
         brandRiskJSON,
+        surveyQuestion,
         laborRiskAlert,
         expiresDate,
         periodTest,
         subscribeToken,
+        companyNameSignIn,
     }: User): IUserResponseDTO {
         const statusMapped =
             status == UserStatusEnum.INACTIVE ? "Inativo" : "Ativo";
@@ -91,6 +94,7 @@ class UserMap {
             brandRisk,
             laborRiskJSON,
             brandRiskJSON,
+            surveyQuestion,
             laborRiskAlert: {
                 label: laborRiskAlertMapped,
                 value: laborRiskAlert,
@@ -99,6 +103,8 @@ class UserMap {
             expiryDateFormated,
             periodTest,
             subscribeToken,
+            companyNameSignIn,
+            companyNameSignInLogo: "",
         });
 
         return user;
@@ -106,4 +112,3 @@ class UserMap {
 }
 
 export { UserMap };
-

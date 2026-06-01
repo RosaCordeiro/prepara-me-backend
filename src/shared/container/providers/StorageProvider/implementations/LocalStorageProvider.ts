@@ -6,6 +6,10 @@ import { IStorageProvider } from "../IStorageProvider";
 
 class LocalStorageProvider implements IStorageProvider {
     async save(file: string, folder: string): Promise<string> {
+        if (!fs.existsSync(resolve(upload.tmpFolder, folder))) {
+            await fs.promises.mkdir(resolve(upload.tmpFolder, folder));
+        }
+
         await fs.promises.rename(
             resolve(upload.tmpFolder, file),
             resolve(`${upload.tmpFolder}/${folder}`, file)
@@ -22,7 +26,6 @@ class LocalStorageProvider implements IStorageProvider {
         } catch {
             return;
         }
-        
 
         await fs.promises.unlink(filename);
     }

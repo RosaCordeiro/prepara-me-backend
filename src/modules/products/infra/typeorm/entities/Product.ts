@@ -9,6 +9,7 @@ import { v4 as uuidV4 } from "uuid";
 
 import { ProductContent } from "./ProductContent";
 import { SubscriptionPlanProduct } from "./SubscriptionPlanProduct";
+import { SpecialistScheduleCancel } from "@modules/specialists/infra/typeorm/entities/SpecialistScheduleCancel";
 
 @Entity("products")
 class Product {
@@ -20,6 +21,9 @@ class Product {
 
     @Column()
     shortName: string;
+
+    @Column()
+    slug: string;
 
     @Column()
     price: number;
@@ -47,19 +51,29 @@ class Product {
     })
     bestSeller: ProductBestSellerEnum;
 
+    @Column({
+        type: 'boolean',
+        default: false,
+        name: 'onlyAdmin'
+    })
+    onlyAdmin: boolean
+
     @OneToMany(() => ProductContent, (productContent) => productContent.product)
     productContent: ProductContent[];
 
-    @OneToMany(
-        () => OrderItem,
-        (orderItem) => orderItem.product
-    )
+    @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
     orderItem: OrderItem[];
 
-    @OneToMany(() => ProductSpecialist, productSpecialist => productSpecialist.product)
+    @OneToMany(
+        () => ProductSpecialist,
+        (productSpecialist) => productSpecialist.product
+    )
     public productSpecialist!: ProductSpecialist[];
 
-    @OneToMany(() => SubscriptionPlanProduct, (subscriptionPlanProduct) => subscriptionPlanProduct.product)
+    @OneToMany(
+        () => SubscriptionPlanProduct,
+        (subscriptionPlanProduct) => subscriptionPlanProduct.product
+    )
     public subscriptionPlanProduct!: SubscriptionPlanProduct[];
 
     @OneToMany(
@@ -68,9 +82,16 @@ class Product {
     )
     public specialistSchedule!: SpecialistSchedule[];
 
+    @OneToMany(
+        () => SpecialistScheduleCancel,
+        (specialistScheduleCancel) => specialistScheduleCancel.id
+    )
+    specialistScheduleCancel: SpecialistScheduleCancel[];
+
     constructor(
         name: string,
         shortName: string,
+        slug: string,
         price: number,
         duration: number,
         status: ProductStatusEnum,
@@ -79,9 +100,9 @@ class Product {
         id: string
     ) {
         if (id) {
-            this.id = id
+            this.id = id;
         }
-        
+
         if (!this.id) {
             this.id = uuidV4();
         }
@@ -93,6 +114,7 @@ class Product {
         this.status = status;
         this.type = type;
         this.bestSeller = bestSeller;
+        this.slug = slug;
     }
 }
 

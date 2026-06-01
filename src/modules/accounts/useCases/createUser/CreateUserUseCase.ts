@@ -43,6 +43,7 @@ class CreateUserUseCase {
         laborRiskAlert,
         expiresDate,
         periodTest,
+        companyNameSignIn,
     }: ICreateUserDTO): Promise<User> {
         var userFind;
 
@@ -60,7 +61,15 @@ class CreateUserUseCase {
             if (userFind && userFind.id !== id) {
                 throw new AppError("E-mail used by another user!");
             }
+        } else {
+            userFind = await this.usersRepository.findByEmail(email);
+
+            if (userFind) {
+                throw new AppError("E-mail already exists!");
+            }
         }
+
+        console.log("userFind", userFind);
 
         let passwordHash = "";
 
@@ -71,7 +80,7 @@ class CreateUserUseCase {
 
             passwordHash = await hash(password, 8);
 
-            periodTest = addDays(7);
+            periodTest = addDays(30);
             expiresDate = null;
         } else {
             passwordHash = userFind.password;
@@ -107,9 +116,17 @@ class CreateUserUseCase {
             expiresDate,
             periodTest,
             subscribeToken,
+            companyNameSignIn: companyNameSignIn ?? "",
         });
 
-        if (userCreated && userCreated.id && !userFind && process.env.NODE_ENV !== "test") {
+        console.log("userCreated", userCreated);
+
+        if (
+            userCreated &&
+            userCreated.id &&
+            !userFind &&
+            process.env.NODE_ENV !== "test"
+        ) {
             let companyEmployee = await this.companyEmployeesRepository.find({
                 documentId,
                 notUserId: "true",
@@ -232,4 +249,3 @@ class CreateUserUseCase {
 }
 
 export { CreateUserUseCase };
-

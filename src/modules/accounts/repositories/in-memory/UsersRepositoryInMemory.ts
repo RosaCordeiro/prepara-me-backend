@@ -26,10 +26,12 @@ class UsersRepositoryInMemory implements IUsersRepository {
         brandRisk,
         laborRiskJSON,
         brandRiskJSON,
+        surveyQuestion,
         laborRiskAlert,
         expiresDate,
         periodTest,
-        subscribeToken
+        subscribeToken,
+        companyNameSignIn,
     }: ICreateUserDTO): Promise<User> {
         const user = new User(
             name,
@@ -49,10 +51,12 @@ class UsersRepositoryInMemory implements IUsersRepository {
             brandRisk,
             laborRiskJSON,
             brandRiskJSON,
+            surveyQuestion,
             laborRiskAlert,
             expiresDate,
             periodTest,
-            subscribeToken
+            subscribeToken,
+            companyNameSignIn
         );
 
         this.users.push(user);
@@ -80,7 +84,7 @@ class UsersRepositoryInMemory implements IUsersRepository {
         documentId,
         id,
         realocated,
-        laborRiskAlert
+        laborRiskAlert,
     }): Promise<IUserResponseDTO[]> {
         let users = this.users;
 
@@ -147,4 +151,3 @@ class UsersRepositoryInMemory implements IUsersRepository {
 }
 
 export { UsersRepositoryInMemory };
-

@@ -1,2 +1,3 @@
 //import jobs
-import "./orders"
+import "./orders";
+import "./reminder";

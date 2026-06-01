@@ -2,6 +2,7 @@ import { ICreateProductSpecialistDTO } from "@modules/specialists/dtos/ICreatePr
 import { getRepository, Repository } from "typeorm";
 import { IProductsSpecialistsRepository } from "../../../repositories/IProductsSpecialistsRepository";
 import { ProductSpecialist } from "../entities/ProductSpecialist";
+import { isUUID } from "@utils/isUUID";
 
 class ProductsSpecialistsRepository implements IProductsSpecialistsRepository {
     private repository: Repository<ProductSpecialist>;
@@ -29,7 +30,7 @@ class ProductsSpecialistsRepository implements IProductsSpecialistsRepository {
     async listSpecialistsByProduct(productId: string): Promise<string[]> {
         const listSpecialistsQuery = this.repository
             .createQueryBuilder("ps")
-            .where("ps.productId = :productId", { productId });
+            .where("product.slug = :productId", { productId });
 
         const specialists = await listSpecialistsQuery
             .getMany()
@@ -42,35 +43,56 @@ class ProductsSpecialistsRepository implements IProductsSpecialistsRepository {
         return specialists;
     }
 
-    async find({
-        productId,
-        specialistId,
-        id,
-    }): Promise<ProductSpecialist[]> {
-        const productsSpecialistsQuery = this.repository
-            .createQueryBuilder("ps")
+    async find({ productId, specialistId, id }): Promise<ProductSpecialist[]> {
+        const productsSpecialistsQuery =
+            this.repository.createQueryBuilder("ps");
 
         if (id) {
-            productsSpecialistsQuery.andWhere("ps.id = :id", {
-                id: id,
-            });
+            try {
+                productsSpecialistsQuery.andWhere("ps.id = :id", {
+                    id: id,
+                });
+            } catch (error) {
+                console.log(error);
+            }
         } else {
             if (productId) {
-                productsSpecialistsQuery.andWhere("ps.productId = :productId", {
-                    productId: productId,
-                });
+                if (isUUID(productId)) {
+                    productsSpecialistsQuery.andWhere(
+                        "ps.productId = :productId",
+                        {
+                            productId: productId,
+                        }
+                    );
+                } else {
+                    productsSpecialistsQuery
+                        .innerJoinAndSelect("ps.product", "product")
+                        .where("product.slug = :productId", { productId });
+                }
             }
 
             if (specialistId) {
-                productsSpecialistsQuery.andWhere("ps.specialistId = :specialistId", {
-                    specialistId: specialistId,
-                });
+                productsSpecialistsQuery.andWhere(
+                    "ps.specialistId = :specialistId",
+                    {
+                        specialistId: specialistId,
+                    }
+                );
             }
         }
 
-        const productsSpecialists = await productsSpecialistsQuery.getMany();
+        try {
+            const productsSpecialists =
+                await productsSpecialistsQuery.getMany();
 
-        return productsSpecialists;
+            return productsSpecialists;
+        } catch (error) {
+            console.log(error);
+            /* .innerJoinAndSelect("ps.product", "product")
+.where("ps.productId = :productId", { productId }) */
+        }
+
+        return [];
     }
 
     async remove(id: string): Promise<string> {
@@ -81,4 +103,3 @@ class ProductsSpecialistsRepository implements IProductsSpecialistsRepository {
 }
 
 export { ProductsSpecialistsRepository };
-

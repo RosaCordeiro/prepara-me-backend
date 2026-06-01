@@ -11,6 +11,8 @@ interface ICreateProductDTO {
     type: ProductTypeEnum;
     bestSeller: ProductBestSellerEnum;
     id?: string;
+    slug?: string;
+    onlyAdmin?: boolean;
 }
 
 export { ICreateProductDTO };

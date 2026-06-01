@@ -7,6 +7,8 @@ import { IUserProductsAvailableRepository } from "@modules/accounts/repositories
 import { UserProductsAvailableRepository } from "@modules/accounts/infra/typeorm/repositories/UserProductsAvailableRepository";
 import { SubscriptionNewslettersRepository } from "@modules/accounts/infra/typeorm/repositories/SubscriptionNewslettersRepository";
 import { ISubscriptionNewslettersRepository } from "@modules/accounts/repositories/ISubcriptionNewslettersRepository";
+import { IUsersRealocatedLogRepository } from "@modules/accounts/repositories/IUsersRealocatedLogRepository";
+import { UsersRealocatedLogRepository } from "@modules/accounts/infra/typeorm/repositories/UsersRealocatedLogRepository";
 
 container.registerSingleton<IUsersRepository>(
     "UsersRepository",
@@ -26,4 +28,9 @@ container.registerSingleton<IUserProductsAvailableRepository>(
 container.registerSingleton<ISubscriptionNewslettersRepository>(
     "SubscriptionNewslettersRepository",
     SubscriptionNewslettersRepository
-)
+);
+
+container.registerSingleton<IUsersRealocatedLogRepository>(
+    "UsersRealocatedLogRepository",
+    UsersRealocatedLogRepository
+);

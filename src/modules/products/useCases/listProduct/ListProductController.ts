@@ -6,7 +6,7 @@ class ListProductController {
     async handle(request: Request, response: Response): Promise<Response> {
         const { id } = request.params;
 
-        const { name, shortName, status, type, bestSeller } = request.query;
+        const { name, shortName, status, type, bestSeller, onlyAdmin } = request.query;
 
         let listProductUseCase = container.resolve(ListProductUseCase);
 
@@ -17,6 +17,7 @@ class ListProductController {
             type,
             bestSeller,
             id,
+            onlyAdmin
         });
 
         return response.status(200).send(products)

@@ -7,8 +7,10 @@ interface ISpecialistResponseDTO {
     bio: string;
     linkedinUrl: string;
     specialistSchedule: SpecialistSchedule[];
-    status,
-    user: IUserResponseDTO
+    status: any;
+    user: IUserResponseDTO;
+    image?: string;
 }
 
 export { ISpecialistResponseDTO };
+

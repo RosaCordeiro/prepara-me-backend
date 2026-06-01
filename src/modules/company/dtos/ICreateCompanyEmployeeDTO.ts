@@ -1,3 +1,5 @@
+import { DismissalTypeEnum } from "@modules/company/enums/DismissalTypeEnum";
+
 interface ICreateCompanyEmployeeDTO {
     name: string;
     companyId: string;
@@ -7,8 +9,21 @@ interface ICreateCompanyEmployeeDTO {
     userId?: string;
     subscribeToken: string;
     id?: string;
-    easyRegister?: string
+    easyRegister?: string;
+    accepted?: boolean;
+    realocate?: boolean;
+    entryDate?: Date;
+    position?: string;
+    department?: string;
+    plan?: string;
+    unity?: string;
+    packageDeclined?: boolean;
+    dismissalType?: DismissalTypeEnum;
+    gender?: string;
+    etnia?: string;
+    pcd?: boolean;
+    city?: string;
+    state?: string;
 }
 
 export { ICreateCompanyEmployeeDTO };
-

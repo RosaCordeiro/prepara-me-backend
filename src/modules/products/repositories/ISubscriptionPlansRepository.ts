@@ -17,7 +17,8 @@ interface ISubscriptionPlansRepository {
     create(data: ICreateSubscriptionPlanDTO): Promise<SubscriptionPlan>;
     find(data: IRequestFind): Promise<IResponseSubscriptionPlanDTO[]>;
     remove(id: string): Promise<void>;
+    findAll(): Promise<SubscriptionPlan[]>;
+    findById(id: string): Promise<SubscriptionPlan>;
 }
 
 export { ISubscriptionPlansRepository };
-

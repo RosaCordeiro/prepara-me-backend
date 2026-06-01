@@ -23,7 +23,9 @@ class CreateProductUseCase {
         status,
         type,
         bestSeller,
-        id
+        id,
+        slug,
+        onlyAdmin
     }: ICreateProductDTO): Promise<Product> {
         if (!name) {
             throw new AppError("Name can't be null");
@@ -49,6 +51,12 @@ class CreateProductUseCase {
             throw new AppError("Best Seller entered wrong");
         }
 
+        const response = await this.productsRepository.findBySlug(slug);
+
+        if (!id && response) {
+            throw new AppError("Slug already exists");
+        }
+
         const product = await this.productsRepository.create({
             name,
             shortName,
@@ -57,7 +65,9 @@ class CreateProductUseCase {
             status,
             type,
             bestSeller,
-            id
+            id,
+            slug,
+            onlyAdmin
         });
 
         return product;

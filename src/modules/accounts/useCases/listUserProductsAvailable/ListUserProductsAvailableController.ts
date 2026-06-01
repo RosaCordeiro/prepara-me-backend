@@ -6,7 +6,7 @@ class ListUserProductsAvailableController {
     async handle(request: Request, response: Response): Promise<Response> {
         const { id } = request.params;
 
-        const { userId, productId } = request.query;
+        const { userId, productId, onlyAdmin } = request.query;
 
         let listUserProductsAvailableUseCase = container.resolve(
             ListUserProductsAvailableUseCase
@@ -17,6 +17,7 @@ class ListUserProductsAvailableController {
                 id,
                 productId,
                 userId,
+                onlyAdmin: onlyAdmin === 'true'
             });
 
         return response.status(200).send(userProductsAvailable);

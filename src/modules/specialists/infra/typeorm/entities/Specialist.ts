@@ -4,6 +4,7 @@ import {
     Column,
     Entity,
     JoinColumn,
+    ManyToOne,
     OneToMany,
     OneToOne,
     PrimaryColumn,
@@ -11,6 +12,8 @@ import {
 import { v4 as uuidV4 } from "uuid";
 import { ProductSpecialist } from "./ProductSpecialist";
 import { SpecialistSchedule } from "./SpecialistSchedule";
+import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
+import { SpecialistScheduleCancel } from "./SpecialistScheduleCancel";
 
 @Entity("specialists")
 class Specialist {
@@ -52,19 +55,30 @@ class Specialist {
     )
     specialistSchedule: SpecialistSchedule[];
 
+    @OneToMany(
+        () => SpecialistScheduleCancel,
+        (specialistScheduleCancel) => specialistScheduleCancel.id
+    )
+    specialistScheduleCancel: SpecialistScheduleCancel[];
+
+    @OneToMany(() => Mentoring, (m) => m.mentor)
+    mentoring: Mentoring[];
+
+    @Column({ nullable: true })
+    image?: string;
+
     constructor(
         name: string,
         bio: string,
         status: SpecialistStatusEnum,
         userId: string,
         linkedinUrl: string,
-        id: string
+        id: string,
+        image?: string
     ) {
-        if (!this.id) {
+        if (!this.id || id === undefined || id === null || id === "") {
             this.id = uuidV4();
-        }
-
-        if (id) {
+        } else {
             this.id = id;
         }
 
@@ -73,8 +87,8 @@ class Specialist {
         this.status = status;
         this.userId = userId;
         this.linkedinUrl = linkedinUrl;
+        this.image = image;
     }
 }
 
 export { Specialist };
-

@@ -3,8 +3,11 @@ import { UserRealocatedEnum } from "@modules/accounts/enums/UserRealocatedEnum";
 import { UserStatusEnum } from "@modules/accounts/enums/UserStatusEnum";
 import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
 import { Company } from "@modules/company/infra/typeorm/entities/Company";
+import { Mentoring } from "@modules/mentoring/infra/typeorm/entities/Mentoring";
 import { Order } from "@modules/orders/infra/typeorm/entities/Order";
 import { SpecialistSchedule } from "@modules/specialists/infra/typeorm/entities/SpecialistSchedule";
+import { SpecialistScheduleCancel } from "@modules/specialists/infra/typeorm/entities/SpecialistScheduleCancel";
+import { SpecialistScheduleFiles } from "@modules/specialists/infra/typeorm/entities/SpecialistScheduleFiles";
 import { ColumnNumericTransformer } from "@utils/ColumnNumericTransformer";
 import { Expose } from "class-transformer";
 import {
@@ -14,6 +17,7 @@ import {
     CreateDateColumn,
     OneToMany,
     ManyToOne,
+    ManyToMany,
 } from "typeorm";
 import { v4 as uuidV4 } from "uuid";
 
@@ -72,11 +76,14 @@ class User {
         (specialistSchedule) => specialistSchedule.id
     )
     specialistSchedule: SpecialistSchedule[];
-    
+
     @OneToMany(
-        () => Order,
-        (order) => order.id
+        () => SpecialistScheduleCancel,
+        (specialistScheduleCancel) => specialistScheduleCancel.id
     )
+    specialistScheduleCancel: SpecialistScheduleCancel[];
+
+    @OneToMany(() => Order, (order) => order.id)
     order: Order[];
 
     @ManyToOne(() => Company, (company) => company.id)
@@ -146,10 +153,19 @@ class User {
     brandRiskJSON: string;
 
     @Column()
+    surveyQuestion: string;
+
+    @Column()
     expiresDate: Date;
 
     @Column()
     periodTest: Date;
+
+    @ManyToMany(() => Mentoring, (mentoring) => mentoring.usersMentoring)
+    mentoring: Mentoring[];
+
+    @Column()
+    companyNameSignIn: string;
 
     constructor(
         name: string,
@@ -168,11 +184,13 @@ class User {
         feelingsMapJSON: string,
         brandRisk: number,
         laborRiskJSON: string,
+        surveyQuestion: string,
         brandRiskJSON: string,
         laborRiskAlert: UserLaborRiskAlertEnum,
         expiresDate: Date,
         periodTest: Date,
         subscribeToken: string,
+        companyNameSignIn: string
     ) {
         if (id) {
             this.id = id;
@@ -200,13 +218,14 @@ class User {
         this.feelingsMapJSON = feelingsMapJSON;
         this.brandRisk = brandRisk;
         this.laborRiskJSON = laborRiskJSON;
+        this.surveyQuestion = surveyQuestion;
         this.brandRiskJSON = brandRiskJSON;
         this.laborRiskAlert = laborRiskAlert;
         this.expiresDate = expiresDate;
         this.periodTest = periodTest;
         this.subscribeToken = subscribeToken;
+        this.companyNameSignIn = companyNameSignIn;
     }
 }
 
 export { User };
-

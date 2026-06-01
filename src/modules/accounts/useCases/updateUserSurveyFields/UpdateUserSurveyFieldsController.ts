@@ -14,6 +14,7 @@ class UpdateUserSurveyFieldsController {
             brandRisk,
             laborRiskJSON,
             brandRiskJSON,
+            surveyQuestion,
         } = request.body;
 
         const updateUserSurveyFieldsUseCase = container.resolve(
@@ -29,6 +30,7 @@ class UpdateUserSurveyFieldsController {
             brandRisk,
             laborRiskJSON,
             brandRiskJSON,
+            surveyQuestion
         });
 
         return response.status(204).send();

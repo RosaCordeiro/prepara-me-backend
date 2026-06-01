@@ -5,6 +5,7 @@ import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepositor
 import { getRepository, Repository } from "typeorm";
 
 import { User } from "../entities/User";
+import { UserTypeEnum } from "@modules/accounts/enums/UserTypeEnum";
 
 class UsersRepository implements IUsersRepository {
     private repository: Repository<User>;
@@ -32,12 +33,14 @@ class UsersRepository implements IUsersRepository {
         brandRisk,
         laborRiskJSON,
         brandRiskJSON,
+        surveyQuestion,
         laborRiskAlert,
         expiresDate,
         periodTest,
         subscribeToken,
+        companyNameSignIn,
     }: ICreateUserDTO): Promise<User> {
-        const user = this.repository.create({
+        console.log("user object", {
             id,
             name,
             username,
@@ -56,10 +59,38 @@ class UsersRepository implements IUsersRepository {
             brandRisk,
             laborRiskJSON,
             brandRiskJSON,
+            surveyQuestion,
             laborRiskAlert,
             expiresDate,
             periodTest,
             subscribeToken,
+            companyNameSignIn,
+        });
+        const user = this.repository.create({
+            id,
+            name,
+            username: username ?? name,
+            email,
+            password,
+            documentId,
+            type,
+            status,
+            avatar,
+            NPSSurvey,
+            laborRisk,
+            surveyAnswered,
+            companyId,
+            realocated,
+            feelingsMapJSON,
+            brandRisk,
+            laborRiskJSON,
+            brandRiskJSON,
+            laborRiskAlert,
+            surveyQuestion,
+            expiresDate,
+            periodTest,
+            subscribeToken,
+            companyNameSignIn: companyNameSignIn ?? "",
         });
 
         await this.repository.save(user);
@@ -69,6 +100,8 @@ class UsersRepository implements IUsersRepository {
 
     async findByEmail(email: string): Promise<User> {
         const user = await this.repository.findOne({ email });
+
+        console.log("user", user);
 
         return user;
     }
@@ -158,12 +191,9 @@ class UsersRepository implements IUsersRepository {
         return usersMapped;
     }
 
-    async remove(id: string): Promise<string> {
-        this.repository.delete(id);
-
-        return id;
+    async remove(id: string): Promise<any> {
+        return this.repository.delete(id);
     }
 }
 
 export { UsersRepository };
-

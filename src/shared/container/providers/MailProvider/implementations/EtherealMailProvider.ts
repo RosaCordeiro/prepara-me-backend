@@ -39,12 +39,20 @@ class EtherealMailProvider implements IMailProvider {
 
         const templateHTML = templateParse(variables);
 
+        console.log('templateHTML - EtherealMailProvider', templateHTML);
+        
+
+        console.log('info sendMail - EtherealMailProvider', { to, subject, variables, path });
+
         const message = await this.client.sendMail({
             to,
             from: "Rentx <noreplie@rentx.com.br>",
             subject,
             html: templateHTML,
         });
+
+        console.log('result sendMail - EtherealMailProvider', message);
+        
 
         console.log("Message sent: %s", message.messageId);
         console.log("Preview URL: %s", nodemailer.getTestMessageUrl(message));

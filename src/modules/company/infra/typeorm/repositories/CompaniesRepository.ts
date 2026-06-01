@@ -1,13 +1,42 @@
 import { ICreateCompanyDTO } from "@modules/company/dtos/ICreateCompanyDTO";
 import { ICompaniesRepository } from "@modules/company/repositories/ICompaniesRepository";
-import { getRepository, Repository } from "typeorm";
+import { Between, getRepository, Repository } from "typeorm";
 import { Company } from "../entities/Company";
+import { User } from "@modules/accounts/infra/typeorm/entities/User";
 
 class CompaniesRepository implements ICompaniesRepository {
     private repository: Repository<Company>;
+    private repositoryUsers: Repository<User>;
 
     constructor() {
         this.repository = getRepository(Company);
+        this.repositoryUsers = getRepository(User);
+    }
+
+    async listVacancies(companyName: string): Promise<number> {
+        console.log(companyName);
+
+        const firstDay = new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            1
+        );
+        const lastDay = new Date(
+            new Date().getFullYear(),
+            new Date().getMonth() + 1,
+            0
+        );
+
+        const response = await this.repositoryUsers.count({
+            where: {
+                companyNameSignIn: companyName,
+                created_at: Between(firstDay, lastDay),
+            },
+        });
+
+        console.log(response);
+
+        return response;
     }
 
     async create({ name, id }: ICreateCompanyDTO): Promise<Company> {
@@ -58,10 +87,15 @@ class CompaniesRepository implements ICompaniesRepository {
         return companies;
     }
 
+    async findAll() {
+        const companies = await this.repository.find();
+
+        return companies;
+    }
+
     async remove(id: string): Promise<void> {
         this.repository.delete(id);
     }
 }
 
 export { CompaniesRepository };
-

@@ -4,14 +4,18 @@ import { UserProductsAvailableMap } from "@modules/accounts/mapper/UserProductsA
 import { IUserProductsAvailableRepository } from "@modules/accounts/repositories/IUserProductsAvailableRepository";
 import { getRepository, Repository } from "typeorm";
 import { UserProductAvailable } from "../entities/UserProductAvailable";
+import { UserProductAvailableLog } from "../entities/UserProductAvailableLog";
+import { AppError } from "@shared/errors/AppError";
 
 class UserProductsAvailableRepository
     implements IUserProductsAvailableRepository
 {
     private repository: Repository<UserProductAvailable>;
+    private repositoryLog: Repository<UserProductAvailableLog>;
 
     constructor() {
         this.repository = getRepository(UserProductAvailable);
+        this.repositoryLog = getRepository(UserProductAvailableLog);
     }
 
     async create({
@@ -56,6 +60,7 @@ class UserProductsAvailableRepository
         userId,
         productId,
         onlyAvailables,
+        onlyAdmin
     }): Promise<IUserProductAvailableResponseDTO[]> {
         let userProductAvailableQuery = this.repository
             .createQueryBuilder("upa")
@@ -87,6 +92,15 @@ class UserProductsAvailableRepository
                     }
                 );
             }
+
+            if (onlyAdmin !== undefined && onlyAdmin !== null) {   
+                userProductAvailableQuery.andWhere(
+                    "product.onlyAdmin = :onlyAdmin",
+                    {
+                        onlyAdmin: onlyAdmin,
+                    }
+                );    
+            }
         }
 
         const userProductsAvailables =
@@ -100,7 +114,26 @@ class UserProductsAvailableRepository
 
         return userProductsAvailablesMapped;
     }
+
+    async update(id: string, productId: string): Promise<UserProductAvailable> {
+
+        const userProductAvailable = await this.repository.findOne(id);
+
+        const userProductAvailableLog = this.repositoryLog.create({
+            userId: userProductAvailable.userId,
+            productIdNew: productId,
+            productIdOld: userProductAvailable.productId,
+            availableQuantity: userProductAvailable.availableQuantity,
+            userProductsAvailableId: userProductAvailable.id,
+        });
+
+        await this.repositoryLog.save(userProductAvailableLog);
+
+        userProductAvailable.productId = productId;
+        await this.repository.save(userProductAvailable);
+
+        return userProductAvailable;
+    }
 }
 
 export { UserProductsAvailableRepository };
-

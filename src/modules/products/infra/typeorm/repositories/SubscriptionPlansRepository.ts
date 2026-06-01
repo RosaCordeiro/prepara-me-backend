@@ -33,7 +33,21 @@ class SubscriptionPlansRepository implements ISubscriptionPlansRepository {
     }
 
     async findById(id: string): Promise<SubscriptionPlan> {
-        const subscriptionPlan = await this.repository.findOne(id);
+        if (id === undefined || id === null || id === "") {
+            return null;
+        }
+
+        console.log("chegou aqui?");
+
+        const subscriptionPlan = await this.repository.findOne(id, {
+            relations: [
+                "subscriptionPlanProduct",
+                "subscriptionPlanProduct.product",
+            ],
+        });
+
+        console.log("subscriptionPlan", subscriptionPlan);
+
         return subscriptionPlan;
     }
 
@@ -43,15 +57,13 @@ class SubscriptionPlansRepository implements ISubscriptionPlansRepository {
         type,
         id,
     }): Promise<IResponseSubscriptionPlanDTO[]> {
-        const subscriptionPlansQuery = this.repository.createQueryBuilder("sp")
-        .leftJoinAndSelect(
-            "sp.subscriptionPlanProduct",
-            "subscriptionPlanProducts"
-        )
-        .leftJoinAndSelect(
-            "subscriptionPlanProducts.product",
-            "products"
-        );
+        const subscriptionPlansQuery = this.repository
+            .createQueryBuilder("sp")
+            .leftJoinAndSelect(
+                "sp.subscriptionPlanProduct",
+                "subscriptionPlanProducts"
+            )
+            .leftJoinAndSelect("subscriptionPlanProducts.product", "products");
 
         if (id) {
             subscriptionPlansQuery.andWhere("sp.id = :id", {
@@ -93,7 +105,32 @@ class SubscriptionPlansRepository implements ISubscriptionPlansRepository {
     async remove(id: string): Promise<void> {
         this.repository.delete(id);
     }
+
+    async findAll(): Promise<SubscriptionPlan[]> {
+        const subscriptionPlans = await this.repository.find({
+            relations: [
+                "subscriptionPlanProduct",
+                "subscriptionPlanProduct.product",
+            ],
+        });
+
+        return subscriptionPlans;
+    }
+
+    async findByID(id: string): Promise<SubscriptionPlan> {
+        console.log("chegou aqui?");
+
+        const subscriptionPlan = await this.repository.findOne(id, {
+            relations: [
+                "subscriptionPlanProduct",
+                "subscriptionPlanProduct.product",
+            ],
+        });
+
+        console.log("subscriptionPlan", subscriptionPlan);
+
+        return subscriptionPlan;
+    }
 }
 
 export { SubscriptionPlansRepository };
-

@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 import upload from "@config/upload";
 import cors from "cors";
 import express from "express";
@@ -22,7 +22,7 @@ const app = express();
 
 app.use(cors());
 
-dotenv.config()
+dotenv.config();
 
 app.use((req, res, next) => {
     req.header("Access-Control-Allow-Origin");
@@ -35,13 +35,14 @@ app.use((req, res, next) => {
     next();
 });
 
-app.options('*', cors()) 
+app.options("*", cors());
 
 app.use(express.json());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use("/avatar", express.static(`${upload.tmpFolder}/avatar`));
+app.use("/mentoring", express.static(`${upload.tmpFolder}/mentoring`));
 
 app.use(router);
 
@@ -50,4 +51,3 @@ app.use(errorReturn);
 //jobs();
 
 export { app };
-

@@ -5,6 +5,10 @@ import { IProductsSpecialistsRepository } from "@modules/specialists/repositorie
 import { ISpecialistSchedulesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesRepository";
 import { container } from "tsyringe";
 import { SpecialistSchedulesRepository } from "@modules/specialists/infra/typeorm/repositories/SpecialistSchedulesRepository";
+import { SpecialistSchedulesFilesRepository } from "@modules/specialists/infra/typeorm/repositories/SpecialistSchedulesFilesRepository";
+import { ISpecialistSchedulesFilesRepository } from "@modules/specialists/repositories/ISpecialistSchedulesFilesRepository";
+import { SpecialistSchedulesCancelRepository } from "@modules/specialists/infra/typeorm/repositories/SpecialistSchedulesCancelRepository";
+import { ISpecialistSchedulesCancelRepository } from "@modules/specialists/repositories/ISpecialistSchedulesCancelRepository";
 
 container.registerSingleton<ISpecialistsRepository>(
     "SpecialistsRepository",
@@ -19,4 +23,14 @@ container.registerSingleton<ISpecialistSchedulesRepository>(
 container.registerSingleton<IProductsSpecialistsRepository>(
     "ProductsSpecialistsRepository",
     ProductsSpecialistsRepository
+);
+
+container.registerSingleton<ISpecialistSchedulesFilesRepository>(
+    "SpecialistSchedulesFilesRepository",
+    SpecialistSchedulesFilesRepository
+);
+
+container.registerSingleton<ISpecialistSchedulesCancelRepository>(
+    "SpecialistSchedulesCancelRepository",
+    SpecialistSchedulesCancelRepository
 );

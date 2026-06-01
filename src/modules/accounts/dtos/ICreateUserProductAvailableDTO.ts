@@ -6,4 +6,3 @@ interface ICreateUserProductAvailableDTO {
 }
 
 export { ICreateUserProductAvailableDTO };
-

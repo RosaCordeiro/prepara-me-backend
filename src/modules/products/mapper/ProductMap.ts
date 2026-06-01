@@ -12,7 +12,9 @@ class ProductMap {
         bestSeller,
         price,
         duration,
-        productContent
+        productContent,
+        slug,
+        onlyAdmin
     }: Product): IResponseProductDTO {
         const statusMapped = status === "ACTIVE" ? "Ativo" : "Inativo";
         const typeMapped = type === "SCHEDULED" ? "Agendado" : "Não Agendado";
@@ -28,7 +30,9 @@ class ProductMap {
             bestSeller: { label: bestSellerMapped, value: bestSeller },
             price,
             duration,
-            productContent
+            productContent,
+            slug,
+            onlyAdmin
         });
 
         return product;
@@ -36,4 +40,3 @@ class ProductMap {
 }
 
 export { ProductMap };
-

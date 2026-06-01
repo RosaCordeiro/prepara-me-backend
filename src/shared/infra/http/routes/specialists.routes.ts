@@ -11,8 +11,43 @@ import { ListSpecialistScheduleController } from "@modules/specialists/useCases/
 import { RemoveSpecialistScheduleController } from "@modules/specialists/useCases/removeSpecialistSchedule/RemoveSpecialistScheduleController";
 import { ListProductSpecialistController } from "@modules/specialists/useCases/listProductSpecialist/ListProductSpecialistController";
 import { CancelSpecialistScheduleController } from "@modules/specialists/useCases/cancelSpecilaistSchedule/CancelSpecialistScheduleController";
+import uploadConfig from "@config/upload";
+import multer from "multer";
+import { CreateSpecialistScheduleFilesController } from "@modules/specialists/useCases/createSpecialistScheduleFiles/CreateSpecialistScheduleFilesController";
+import { ListSpecialistScheduleFilesController } from "@modules/specialists/useCases/listSpecialistScheduleFiles/ListSpecialistScheduleFilesController";
+import { RemoveSpecialistScheduleFilesController } from "@modules/specialists/useCases/removeSpeecialistScheduleFiles/removeSpecialistScheduleFilesController";
+import { CreateSpecialistScheduleRescheduleController } from "@modules/specialists/useCases/createSpecialistScheduleAvailableReschedule/CreateSpecialistScheduleRescheduleController";
+import { ListSpecialistScheduleToUserController } from "@modules/specialists/useCases/listSpecialistScheduleToUser/ListSpecialistScheduleToUserController";
 
 const specialistsRoutes = Router();
+const uploadImage = multer(uploadConfig);
+
+const listSpecialistScheduleFilesController =
+    new ListSpecialistScheduleFilesController();
+
+const removeSpecialistScheduleFilesController =
+    new RemoveSpecialistScheduleFilesController();
+
+specialistsRoutes.get(
+    "/schedule/:id/schedule-files",
+    ensuredAuthenticated,
+    listSpecialistScheduleFilesController.handle
+);
+const createSpecialistScheduleFilesController =
+    new CreateSpecialistScheduleFilesController();
+specialistsRoutes.post(
+    "/schedule-files",
+    ensuredAuthenticated,
+    uploadImage.any(),
+    //aqui eu passo pelo multer e ele coloca arquivo que poderia receber
+    createSpecialistScheduleFilesController.handle
+);
+
+specialistsRoutes.delete(
+    "/schedule/:id/schedule-files-delete",
+    ensuredAuthenticated,
+    removeSpecialistScheduleFilesController.handle
+);
 
 const createSpecialistScheduleController =
     new CreateSpecialistScheduleController();
@@ -28,6 +63,14 @@ specialistsRoutes.put(
     createSpecialistScheduleController.handle
 );
 
+const createSpecialistScheduleRescheduleController =
+    new CreateSpecialistScheduleRescheduleController();
+specialistsRoutes.put(
+    "/reschedule/:id",
+    ensuredAuthenticated,
+    createSpecialistScheduleRescheduleController.handle
+);
+
 const cancelSpecialistScheduleController =
     new CancelSpecialistScheduleController();
 specialistsRoutes.post(
@@ -37,7 +80,7 @@ specialistsRoutes.post(
 );
 
 const listSpecialistScheduleController = new ListSpecialistScheduleController();
-specialistsRoutes.get("/schedule/", listSpecialistScheduleController.handle);
+specialistsRoutes.get("/schedule/", ensuredAuthenticated, listSpecialistScheduleController.handle);
 specialistsRoutes.get("/schedule/:id", listSpecialistScheduleController.handle);
 
 const removeSpecialistScheduleController =
@@ -58,7 +101,10 @@ specialistsRoutes.post(
 );
 
 const listProductSpecialistController = new ListProductSpecialistController();
-specialistsRoutes.get("/products", listProductSpecialistController.handle);
+specialistsRoutes.get("/products", ensuredAuthenticated, listProductSpecialistController.handle);
+
+const listSpecialistScheduleToUserController = new ListSpecialistScheduleToUserController();
+specialistsRoutes.get("/schedule-to-user", listSpecialistScheduleToUserController.handle);
 
 const removeProductSpecialistController =
     new RemoveProductSpecialistController();
@@ -74,6 +120,7 @@ specialistsRoutes.post(
     "/",
     ensuredAuthenticated,
     ensureAdmin,
+    uploadImage.any(),
     createSpecialistController.handle
 );
 
@@ -90,4 +137,3 @@ specialistsRoutes.delete(
 );
 
 export { specialistsRoutes };
-

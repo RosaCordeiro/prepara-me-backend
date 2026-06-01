@@ -5,6 +5,7 @@ import { Router } from "express";
 import { ensuredAuthenticated } from "../middlewares/ensureAuthenticated";
 import { ensureAdmin } from "../middlewares/ensureAdmin";
 import { RemoveSubscriptionPlanController } from "@modules/products/useCases/removeSubscriptionPlan/RemoveSubscriptionPlanController";
+import { DeleteSubscriptionPlanProductController } from "@modules/products/useCases/deleteSubscriptionPlanProduct/DeleteSubscriptionPlanProductController";
 
 const subscriptionPlansRoutes = Router();
 
@@ -39,12 +40,22 @@ subscriptionPlansRoutes.delete(
     removeSubscriptionPlanController.handle
 );
 
-const createSubscriptionPlanProductController = new CreateSubscriptionPlanProductController();
+const createSubscriptionPlanProductController =
+    new CreateSubscriptionPlanProductController();
 subscriptionPlansRoutes.post(
     "/:id/products",
     ensuredAuthenticated,
     ensureAdmin,
     createSubscriptionPlanProductController.handle
+);
+
+const deleteSubscriptionPlanProductController =
+    new DeleteSubscriptionPlanProductController();
+subscriptionPlansRoutes.delete(
+    "/products/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
+    deleteSubscriptionPlanProductController.handle
 );
 
 export { subscriptionPlansRoutes };

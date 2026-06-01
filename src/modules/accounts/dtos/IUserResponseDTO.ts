@@ -20,12 +20,14 @@ interface IUserResponseDTO {
     brandRisk: number;
     laborRiskJSON: string;
     brandRiskJSON: string;
+    surveyQuestion?: string;
     laborRiskAlert: Object;
     expiresDate: Date;
     expiryDateFormated?: string;
     periodTest: Date;
     subscribeToken: string;
+    companyNameSignIn: string;
+    companyNameSignInLogo?: string;
 }
 
 export { IUserResponseDTO };
-

@@ -1,0 +1,45 @@
+stages:
+    - deploy
+
+variables:
+    projectName: Prepara.Me - API
+    projectType: prepara_api
+    projetctFolder: preparame/api
+    shouldRunCompose: "false"
+    projectPm2Name: app-preparame-api
+    projectPm2NameProd: preparame-api
+    projetctFolderProd: preparame/api
+
+deploy_job:
+    stage: deploy
+    script:
+        - echo "Deploying develop branch..."
+        - cd /var/www/app/$projetctFolder
+        - git checkout .
+        - git pull origin develop
+        - echo "Publicando $projectName"
+        - sed -i 's/\r$//' /var/www/app/$projetctFolder/scripts/deploy.sh
+        - chmod +x ./scripts/deploy.sh
+        - ./scripts/deploy.sh $projetctFolder $projectPm2Name
+        - echo "Finalizando deploy..."
+    tags:
+        - nodedso_homolog
+    only:
+        - develop
+
+deploy_production:
+    stage: deploy
+    script:
+        - echo "Deploying master branch..."
+        - cd /var/www/$projetctFolderProd
+        - git checkout .
+        - git pull origin master
+        - echo "Publicando $projectName"
+        - sed -i 's/\r$//' /var/www/$projetctFolderProd/scripts/deploy_prod.sh
+        - chmod +x ./scripts/deploy_prod.sh
+        - ./scripts/deploy_prod.sh $projetctFolderProd $projectPm2NameProd
+        - echo "Finalizando deploy..."
+    tags:
+        - preparame_prod
+    only:
+        - master # Run on branches starting with ''

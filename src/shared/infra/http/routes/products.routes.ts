@@ -13,11 +13,35 @@ import { RemoveSimulatorVideosGroupController } from "@modules/products/useCases
 import { CreateSimulatorVideosController } from "@modules/products/useCases/createSimulatorVideos/CreateSimulatorVideosController";
 import { ListSimulatorVideosController } from "@modules/products/useCases/listSimulatorVideos/ListSimulatorVideosController";
 import { RemoveSimulatorVideosController } from "@modules/products/useCases/removeSimulatorVideos/RemoveSimulatorVideosController";
+import { ListProductByUserController } from "@modules/products/useCases/listProductByUser/ListProductByUserController";
+import { RemoveProductUserUseCase } from "@modules/products/useCases/removeProductUser/RemoveProductUserUseCase";
+import { RemoveProductUserController } from "@modules/products/useCases/removeProductUser/RemoveProductUserController";
+import { ListProductByPriceController } from "@modules/products/useCases/listProductByPrice/ListProductByPriceController";
+import { ListProductByUserWithSpecialistController } from "@modules/products/useCases/listProductByUserWithSpecialist/ListProductByUserWithSpecialistController";
+import { ListProductsAvailableByUserController } from "@modules/products/useCases/listProductsAvailableByUser/ListProductsAvailableByUserController";
 
 const productsRoutes = Router();
 
+const listProductsAvailableByUserController = new ListProductsAvailableByUserController();
+productsRoutes.get("/listProductsAvailableByUser", ensuredAuthenticated, listProductsAvailableByUserController.handle);
+
 const createRequestScheduleController = new CreateRequestScheduleController();
 productsRoutes.post("/requestSchedule", createRequestScheduleController.handle);
+
+const listProductByUserController = new ListProductByUserController();
+productsRoutes.get(
+    "/listProductByUser",
+    ensuredAuthenticated,
+    listProductByUserController.handle
+);
+
+const listProductByUserWithSpecialistController =
+    new ListProductByUserWithSpecialistController();
+productsRoutes.get(
+    "/listProductByUserWithSpecialist",
+    ensuredAuthenticated,
+    listProductByUserWithSpecialistController.handle
+);
 
 const listRequestScheduleController = new ListProductController();
 productsRoutes.get(
@@ -108,12 +132,27 @@ const listProductController = new ListProductController();
 productsRoutes.get("/", listProductController.handle);
 productsRoutes.get("/:id", listProductController.handle);
 
+const listProductByPriceController = new ListProductByPriceController();
+productsRoutes.get(
+    "/price/:id",
+    ensuredAuthenticated,
+    listProductByPriceController.handle
+);
+
 const removeProductController = new RemoveProductController();
 productsRoutes.delete(
     "/:id",
     ensuredAuthenticated,
     ensureAdmin,
     removeProductController.handle
+);
+
+const removeProductUserController = new RemoveProductUserController();
+productsRoutes.delete(
+    "/:id/users",
+    ensuredAuthenticated,
+    ensureAdmin,
+    removeProductUserController.handle
 );
 
 const createProductController = new CreateProductController();
@@ -124,6 +163,4 @@ productsRoutes.post(
     createProductController.handle
 );
 
-
 export { productsRoutes };
-

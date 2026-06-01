@@ -2,7 +2,7 @@ import { injectable } from "tsyringe";
 import { IMailProvider } from "../IMailProvider";
 import sgMail from "@sendgrid/mail";
 import nodemailer, { Transporter } from "nodemailer";
-import nodemailerSendgrid from 'nodemailer-sendgrid'
+import nodemailerSendgrid from "nodemailer-sendgrid";
 
 @injectable()
 class SendGridProvider implements IMailProvider {
@@ -11,9 +11,10 @@ class SendGridProvider implements IMailProvider {
     constructor() {
         this.client = nodemailer.createTransport(
             nodemailerSendgrid({
-                apiKey: process.env.SENDGRID_API_KEY
+                apiKey: process.env.SENDGRID_API_KEY,
             })
-        )};
+        );
+    }
 
     async sendMail(
         to: string,
@@ -25,25 +26,30 @@ class SendGridProvider implements IMailProvider {
 
         const msg = {
             to: to,
-            from: "contato@prepara.me",
+            from: "Prepara.me - Agendamento <contato@prepara.me>",
             subject: subject,
             text: "and easy to do anywhere, even with Node.js",
             html: "<strong>and easy to do anywhere, even with Node.js</strong>",
         };
 
-        this.client.sendMail({
-            to: to,
-            from: "contato@prepara.me",
-            subject: subject,
-            text: "and easy to do anywhere, even with Node.js",
-            html: "<strong>and easy to do anywhere, even with Node.js</strong>",
-        }).then(() => {
-            console.log("Email sent");
-        }).catch((error) => {
-            console.error(error);
-        })
-    } 
+        console.log('info sendMail - SendGridProvider', msg);
+        
+
+        this.client
+            .sendMail({
+                to: to,
+                from: "Prepara.me - Agendamento <contato@prepara.me>",
+                subject: subject,
+                text: "and easy to do anywhere, even with Node.js",
+                html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+            })
+            .then(() => {
+                console.log("Email sent - SendGridProvider");
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 }
 
 export { SendGridProvider };
-

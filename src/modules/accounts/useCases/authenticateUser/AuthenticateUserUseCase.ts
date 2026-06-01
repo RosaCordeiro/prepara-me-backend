@@ -9,6 +9,7 @@ import { inject, injectable } from "tsyringe";
 
 import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
 import { AppError } from "@shared/errors/AppError";
+import { CompanyPageRepository } from "@modules/company/infra/typeorm/repositories/CompanyPageRepository";
 
 interface IRequest {
     login: string;
@@ -33,7 +34,11 @@ class AuthenticateUserUseCase {
     ) {}
 
     async execute({ login, password }: IRequest): Promise<ITokenResponse> {
+        console.log(login, password);
+
         let user = await this.userRepository.findByEmail(login);
+
+        console.log(user);
 
         if (!user) {
             user = await this.userRepository.findByDocument(login);
@@ -44,6 +49,8 @@ class AuthenticateUserUseCase {
         }
 
         const passwordMatch = await compare(password, user.password);
+
+        console.log(passwordMatch);
 
         if (!passwordMatch) {
             throw new AppError("Email or Password incorrect.");
@@ -69,13 +76,26 @@ class AuthenticateUserUseCase {
             expiresIn: auth.expires_in_token,
         });
 
+        const newUser = UserMap.toDTO(user);
+
+        if (
+            newUser.companyNameSignIn !== undefined &&
+            newUser.companyNameSignIn !== null &&
+            newUser.companyNameSignIn !== ""
+        ) {
+            const companyPageRepository = new CompanyPageRepository();
+            const response = await companyPageRepository.findByName(
+                user.companyNameSignIn
+            );
+
+            newUser.companyNameSignInLogo = `${process.env.AWS_BUCKET_URL}/company/${response.logoInternal}`;
+        }
         return {
             refresh_token,
             token: newToken,
-            user: UserMap.toDTO(user),
+            user: newUser,
         };
     }
 }
 
 export { AuthenticateUserUseCase };
-

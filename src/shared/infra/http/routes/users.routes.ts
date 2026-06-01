@@ -11,6 +11,8 @@ import { ListUserProductsAvailableController } from "@modules/accounts/useCases/
 import { CreateSubscriptionNewsletterController } from "@modules/accounts/useCases/createSubscriptionNewsletter/CreateSubscriptionNewsletterController";
 import { UpdateUserSurveyFieldsController } from "@modules/accounts/useCases/updateUserSurveyFields/UpdateUserSurveyFieldsController";
 import { UpdateUserLaborRiskAlertController } from "@modules/accounts/useCases/updateUserLaborRiskAlert/UpdateUserLaborRiskAlertController";
+import { RemoveUserController } from "@modules/accounts/useCases/removeUser/RemoveUserController";
+import { UpdateUserProductAvailableController } from "@modules/accounts/useCases/updateUserProductAvailable/UpdateUserProductAvailableController";
 
 const usersRoutes = Router();
 
@@ -37,6 +39,15 @@ usersRoutes.get(
     listUserProductsAvailableController.handle
 );
 
+const updateUserProductAvailableController =
+    new UpdateUserProductAvailableController();
+
+usersRoutes.patch(
+    "/products",
+    ensuredAuthenticated,
+    updateUserProductAvailableController.handle
+);
+
 const updateUserAvatarController = new UpdateUserAvatarController();
 const uploadAvatar = multer(uploadConfig);
 usersRoutes.patch(
@@ -57,32 +68,31 @@ const createUserController = new CreateUserController();
 usersRoutes.post("/", createUserController.handle);
 
 const listUserController = new ListUserController();
-usersRoutes.get(
-    "/",
-    ensuredAuthenticated,
-    ensureAdmin,
-    listUserController.handle
-);
+usersRoutes.get("/", ensuredAuthenticated, listUserController.handle);
 
-usersRoutes.get(
-    "/:id",
-    ensuredAuthenticated,
-    listUserController.handle
-);
+usersRoutes.get("/:id", ensuredAuthenticated, listUserController.handle);
 
-const updateUserSurveyFieldsController = new UpdateUserSurveyFieldsController()
+const updateUserSurveyFieldsController = new UpdateUserSurveyFieldsController();
 usersRoutes.put(
     "/updateSurveyFields",
     ensuredAuthenticated,
     updateUserSurveyFieldsController.handle
 );
 
-const updateUserLaborRiskAlertController = new UpdateUserLaborRiskAlertController()
+const updateUserLaborRiskAlertController =
+    new UpdateUserLaborRiskAlertController();
 usersRoutes.put(
     "/updateLaborRiskAlert",
     ensuredAuthenticated,
     updateUserLaborRiskAlertController.handle
 );
 
-export { usersRoutes };
+const removeUserController = new RemoveUserController();
+usersRoutes.delete(
+    "/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
+    removeUserController.handle
+);
 
+export { usersRoutes };

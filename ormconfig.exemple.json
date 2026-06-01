@@ -1,13 +1,13 @@
 {
-    "type": "",
-    "port": 0,
-    "host": "",
-    "username": "",
-    "password": "",
-    "database": "", 
+    "type": "postgres",
+    "port": 5432,
+    "host": "database",
+    "username": "docker",
+    "password": "admin@01",
+    "database": "preparame",
     "migrations": ["./src/shared/infra/typeorm/migrations/*.ts"],
     "entities": ["./src/modules/**/entities/*.ts"],
     "cli": {
-      "migrationsDir": "./src/shared/infra/typeorm/migrations"
+        "migrationsDir": "./src/shared/infra/typeorm/migrations"
     }
-  }
+}

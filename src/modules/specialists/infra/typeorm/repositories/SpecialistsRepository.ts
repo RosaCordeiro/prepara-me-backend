@@ -13,22 +13,8 @@ class SpecialistsRepository implements ISpecialistsRepository {
         this.repository = getRepository(Specialist);
     }
 
-    async create({
-        name,
-        bio,
-        status,
-        linkedinUrl,
-        userId,
-        id,
-    }: ICreateSpecialistDTO): Promise<Specialist> {
-        const specialist = this.repository.create({
-            name,
-            bio,
-            status,
-            linkedinUrl,
-            userId,
-            id,
-        });
+    async create(data: ICreateSpecialistDTO): Promise<Specialist> {
+        const specialist = this.repository.create(data);
 
         await this.repository.save(specialist);
 
@@ -36,7 +22,9 @@ class SpecialistsRepository implements ISpecialistsRepository {
     }
 
     async findById(id: string): Promise<Specialist> {
-        const specialist = await this.repository.findOne(id);
+        const specialist = await this.repository.findOne(id, {
+            relations: ["user"],
+        });
 
         return specialist;
     }
@@ -132,4 +120,3 @@ class SpecialistsRepository implements ISpecialistsRepository {
 }
 
 export { SpecialistsRepository };
-
