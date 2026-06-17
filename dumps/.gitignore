@@ -1,1 +1,3 @@
 *.sql
+!seed-users-dev.sql
+!fix-company-name-sign-in.sql

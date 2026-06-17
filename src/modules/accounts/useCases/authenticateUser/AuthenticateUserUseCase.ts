@@ -9,6 +9,8 @@ import { inject, injectable } from "tsyringe";
 
 import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
 import { AppError } from "@shared/errors/AppError";
+import { User } from "@modules/accounts/infra/typeorm/entities/User";
+import { CompanyPage } from "@modules/company/infra/typeorm/entities/CompanyPage";
 import { CompanyPageRepository } from "@modules/company/infra/typeorm/repositories/CompanyPageRepository";
 
 interface IRequest {
@@ -78,23 +80,52 @@ class AuthenticateUserUseCase {
 
         const newUser = UserMap.toDTO(user);
 
-        if (
-            newUser.companyNameSignIn !== undefined &&
-            newUser.companyNameSignIn !== null &&
-            newUser.companyNameSignIn !== ""
-        ) {
-            const companyPageRepository = new CompanyPageRepository();
-            const response = await companyPageRepository.findByName(
-                user.companyNameSignIn
-            );
+        const companyNameSignInLogo =
+            await this.resolveCompanyNameSignInLogo(user);
 
-            newUser.companyNameSignInLogo = `${process.env.AWS_BUCKET_URL}/company/${response.logoInternal}`;
+        if (companyNameSignInLogo) {
+            newUser.companyNameSignInLogo = companyNameSignInLogo;
         }
+
         return {
             refresh_token,
             token: newToken,
             user: newUser,
         };
+    }
+
+    private async resolveCompanyNameSignInLogo(
+        user: User
+    ): Promise<string | undefined> {
+        const companyPageRepository = new CompanyPageRepository();
+        let companyPage: CompanyPage | undefined;
+
+        if (user.companyId) {
+            companyPage = await companyPageRepository.findByCompanyId(
+                user.companyId
+            );
+        }
+
+        if (
+            !companyPage &&
+            user.companyNameSignIn !== undefined &&
+            user.companyNameSignIn !== null &&
+            user.companyNameSignIn !== ""
+        ) {
+            companyPage = await companyPageRepository.findByName(
+                user.companyNameSignIn
+            );
+        }
+
+        if (
+            !companyPage?.logoInternal ||
+            companyPage.logoInternal === null ||
+            companyPage.logoInternal === ""
+        ) {
+            return undefined;
+        }
+
+        return `${process.env.AWS_BUCKET_URL}/company/${companyPage.logoInternal}`;
     }
 }
 
