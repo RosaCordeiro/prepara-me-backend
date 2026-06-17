@@ -3,12 +3,9 @@ set -e
 
 echo "🚀 Iniciando aplicação..."
 
-# Aguardar banco de dados
+# Aguardar banco de dados (healthcheck do compose já valida; fallback curto)
 echo "⏳ Aguardando banco de dados..."
-while ! pg_isready -h database -p 5432 -U docker; do
-    echo "Aguardando banco..."
-    sleep 2
-done
+sleep 5
 echo "✅ Banco pronto!"
 
 # Criar ormconfig.json
