@@ -1,26 +1,42 @@
 #!/usr/bin/env bash
 set -e
 
-echo "🚀 Iniciando aplicação..."
+DB_HOST="${DB_HOST:-host.docker.internal}"
+DB_PORT="${DB_PORT:-5432}"
+DB_USER="${DB_USER:-docker}"
+DB_PASS="${DB_PASS:-admin@01}"
+DB_NAME="${DB_NAME:-preparame}"
 
-# Aguardar banco de dados
+echo "🚀 Iniciando aplicação..."
+echo "📡 Banco externo: ${DB_HOST}:${DB_PORT}/${DB_NAME}"
+
 echo "⏳ Aguardando banco de dados..."
-while ! pg_isready -h database -p 5432 -U docker; do
-    echo "Aguardando banco..."
+for i in $(seq 1 60); do
+    if PGPASSWORD="${DB_PASS}" pg_isready -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" > /dev/null 2>&1; then
+        echo "✅ Banco pronto!"
+        break
+    fi
+
+    if [ "${i}" -eq 60 ]; then
+        echo "❌ Banco indisponível em ${DB_HOST}:${DB_PORT}"
+        echo "   Verifique se o PostgreSQL está rodando no Windows."
+        echo "   Execute: powershell.exe -File scripts/setup-windows-postgres.ps1"
+        exit 1
+    fi
+
+    echo "Aguardando banco... (${i}/60)"
     sleep 2
 done
-echo "✅ Banco pronto!"
 
-# Criar ormconfig.json
 echo "📝 Criando ormconfig.json..."
 cat > ormconfig.json << EOF
 {
     "type": "postgres",
-    "port": 5432,
-    "host": "database", 
-    "username": "docker",
-    "password": "admin@01",
-    "database": "preparame",
+    "port": ${DB_PORT},
+    "host": "${DB_HOST}",
+    "username": "${DB_USER}",
+    "password": "${DB_PASS}",
+    "database": "${DB_NAME}",
     "synchronize": false,
     "logging": false,
     "migrations": ["./src/shared/infra/typeorm/migrations/*.ts"],
@@ -32,9 +48,8 @@ cat > ormconfig.json << EOF
 EOF
 echo "✅ ormconfig.json criado!"
 
-# Executar migrações
 echo "🔄 Executando migrações..."
-sleep 3
+sleep 2
 npm run typeorm migration:run || echo "⚠️ Erro nas migrações, continuando..."
 
 echo "🎉 Iniciando aplicação..."

@@ -2,29 +2,62 @@
 
 API backend para o sistema Preparame desenvolvida com Node.js, TypeScript e PostgreSQL.
 
+## Banco de dados (PostgreSQL no WSL)
+
+O PostgreSQL roda **localmente no WSL** (sem Docker), em `~/.local/pgsql/data`.
+
+### Setup inicial
+
+```bash
+./scripts/setup-wsl-postgres.sh
+```
+
+Isso instala os binários, cria o banco `preparame` e atualiza o `.env`.
+
+### Subir o PostgreSQL
+
+```bash
+./scripts/start-postgres.sh
+```
+
+### Restaurar dump
+
+```bash
+./dumps/restore-dump.sh "/caminho/para/backup.sql"
+```
+
+Script de criação do banco (reutilizável): `scripts/create-database.sql`
+
+Conexões:
+- **WSL / Node local:** `localhost:5432`
+- **Docker (backend):** `host.docker.internal:5432`
+
 ## 🚀 Início Rápido
 
 ### Pré-requisitos
 
--   Docker e Docker Compose instalados
--   Node.js (para modo debug)
+-   Docker no WSL (usuário no grupo `docker`)
+-   PostgreSQL configurado no Windows
+-   Node.js no WSL (para o frontend)
 
 ### Como executar
 
 ```bash
-# Script interativo com menu de opções
+# Backend (Docker, banco no Windows)
+./scripts/dev-backend.sh
+
+# Frontend (WSL)
+cd ../preparame-platform
+./scripts/dev-frontend.sh
+```
+
+Ou use o menu interativo:
+
+```bash
 ./start.sh
 ```
 
-O script mostrará um menu com as opções:
-
-1. **🐳 Ambiente Completo (Docker)** - App + Banco no Docker
-2. **🐛 Modo Debug** - Só banco Docker + Node local para debugger
-3. **🗄️ Apenas Banco** - Só PostgreSQL
-4. **⏹️ Parar Serviços** - Para todos os containers
-5. **🚪 Sair**
-
-**Pronto!** A API estará rodando em: http://localhost:3334
+**Pronto!** A API estará em http://localhost:3334 e o frontend em http://localhost:8080
 
 ### Modo Debug (Desenvolvimento)
 
