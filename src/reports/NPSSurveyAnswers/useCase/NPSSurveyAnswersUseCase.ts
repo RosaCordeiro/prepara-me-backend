@@ -59,7 +59,9 @@ class NPSSurveyAnswersUseCase {
                 stateArray
             );
 
-            users = result.map((r: any) => r.user);
+            users = result
+                .map((r: any) => r.user)
+                .filter((user: any) => user != null);
         }
 
         let usersAll = await npsSurveyAnswers.reportAllusers();
@@ -139,7 +141,7 @@ class NPSSurveyAnswersUseCase {
 
     getRealocatedsNumber(users: any) {
         const realocateds = users.filter((user: any) => {
-            return user.realocated == "REALOCATED";
+            return user?.realocated == "REALOCATED";
         });
 
         return realocateds.length;
@@ -465,9 +467,9 @@ class NPSSurveyAnswersUseCase {
     }
 
     getRealocateds(users: any, companyId: any) {
-        const filterUsers = users[0]?.user
-            ? users.filter((employee: any) => employee.userId)
-            : users;
+        const filterUsers = users[0]?.user !== undefined
+            ? users.filter((employee: any) => employee.userId && employee.user)
+            : users.filter((user: any) => user != null);
         console.log("FILTER USERS", filterUsers);
 
         if (filterUsers.length === 0) {
