@@ -37,9 +37,16 @@ Alternativa (dono das tabelas do dump): `usprepareme` / `admin@01`
 | ADMIN | `teste.admin@prepara.me` | Admin Teste | Administração da plataforma |
 | SPECIALIST | `teste.especialista@prepara.me` | Especialista Teste | Perfil especialista |
 | COMPANY_ADMIN | `teste.empresa@prepara.me` | Admin Empresa Teste | RH — layout novo / dashboard empresa |
-| USER | `teste.colaborador1@prepara.me` | Colaborador Teste 1 | Ex-colaborador (empresa teste) |
-| USER | `teste.colaborador2@prepara.me` | Colaborador Teste 2 | Ex-colaborador (empresa teste) |
-| USER | `teste.colaborador3@prepara.me` | Colaborador Teste 3 | Ex-colaborador (empresa teste) |
+| USER | `teste.colaborador1@prepara.me` | Colaborador Teste 1 | Operações · Matriz SP · NPS 9 · recolocado |
+| USER | `teste.colaborador2@prepara.me` | Colaborador Teste 2 | RH · Matriz SP · NPS 6 · alerta risco |
+| USER | `teste.colaborador3@prepara.me` | Colaborador Teste 3 | Financeiro · Filial SP · NPS 3 · alerta risco |
+| USER | `teste.colaborador4@prepara.me` | Maria Silva Costa | Tecnologia · Matriz SP · NPS 10 · recolocado |
+| USER | `teste.colaborador5@prepara.me` | João Pedro Santos | Comercial · Filial RJ · NPS 2 · PCD · alerta |
+| USER | `teste.colaborador6@prepara.me` | Ana Beatriz Lima | Marketing · Matriz SP · NPS 7 |
+| USER | `teste.colaborador7@prepara.me` | Pedro Henrique Oliveira | Logística · CD Campinas · NPS 8 · recolocado |
+| USER | `teste.colaborador8@prepara.me` | Fernanda Souza Mendes | Jurídico · Matriz SP · NPS 5 · alerta risco |
+| USER | `teste.colaborador9@prepara.me` | Carlos Eduardo Rocha | Produção · Filial MG · **sem pesquisa** · PCD |
+| USER | `teste.colaborador10@prepara.me` | Juliana Aparecida Ferreira | Customer Success · Filial NE · NPS 8 |
 
 ### Empresa de teste
 
@@ -47,6 +54,11 @@ Alternativa (dono das tabelas do dump): `usprepareme` / `admin@01`
 |---|---|
 | Nome | Empresa Teste Prepara.me |
 | Token assinatura | `TESTE-PREPARA-2026` |
+| Colaboradores ativos | 10 (9 com pesquisa respondida) |
+| Colaborador pendente | 1 (`teste.pendente@prepara.me`, sem login) |
+| Áreas no seed | Operações, RH, Financeiro, Tecnologia, Comercial, Marketing, Logística, Jurídico, Produção, Customer Success |
+| Unidades no seed | Matriz SP, Filial SP, Filial RJ, CD Campinas, Filial MG, Filial NE |
+| Perguntas qualitativas | 2 perguntas da empresa + respostas nos colaboradores com pesquisa |
 
 ### Colaborador pendente (sem login)
 
@@ -62,10 +74,12 @@ Se os usuários sumirem após restore do banco:
 
 ```bash
 cd prepara-me-backend
+node scripts/build-seed-test-users.js   # opcional: regenera o SQL
 bash scripts/seed-test-users.sh
 ```
 
-Script SQL: `scripts/seed-test-users.sql`
+Script SQL: `scripts/seed-test-users.sql` (gerado por `scripts/build-seed-test-users.js`)
+Perfis de pesquisa: `scripts/seed-test-company-profiles.js`
 
 ---
 

@@ -78,9 +78,6 @@ class NPSSurveyAnswersUseCase {
             cityArray.length === 0 &&
             stateArray.length === 0;
 
-        console.log("shouldApplyException", shouldApplyException);
-        console.log("users length", users.length);
-
         const lessThanFive = this.shouldCheckSurveyLimit(
             companyId,
             users,
@@ -177,18 +174,13 @@ class NPSSurveyAnswersUseCase {
         filterUsers?: any[],
         shouldApplyException: boolean = true
     ): boolean {
-        console.log("ROLE USER", users.length);
         if (!users || users.length === 0) {
             return true;
         }
 
-        console.log("CHECKING SURVEY LIMIT");
-
-        if (this.roleUser === "ADMIN") {
+        if (this.roleUser === "ADMIN" || this.roleUser === "COMPANY_ADMIN") {
             return false;
         }
-
-        console.log("ROLE USER 2", this.roleUser);
 
         const EXCEPTION_COMPANY_IDS = [
             "a62a66b5-2ad4-446d-af44-95679cb9d580",
@@ -201,8 +193,6 @@ class NPSSurveyAnswersUseCase {
         if (EXCEPTION_COMPANY_IDS.includes(companyId) && shouldApplyException) {
             return false;
         }
-
-        console.log("CHEGOU AQUI");
 
         const targetUsers = filterUsers || users;
 
@@ -299,35 +289,16 @@ class NPSSurveyAnswersUseCase {
         companyId: any,
         shouldApplyException: boolean = true
     ) {
-        console.log("-- [getLaborIssues] INPUT users:", users?.length);
-        console.log("-- [getLaborIssues] roleUser:", this.roleUser);
-        console.log("-- [getLaborIssues] shouldApplyException:", shouldApplyException);
-
-
         if (this.roleUser === "ADMIN" || this.roleUser === "COMPANY_ADMIN") {
-            console.log("-- ADMIN / COMPANY_ADMIN ignoram anonimato");
             shouldApplyException = false;
         }
-
 
         const normalizedUsers = users.map((employee: any) => {
             if (employee?.user) return employee.user;
             return employee;
         });
 
-        console.log(
-            "-- [getLaborIssues] normalizedUsers (users reais extraídos):",
-            normalizedUsers.length
-        );
-
-
         const filterUsers = normalizedUsers.filter((user: any) => user?.id);
-
-        console.log(
-            "-- [getLaborIssues] filterUsers (válidos para cálculo):",
-            filterUsers.length
-        );
-
 
         if (
             shouldApplyException &&
@@ -337,15 +308,9 @@ class NPSSurveyAnswersUseCase {
             return "N/A";
         }
 
-
         const laborRiskAlerts = filterUsers.filter((user: any) => {
             return user?.laborRiskAlert === "ALERT";
         });
-
-        console.log(
-            `-- [getLaborIssues] ALERTS: ${laborRiskAlerts.length}/${filterUsers.length}`
-        );
-
 
         return (
             ((laborRiskAlerts.length / filterUsers.length) * 100).toFixed(2) + "%"
@@ -470,7 +435,6 @@ class NPSSurveyAnswersUseCase {
         const filterUsers = users[0]?.user !== undefined
             ? users.filter((employee: any) => employee.userId && employee.user)
             : users.filter((user: any) => user != null);
-        console.log("FILTER USERS", filterUsers);
 
         if (filterUsers.length === 0) {
             return "0%";
@@ -522,6 +486,10 @@ class NPSSurveyAnswersUseCase {
 
             if (Array.isArray(feelingsMap)) {
                 feelingsMap.forEach((feelingMapped) => {
+                    if (feelingMapped.checked === false) {
+                        return;
+                    }
+
                     const findFeeling = feelingsMapData.findIndex(
                         (feelingInserted) => {
                             return (
