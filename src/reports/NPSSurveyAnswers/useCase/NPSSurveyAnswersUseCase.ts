@@ -10,12 +10,41 @@ class NPSSurveyAnswersUseCase {
 
     private roleUser: string = "USER";
 
-    async execute({ companyId, area, role, period, unity, dismissalType, gender, etnia, pcd, city, state }: { companyId: string; area: string; role: string; period: string; unity: string; dismissalType: string; gender: string; etnia: string; pcd: string; city: string; state: string }, userId: string) {
+    async execute(
+        {
+            companyId,
+            area,
+            role,
+            period,
+            unity,
+            dismissalType,
+            gender,
+            etnia,
+            pcd,
+            city,
+            state,
+        }: {
+            companyId: string;
+            area: string;
+            role: string;
+            period: string;
+            unity: string;
+            dismissalType: string;
+            gender: string;
+            etnia: string;
+            pcd: string;
+            city: string;
+            state: string;
+        },
+        userId: string
+    ) {
         const areaArray = area ? JSON.parse(area) : [];
         const roleArray = role ? JSON.parse(role) : [];
         const periodArray = period ? JSON.parse(period) : [];
         const unityArray = unity ? JSON.parse(unity) : [];
-        const dismissalTypeArray = dismissalType ? JSON.parse(dismissalType) : [];
+        const dismissalTypeArray = dismissalType
+            ? JSON.parse(dismissalType)
+            : [];
         const genderArray = gender ? JSON.parse(gender) : [];
         const etniaArray = etnia ? JSON.parse(etnia) : [];
         const pcdArray = pcd ? JSON.parse(pcd) : [];
@@ -149,10 +178,13 @@ class NPSSurveyAnswersUseCase {
         const companyQuestions =
             await this.surveyQuestionsRepository.listByCompanyId(companyId);
         const usersFilterred = users.filter(
-            (user: any) => user.surveyQuestion !== null && user.surveyQuestion !== ""
+            (user: any) =>
+                user.surveyQuestion !== null && user.surveyQuestion !== ""
         );
 
-        const result: (SurveyQuestion & { answers?: any[] })[] = [...companyQuestions];
+        const result: (SurveyQuestion & { answers?: any[] })[] = [
+            ...companyQuestions,
+        ];
 
         for (const user of usersFilterred) {
             const surveyQuestions = JSON.parse(user.surveyQuestion);
@@ -286,7 +318,7 @@ class NPSSurveyAnswersUseCase {
                         if (curr.answer === 0) return acc + 1;
                         return acc;
                     }, 0) /
-                    users.length) *
+                        users.length) *
                 100
             ).toFixed(2) + "%"
         );
@@ -299,14 +331,15 @@ class NPSSurveyAnswersUseCase {
     ) {
         console.log("-- [getLaborIssues] INPUT users:", users?.length);
         console.log("-- [getLaborIssues] roleUser:", this.roleUser);
-        console.log("-- [getLaborIssues] shouldApplyException:", shouldApplyException);
-
+        console.log(
+            "-- [getLaborIssues] shouldApplyException:",
+            shouldApplyException
+        );
 
         if (this.roleUser === "ADMIN" || this.roleUser === "COMPANY_ADMIN") {
             console.log("-- ADMIN / COMPANY_ADMIN ignoram anonimato");
             shouldApplyException = false;
         }
-
 
         const normalizedUsers = users.map((employee: any) => {
             if (employee?.user) return employee.user;
@@ -318,7 +351,6 @@ class NPSSurveyAnswersUseCase {
             normalizedUsers.length
         );
 
-
         const filterUsers = normalizedUsers.filter((user: any) => user?.id);
 
         console.log(
@@ -326,15 +358,17 @@ class NPSSurveyAnswersUseCase {
             filterUsers.length
         );
 
-
         if (
             shouldApplyException &&
-            this.shouldCheckSurveyLimit(companyId, filterUsers, undefined, shouldApplyException)
+            this.shouldCheckSurveyLimit(
+                companyId,
+                filterUsers,
+                undefined,
+                shouldApplyException
+            )
         ) {
-
             return "N/A";
         }
-
 
         const laborRiskAlerts = filterUsers.filter((user: any) => {
             return user?.laborRiskAlert === "ALERT";
@@ -344,9 +378,9 @@ class NPSSurveyAnswersUseCase {
             `-- [getLaborIssues] ALERTS: ${laborRiskAlerts.length}/${filterUsers.length}`
         );
 
-
         return (
-            ((laborRiskAlerts.length / filterUsers.length) * 100).toFixed(2) + "%"
+            ((laborRiskAlerts.length / filterUsers.length) * 100).toFixed(2) +
+            "%"
         );
     }
 
@@ -492,7 +526,11 @@ class NPSSurveyAnswersUseCase {
         return `${countAccepted}/${empployee.length}`;
     }
 
-    getFeelingMap(users: any, companyId: any, shouldApplyException: boolean = true) {
+    getFeelingMap(
+        users: any,
+        companyId: any,
+        shouldApplyException: boolean = true
+    ) {
         if (
             this.shouldCheckSurveyLimit(
                 companyId,
@@ -520,6 +558,8 @@ class NPSSurveyAnswersUseCase {
 
             if (Array.isArray(feelingsMap)) {
                 feelingsMap.forEach((feelingMapped) => {
+                    if (!feelingMapped.checked) return;
+
                     const findFeeling = feelingsMapData.findIndex(
                         (feelingInserted) => {
                             return (
@@ -551,7 +591,11 @@ class NPSSurveyAnswersUseCase {
         return feelingsMapData;
     }
 
-    getShutDown(users: any, companyId: any, shouldApplyException: boolean = true) {
+    getShutDown(
+        users: any,
+        companyId: any,
+        shouldApplyException: boolean = true
+    ) {
         if (
             this.shouldCheckSurveyLimit(
                 companyId,
@@ -589,22 +633,36 @@ class NPSSurveyAnswersUseCase {
                     );
 
                     if (findLaborRisk >= 0) {
-                        if (laborRiskMapped.answer !== null && laborRiskMapped.answer !== undefined) {
-                            laborRiskData[findLaborRisk].count += laborRiskMapped.answer * 1;
+                        if (
+                            laborRiskMapped.answer !== null &&
+                            laborRiskMapped.answer !== undefined
+                        ) {
+                            laborRiskData[findLaborRisk].count +=
+                                laborRiskMapped.answer * 1;
                             laborRiskData[findLaborRisk].respondents += 1;
                         }
                     } else {
                         laborRiskData.push({
                             ...laborRiskMapped,
-                            count: laborRiskMapped.answer !== null && laborRiskMapped.answer !== undefined ? laborRiskMapped.answer * 1 : 0,
-                            respondents: laborRiskMapped.answer !== null && laborRiskMapped.answer !== undefined ? 1 : 0,
+                            count:
+                                laborRiskMapped.answer !== null &&
+                                laborRiskMapped.answer !== undefined
+                                    ? laborRiskMapped.answer * 1
+                                    : 0,
+                            respondents:
+                                laborRiskMapped.answer !== null &&
+                                laborRiskMapped.answer !== undefined
+                                    ? 1
+                                    : 0,
                         });
                     }
                 }
             }
         }
         laborRiskData.forEach((laborRisk) => {
-            laborRisk.count = (laborRisk.count / laborRisk.respondents).toFixed(2);
+            laborRisk.count = (laborRisk.count / laborRisk.respondents).toFixed(
+                2
+            );
             delete laborRisk.respondents;
             return laborRisk;
         });
