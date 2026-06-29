@@ -4,11 +4,16 @@ import { getFirstAndLastDayOfMonth } from "@utils/formatDate";
 import { SurveyQuestionsRepository } from "@modules/company/infra/typeorm/repositories/SurveyQuestionRepository";
 import { SurveyQuestion } from "@modules/company/infra/typeorm/entities/SurveyQuestions";
 import { UsersRepository } from "@modules/accounts/infra/typeorm/repositories/UsersRepository";
+import { VOLUNTARY_REASONS_KEYS } from "./ImportSurveyAnswersBatchUseCase";
 
 class NPSSurveyAnswersUseCase {
-    private surveyQuestionsRepository = new SurveyQuestionsRepository();
+    private surveyQuestionsRepository: SurveyQuestionsRepository;
 
     private roleUser: string = "USER";
+
+    constructor(surveyQuestionsRepository?: SurveyQuestionsRepository) {
+        this.surveyQuestionsRepository = surveyQuestionsRepository ?? new SurveyQuestionsRepository();
+    }
 
     async execute(
         {
@@ -50,6 +55,10 @@ class NPSSurveyAnswersUseCase {
         const pcdArray = pcd ? JSON.parse(pcd) : [];
         const cityArray = city ? JSON.parse(city) : [];
         const stateArray = state ? JSON.parse(state) : [];
+
+        const isVoluntaryFilter =
+            dismissalTypeArray.length === 1 &&
+            dismissalTypeArray[0] === "voluntary";
 
         const npsSurveyAnswers = new NPSSurveyAnswers();
         const usersRepository = new UsersRepository();
@@ -146,6 +155,9 @@ class NPSSurveyAnswersUseCase {
                 companyId,
                 shouldApplyException
             ),
+            voluntaryReasonsMap: isVoluntaryFilter
+                ? this.getVoluntaryReasonsMap(users, companyId, shouldApplyException)
+                : [],
             shutDown: this.getShutDown(users, companyId, shouldApplyException),
             realocatedCount: this.getRealocatedsNumber(users),
             companyQuestions: await this.getAnswersCompanyQuestions(
@@ -161,6 +173,9 @@ class NPSSurveyAnswersUseCase {
                 laborIssues: this.getLaborIssuesAllUsers(usersAll, companyId),
                 welcomed: this.getWelcomed(usersAll, companyId, users),
                 feelingMap: this.getFeelingMap(usersAll, companyId),
+                voluntaryReasonsMap: isVoluntaryFilter
+                    ? this.getVoluntaryReasonsMap(usersAll, companyId)
+                    : [],
                 shutDown: this.getShutDown(usersAll, companyId),
             },
         };
@@ -293,9 +308,6 @@ class NPSSurveyAnswersUseCase {
         const lastAnswers: any[] = [];
 
         for (const user of users) {
-            //of serve para desmembrar um array e listar direto em uma variável
-            //ele já tira o objeto e joga ele
-            //o in ele pega o index de cada objeto listado
             if (user?.laborRiskJSON === undefined) {
                 continue;
             }
@@ -446,18 +458,12 @@ class NPSSurveyAnswersUseCase {
         ) {
             return "N/A";
         }
-        /*  try { */
-        //fazer um if para verificar diferente de undefined e de zero
         const countUsersResponded = users.filter((user: any) => {
-            //
             if (
                 user?.surveyAnswered !== undefined &&
                 user?.surveyAnswered !== 0
             )
                 return user?.surveyAnswered;
-
-            //a interrogação eu falo que pode ser nulo e se for pega a propriedade
-            //se nao voce para aqui
         }).length;
         if (countUsersResponded === 0) {
             return "N/A";
@@ -465,19 +471,12 @@ class NPSSurveyAnswersUseCase {
 
         const result = users.reduce(
             (accumulators: any, user: any) => {
-                //
-                //
-                //aqui eu consigo pegar as respostas dos usuários
-                //
-                //let totalAwnswers = 0
-
                 if (
                     user?.NPSSurvey < 7 &&
                     user?.NPSSurvey !== undefined &&
                     user?.NPSSurvey !== 0
                 ) {
                     accumulators.npsAnswersLassThanSeven += 1;
-                    //totalAwnswers += 1
                 }
                 if (
                     user?.NPSSurvey > 8 &&
@@ -548,9 +547,6 @@ class NPSSurveyAnswersUseCase {
         });
 
         for (const user of usersResponded) {
-            //of serve para desmembrar um array e listar direto em uma variável
-            //ele já tira o objeto e joga ele
-            //o in ele pega o index de cada objeto listado
             if (user?.feelingsMapJSON === undefined) {
                 continue;
             }
@@ -591,6 +587,65 @@ class NPSSurveyAnswersUseCase {
         return feelingsMapData;
     }
 
+    getVoluntaryReasonsMap(
+        users: any,
+        companyId: any,
+        shouldApplyException: boolean = true
+    ) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                users,
+                undefined,
+                shouldApplyException
+            )
+        ) {
+            return [];
+        }
+
+        const reasonsMapData: any[] = [];
+
+        const usersResponded = users.filter(
+            (user: any) => user?.surveyAnswered === true && user?.dismissalReasonsJSON
+        );
+
+        for (const user of usersResponded) {
+            const reasonsMap = JSON.parse(user.dismissalReasonsJSON);
+
+            if (Array.isArray(reasonsMap)) {
+                reasonsMap.forEach((reasonMapped: any) => {
+                    if (!reasonMapped.checked) return;
+
+                    const findReason = reasonsMapData.findIndex(
+                        (r) => r.reason === reasonMapped.reason
+                    );
+
+                    if (findReason >= 0) {
+                        reasonsMapData[findReason].count++;
+                    } else {
+                        reasonsMapData.push({ reason: reasonMapped.reason, count: 1 });
+                    }
+                });
+            }
+        }
+
+        // Garante que todos os motivos apareçam, mesmo com count 0
+        VOLUNTARY_REASONS_KEYS.forEach((key) => {
+            if (!reasonsMapData.find((r) => r.reason === key)) {
+                reasonsMapData.push({ reason: key, count: 0 });
+            }
+        });
+
+        const total = usersResponded.length || 1;
+        reasonsMapData.forEach((r) => {
+            r.count = ((r.count / total) * 100).toFixed(2);
+        });
+
+        reasonsMapData.sort((a, b) => parseFloat(b.count) - parseFloat(a.count));
+
+        return reasonsMapData;
+    }
+
     getShutDown(
         users: any,
         companyId: any,
@@ -624,7 +679,6 @@ class NPSSurveyAnswersUseCase {
 
                     const findLaborRisk = laborRiskData.findIndex(
                         (laborRiskInserted) => {
-                            //
                             return (
                                 laborRiskMapped.question ==
                                 laborRiskInserted.question
