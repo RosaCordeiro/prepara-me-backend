@@ -13,6 +13,8 @@ import { UpdateUserSurveyFieldsController } from "@modules/accounts/useCases/upd
 import { UpdateUserLaborRiskAlertController } from "@modules/accounts/useCases/updateUserLaborRiskAlert/UpdateUserLaborRiskAlertController";
 import { RemoveUserController } from "@modules/accounts/useCases/removeUser/RemoveUserController";
 import { UpdateUserProductAvailableController } from "@modules/accounts/useCases/updateUserProductAvailable/UpdateUserProductAvailableController";
+import { GetMyCompanyEmployeeProfileController } from "@modules/company/useCases/getMyCompanyEmployeeProfile/GetMyCompanyEmployeeProfileController";
+import { UpdateMyCompanyEmployeeProfileController } from "@modules/company/useCases/updateMyCompanyEmployeeProfile/UpdateMyCompanyEmployeeProfileController";
 
 const usersRoutes = Router();
 
@@ -69,6 +71,22 @@ usersRoutes.post("/", createUserController.handle);
 
 const listUserController = new ListUserController();
 usersRoutes.get("/", ensuredAuthenticated, listUserController.handle);
+
+const getMyCompanyEmployeeProfileController =
+    new GetMyCompanyEmployeeProfileController();
+usersRoutes.get(
+    "/me/company-employee",
+    ensuredAuthenticated,
+    getMyCompanyEmployeeProfileController.handle
+);
+
+const updateMyCompanyEmployeeProfileController =
+    new UpdateMyCompanyEmployeeProfileController();
+usersRoutes.patch(
+    "/me/company-employee",
+    ensuredAuthenticated,
+    updateMyCompanyEmployeeProfileController.handle
+);
 
 usersRoutes.get("/:id", ensuredAuthenticated, listUserController.handle);
 

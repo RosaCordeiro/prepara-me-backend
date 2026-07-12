@@ -19,6 +19,8 @@ class ListCompanyEmployeeUseCase {
         id,
         department,
         dismissalType,
+        companyName,
+        openToWork,
     }) {
         const companyEmployees = await this.companyEmployeesRepository.find({
             name,
@@ -31,6 +33,8 @@ class ListCompanyEmployeeUseCase {
             id,
             department,
             dismissalType,
+            companyName,
+            openToWork: openToWork === true || openToWork === "true",
         });
 
         console.log("companyEmployees", companyEmployees);

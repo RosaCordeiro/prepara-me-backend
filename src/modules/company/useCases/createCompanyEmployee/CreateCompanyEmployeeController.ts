@@ -26,6 +26,7 @@ class CreateCompanyEmployeeController {
             pcd,
             city,
             state,
+            linkedinUrl,
         } = request.body;
 
         const { id: companyId } = request.params;
@@ -59,6 +60,7 @@ class CreateCompanyEmployeeController {
             pcd: pcd !== undefined && pcd !== null ? (pcd === true || pcd === 'true' || pcd === 1) : undefined,
             city,
             state,
+            linkedinUrl,
         });
 
         return response.status(201).send(companyEmployee);

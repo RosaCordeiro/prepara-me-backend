@@ -28,6 +28,9 @@ import { GetSurveyQuestionController } from "@modules/company/useCases/getSurvey
 import { DeleteSurveyQuestionController } from "@modules/company/useCases/deleteSurveyQuestion/deleteSurveyQuestionController";
 import { UpdateSurveyQuestionController } from "@modules/company/useCases/uptadeSurveyQuestion/UpdateSurveyQuestionController";
 import { GetSurveyQuestionByIdController } from "@modules/company/useCases/getSurveyQuestionById/getSurveyQuestionByIdController";
+import { GetMyCompanyEmployeeProfileController } from "@modules/company/useCases/getMyCompanyEmployeeProfile/GetMyCompanyEmployeeProfileController";
+import { UpdateMyCompanyEmployeeProfileController } from "@modules/company/useCases/updateMyCompanyEmployeeProfile/UpdateMyCompanyEmployeeProfileController";
+import { UpdateCompanyEmployeeLinkedinController } from "@modules/company/useCases/updateCompanyEmployeeLinkedin/UpdateCompanyEmployeeLinkedinController";
 
 
 const companiesRoutes = Router();
@@ -120,6 +123,20 @@ companiesRoutes.get(
 );
 
 const listCompanyEmployeeController = new ListCompanyEmployeeController();
+companiesRoutes.get(
+    "/employees/open-to-work",
+    ensuredAuthenticated,
+    listCompanyEmployeeController.handleOpenToWork
+);
+
+const updateCompanyEmployeeLinkedinController =
+    new UpdateCompanyEmployeeLinkedinController();
+companiesRoutes.patch(
+    "/employees/:id/linkedin",
+    ensuredAuthenticated,
+    updateCompanyEmployeeLinkedinController.handle
+);
+
 companiesRoutes.get(
     "/employees",
     

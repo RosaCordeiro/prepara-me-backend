@@ -16,6 +16,8 @@ interface IRequestFind {
     id?: string;
     department?: string;
     dismissalType?: DismissalTypeEnum;
+    companyName?: string;
+    openToWork?: boolean;
 }
 
 interface ICompanyEmployeesRepository {
