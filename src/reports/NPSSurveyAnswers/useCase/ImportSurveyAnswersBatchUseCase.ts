@@ -53,6 +53,48 @@ const HEADERS = [
     "Os cálculos da rescisão estão corretos?",
 ];
 
+const VOLUNTARY_HEADERS = [
+    "ID",
+    "Nome",
+    "Email",
+    "Origem",
+    "Empresa",
+    "Período",
+    "Unidade",
+    "Área",
+    "Cargo",
+    "Falta de oportunidades de crescimento ou promoção.",
+    "Mais benefícios.",
+    "Cargo maior(a). Minha demissão foi injusta.",
+    "Desconexão com a empresa.",
+    "Desconexão com o time.",
+    "Desconexão com a liderança.",
+    "Motivos pessoais.",
+    "Sobrecarga de trabalho ou estresse.",
+    "Modalidade inflexível - Presencial.",
+    "O quanto você recomenda a empresa para seus amigos e familiares trabalharem?",
+    "O quanto você se sentia respeitado na empresa, de forma geral?",
+    "O quanto você se sentia respeitado pelos seus líderes?",
+    "O quanto você gostaria de voltar a trabalhar nesta empresa no futuro?",
+    "O quanto você achou que seu processo de demissão foi respeitoso?",
+    "O quanto você se sentia seguro fisicamente na empresa?",
+    "O quanto você se sentia seguro emocionalmente na empresa?",
+    "O quanto você gostava do pacote de benefícios e remuneração da empresa?",
+    "Os cálculos da rescisão estão corretos?",
+];
+
+export const VOLUNTARY_REASONS_KEYS = [
+    "Falta de oportunidades de crescimento ou promoção.",
+    "Mais benefícios.",
+    "Cargo maior(a). Minha demissão foi injusta.",
+    "Desconexão com a empresa.",
+    "Desconexão com o time.",
+    "Desconexão com a liderança.",
+    "Motivos pessoais.",
+    "Sobrecarga de trabalho ou estresse.",
+    "Modalidade inflexível - Presencial.",
+];
+
 const FEELINGS_KEYS = [
     "Alíviado(a). Já queria sair da empresa.",
     "Surpreso(a). Não esperava pela demissão.",
@@ -112,7 +154,17 @@ class ImportSurveyAnswersBatchUseCase {
         const rows: any[][] = await readXlsxFile(filePath);
 
         const hasIdColumn = rows[0][0] === "ID";
-        const expectedHeaders = hasIdColumn ? HEADERS : HEADERS.slice(1);
+
+        // Detecta planilha voluntária pela coluna I (índice 9 com ID, 8 sem ID)
+        const checkIdx = hasIdColumn ? 9 : 8;
+        const isVoluntary = rows[0][checkIdx] === VOLUNTARY_REASONS_KEYS[0];
+
+        const ACTIVE_HEADERS = isVoluntary ? VOLUNTARY_HEADERS : HEADERS;
+        const expectedHeaders = hasIdColumn ? ACTIVE_HEADERS : ACTIVE_HEADERS.slice(1);
+
+        // Offsets de colunas diferem entre os modelos (voluntário tem 9 motivos; padrão tem 12 sentimentos)
+        const npsColIndex = isVoluntary ? 18 : 21;
+        const laborRiskStartIndex = isVoluntary ? 19 : 22;
 
         if (rows[0].length < expectedHeaders.length) {
             return {
@@ -199,21 +251,21 @@ class ImportSurveyAnswersBatchUseCase {
             }
 
             const nps =
-                row[21] !== null && row[21] !== undefined
-                    ? Number(row[21])
+                row[npsColIndex] !== null && row[npsColIndex] !== undefined
+                    ? Number(row[npsColIndex])
                     : undefined;
 
             if (nps !== undefined && (isNaN(nps) || nps < 0 || nps > 10)) {
                 errors.push({
                     row: rowNum,
-                    reason: `NPS inválido: ${row[21]} — deve ser entre 0 e 10`,
+                    reason: `NPS inválido: ${row[npsColIndex]} — deve ser entre 0 e 10`,
                 });
                 continue;
             }
 
             let riskError = false;
             for (let q = 0; q < LABOR_RISK_QUESTIONS.length - 1; q++) {
-                const val = row[22 + q];
+                const val = row[laborRiskStartIndex + q];
                 if (val !== null && val !== undefined && val !== "") {
                     const num = Number(val);
                     if (isNaN(num) || num < 0 || num > 10) {
@@ -228,18 +280,32 @@ class ImportSurveyAnswersBatchUseCase {
             }
             if (riskError) continue;
 
-            const feelingsMap = FEELINGS_KEYS.map((feeling, idx) => {
-                const val = row[9 + idx];
-                return {
-                    feeling,
-                    checked: val
-                        ? val.toString().trim().toLowerCase() === "sim"
-                        : false,
-                };
-            });
+            const feelingsMap = isVoluntary
+                ? []
+                : FEELINGS_KEYS.map((feeling, idx) => {
+                    const val = row[9 + idx];
+                    return {
+                        feeling,
+                        checked: val
+                            ? val.toString().trim().toLowerCase() === "sim"
+                            : false,
+                    };
+                });
+
+            const dismissalReasonsMap = isVoluntary
+                ? VOLUNTARY_REASONS_KEYS.map((reason, idx) => {
+                    const val = row[9 + idx];
+                    return {
+                        reason,
+                        checked: val
+                            ? val.toString().trim().toLowerCase() === "sim"
+                            : false,
+                    };
+                })
+                : null;
 
             const laborRisk = LABOR_RISK_QUESTIONS.map((item, idx) => {
-                const val = row[22 + idx];
+                const val = row[laborRiskStartIndex + idx];
                 let answer: number | null =
                     val !== null && val !== undefined && val !== ""
                         ? Number(val)
@@ -287,6 +353,10 @@ class ImportSurveyAnswersBatchUseCase {
                         : UserLaborRiskAlertEnum.NORMAL,
             };
 
+            if (dismissalReasonsMap !== null) {
+                (userUpdate as any).dismissalReasonsJSON = JSON.stringify(dismissalReasonsMap);
+            }
+
             if (nps !== undefined) userUpdate.NPSSurvey = nps;
             if (laborRiskAvg !== undefined) userUpdate.laborRisk = laborRiskAvg;
             if (nps !== undefined) userUpdate.brandRisk = nps;
@@ -303,6 +373,7 @@ class ImportSurveyAnswersBatchUseCase {
                     unity: row[6] ? row[6].toString() : undefined,
                     department: row[7] ? row[7].toString() : undefined,
                     position: row[8] ? row[8].toString() : undefined,
+                    ...(isVoluntary ? { dismissalType: "voluntary" as any } : {}),
                 },
             });
         }

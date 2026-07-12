@@ -4,6 +4,7 @@ import { getFirstAndLastDayOfMonth } from "@utils/formatDate";
 import { SurveyQuestionsRepository } from "@modules/company/infra/typeorm/repositories/SurveyQuestionRepository";
 import { SurveyQuestion } from "@modules/company/infra/typeorm/entities/SurveyQuestions";
 import { UsersRepository } from "@modules/accounts/infra/typeorm/repositories/UsersRepository";
+import { VOLUNTARY_REASONS_KEYS } from "./ImportSurveyAnswersBatchUseCase";
 
 class NPSSurveyAnswersUseCase {
     private surveyQuestionsRepository = new SurveyQuestionsRepository();
@@ -21,6 +22,10 @@ class NPSSurveyAnswersUseCase {
         const pcdArray = pcd ? JSON.parse(pcd) : [];
         const cityArray = city ? JSON.parse(city) : [];
         const stateArray = state ? JSON.parse(state) : [];
+
+        const isVoluntaryFilter =
+            dismissalTypeArray.length === 1 &&
+            dismissalTypeArray[0] === "voluntary";
 
         const npsSurveyAnswers = new NPSSurveyAnswers();
         const usersRepository = new UsersRepository();
@@ -116,6 +121,9 @@ class NPSSurveyAnswersUseCase {
                 companyId,
                 shouldApplyException
             ),
+            voluntaryReasonsMap: isVoluntaryFilter
+                ? this.getVoluntaryReasonsMap(users, companyId, shouldApplyException)
+                : [],
             shutDown: this.getShutDown(users, companyId, shouldApplyException),
             realocatedCount: this.getRealocatedsNumber(users),
             companyQuestions: await this.getAnswersCompanyQuestions(
@@ -131,6 +139,9 @@ class NPSSurveyAnswersUseCase {
                 laborIssues: this.getLaborIssuesAllUsers(usersAll, companyId),
                 welcomed: this.getWelcomed(usersAll, companyId, users),
                 feelingMap: this.getFeelingMap(usersAll, companyId),
+                voluntaryReasonsMap: isVoluntaryFilter
+                    ? this.getVoluntaryReasonsMap(usersAll, companyId)
+                    : [],
                 shutDown: this.getShutDown(usersAll, companyId),
             },
         };
@@ -519,6 +530,64 @@ class NPSSurveyAnswersUseCase {
         });
 
         return feelingsMapData;
+    }
+
+    getVoluntaryReasonsMap(
+        users: any,
+        companyId: any,
+        shouldApplyException: boolean = true
+    ) {
+        if (
+            this.shouldCheckSurveyLimit(
+                companyId,
+                users,
+                undefined,
+                shouldApplyException
+            )
+        ) {
+            return [];
+        }
+
+        const reasonsMapData: any[] = [];
+
+        const usersResponded = users.filter(
+            (user: any) => user?.surveyAnswered === true && user?.dismissalReasonsJSON
+        );
+
+        for (const user of usersResponded) {
+            const reasonsMap = JSON.parse(user.dismissalReasonsJSON);
+
+            if (Array.isArray(reasonsMap)) {
+                reasonsMap.forEach((reasonMapped: any) => {
+                    if (!reasonMapped.checked) return;
+
+                    const findReason = reasonsMapData.findIndex(
+                        (r) => r.reason === reasonMapped.reason
+                    );
+
+                    if (findReason >= 0) {
+                        reasonsMapData[findReason].count++;
+                    } else {
+                        reasonsMapData.push({ reason: reasonMapped.reason, count: 1 });
+                    }
+                });
+            }
+        }
+
+        VOLUNTARY_REASONS_KEYS.forEach((key) => {
+            if (!reasonsMapData.find((r) => r.reason === key)) {
+                reasonsMapData.push({ reason: key, count: 0 });
+            }
+        });
+
+        const total = usersResponded.length || 1;
+        reasonsMapData.forEach((r) => {
+            r.count = ((r.count / total) * 100).toFixed(2);
+        });
+
+        reasonsMapData.sort((a, b) => parseFloat(b.count) - parseFloat(a.count));
+
+        return reasonsMapData;
     }
 
     getShutDown(users: any, companyId: any, shouldApplyException: boolean = true) {
