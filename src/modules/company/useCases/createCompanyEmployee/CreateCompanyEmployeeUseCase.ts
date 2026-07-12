@@ -44,6 +44,8 @@ class CreateCompanyEmployeeUseCase {
         pcd,
         city,
         state,
+        linkedinUrl,
+        showLinkedinInRelocationProgram,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         console.log({
             companyId,
@@ -68,6 +70,8 @@ class CreateCompanyEmployeeUseCase {
             pcd,
             city,
             state,
+            linkedinUrl,
+            showLinkedinInRelocationProgram,
         });
 
         if (!name) {
@@ -137,6 +141,11 @@ class CreateCompanyEmployeeUseCase {
             pcd,
             city,
             state,
+            linkedinUrl,
+            showLinkedinInRelocationProgram:
+                showLinkedinInRelocationProgram !== undefined
+                    ? showLinkedinInRelocationProgram
+                    : true,
         };
 
         if (!id) {
@@ -220,6 +229,11 @@ class CreateCompanyEmployeeUseCase {
             if (pcd !== undefined) updateData.pcd = pcd;
             if (city !== undefined) updateData.city = city;
             if (state !== undefined) updateData.state = state;
+            if (linkedinUrl !== undefined) updateData.linkedinUrl = linkedinUrl;
+            if (showLinkedinInRelocationProgram !== undefined) {
+                updateData.showLinkedinInRelocationProgram =
+                    showLinkedinInRelocationProgram;
+            }
 
             const updatedEmployee = await this.companyEmployeesRepository.update({
                 id,
@@ -312,6 +326,9 @@ class CreateCompanyEmployeeUseCase {
                     pcd: companyEmployeeCreated.pcd,
                     city: companyEmployeeCreated.city,
                     state: companyEmployeeCreated.state,
+                    linkedinUrl: companyEmployeeCreated.linkedinUrl,
+                    showLinkedinInRelocationProgram:
+                        companyEmployeeCreated.showLinkedinInRelocationProgram,
                 });
 
             if (!id && plan && planModel?.subscriptionPlanProduct)

@@ -93,6 +93,12 @@ class CompanyEmployee {
     @Column({ nullable: true })
     state?: string;
 
+    @Column({ nullable: true })
+    linkedinUrl?: string;
+
+    @Column({ default: true })
+    showLinkedinInRelocationProgram: boolean;
+
     constructor(
         name: string,
         subscribeToken: string,
@@ -117,7 +123,9 @@ class CompanyEmployee {
         etnia?: string,
         pcd?: boolean,
         city?: string,
-        state?: string
+        state?: string,
+        linkedinUrl?: string,
+        showLinkedinInRelocationProgram?: boolean
     ) {
         this.id = id || uuidV4();
         this.accepted = accepted !== undefined ? accepted : false;
@@ -144,6 +152,13 @@ class CompanyEmployee {
         if (pcd !== undefined) this.pcd = pcd;
         if (city !== undefined) this.city = city;
         if (state !== undefined) this.state = state;
+        if (linkedinUrl !== undefined) this.linkedinUrl = linkedinUrl;
+        if (showLinkedinInRelocationProgram !== undefined) {
+            this.showLinkedinInRelocationProgram =
+                showLinkedinInRelocationProgram;
+        } else if (this.showLinkedinInRelocationProgram === undefined) {
+            this.showLinkedinInRelocationProgram = true;
+        }
     }
 }
 

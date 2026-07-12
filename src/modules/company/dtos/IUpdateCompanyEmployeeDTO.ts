@@ -17,6 +17,8 @@ interface IUpdateCompanyEmployeeDTO {
     pcd?: boolean;
     city?: string;
     state?: string;
+    linkedinUrl?: string;
+    showLinkedinInRelocationProgram?: boolean;
 }
 
 export { IUpdateCompanyEmployeeDTO };

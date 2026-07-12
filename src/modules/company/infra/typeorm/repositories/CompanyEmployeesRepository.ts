@@ -241,6 +241,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         pcd,
         city,
         state,
+        linkedinUrl,
+        showLinkedinInRelocationProgram,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const companyEmployee = this.repository.create({
             companyId,
@@ -264,6 +266,11 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             pcd,
             city,
             state,
+            linkedinUrl,
+            showLinkedinInRelocationProgram:
+                showLinkedinInRelocationProgram !== undefined
+                    ? showLinkedinInRelocationProgram
+                    : true,
         });
 
         await this.repository.save(companyEmployee);
@@ -288,6 +295,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         pcd,
         city,
         state,
+        linkedinUrl,
+        showLinkedinInRelocationProgram,
     }: IUpdateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const companyEmployee = await this.repository.findOne(id);
 
@@ -311,6 +320,11 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         if (pcd !== undefined) companyEmployee.pcd = pcd;
         if (city !== undefined) companyEmployee.city = city;
         if (state !== undefined) companyEmployee.state = state;
+        if (linkedinUrl !== undefined) companyEmployee.linkedinUrl = linkedinUrl;
+        if (showLinkedinInRelocationProgram !== undefined) {
+            companyEmployee.showLinkedinInRelocationProgram =
+                showLinkedinInRelocationProgram;
+        }
 
         await this.repository.save(companyEmployee);
 
@@ -328,6 +342,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         id,
         department,
         dismissalType,
+        companyName,
+        openToWork,
     }: {
         name?: string;
         documentId?: string;
@@ -339,6 +355,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         id?: string;
         department?: string;
         dismissalType?: string;
+        companyName?: string;
+        openToWork?: boolean;
     }): Promise<ICompanyEmployeeResponseDTO[]> {
         const companyEmployeesQuery = this.repository
             .createQueryBuilder("ce")
@@ -353,7 +371,7 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             if (name) {
                 name = `%${name}%`;
 
-                companyEmployeesQuery.andWhere("ce.name like :name", {
+                companyEmployeesQuery.andWhere("ce.name ILIKE :name", {
                     name: name,
                 });
             }
@@ -406,6 +424,19 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                 companyEmployeesQuery.andWhere("ce.dismissalType = :dismissalType", {
                     dismissalType: dismissalType,
                 });
+            }
+
+            if (companyName) {
+                companyEmployeesQuery.andWhere("c.name ILIKE :companyName", {
+                    companyName: `%${companyName}%`,
+                });
+            }
+
+            if (openToWork) {
+                companyEmployeesQuery
+                    .andWhere("ce.showLinkedinInRelocationProgram = true")
+                    .andWhere("ce.linkedinUrl IS NOT NULL")
+                    .andWhere("ce.linkedinUrl <> ''");
             }
         }
 

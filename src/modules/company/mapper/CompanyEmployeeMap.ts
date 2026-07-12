@@ -30,6 +30,8 @@ class CompanyEmployeeMap {
         pcd,
         city,
         state,
+        linkedinUrl,
+        showLinkedinInRelocationProgram,
     }: CompanyEmployee): ICompanyEmployeeResponseDTO {
         let easyRegisterMapped = "";
 
@@ -75,6 +77,12 @@ class CompanyEmployeeMap {
             pcd,
             city,
             state,
+            linkedinUrl,
+            showLinkedinInRelocationProgram:
+                showLinkedinInRelocationProgram === null ||
+                showLinkedinInRelocationProgram === undefined
+                    ? true
+                    : showLinkedinInRelocationProgram,
         });
 
         return companyEmployee;
