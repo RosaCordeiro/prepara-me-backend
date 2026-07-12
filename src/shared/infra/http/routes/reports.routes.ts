@@ -7,6 +7,7 @@ import { ensuredAuthenticated } from "../middlewares/ensureAuthenticated";
 import { ReplacementsReportController } from "../../../../reports/ReplacementsReport/useCase/ReplacementsReportController";
 import { ImportSurveyAnswersBatchController } from "../../../../reports/NPSSurveyAnswers/useCase/ImportSurveyAnswersBatchController";
 import { DownloadSurveyAnswersTemplateController } from "../../../../reports/NPSSurveyAnswers/useCase/DownloadSurveyAnswersTemplateController";
+import { DownloadVolunteerAnswersTemplateController } from "../../../../reports/NPSSurveyAnswers/useCase/DownloadVolunteerAnswersTemplateController";
 import { uploadFileXlsx } from "../middlewares/uploadFileXlsx";
 
 const reportsRoutes = Router();
@@ -47,6 +48,13 @@ reportsRoutes.get(
     "/npsSurveyAnswers/import/template",
     ensuredAuthenticated,
     downloadSurveyAnswersTemplateController.handle
+);
+
+const downloadVolunteerAnswersTemplateController = new DownloadVolunteerAnswersTemplateController();
+reportsRoutes.get(
+    "/npsSurveyAnswers/import/template/voluntary",
+    ensuredAuthenticated,
+    downloadVolunteerAnswersTemplateController.handle
 );
 
 export { reportsRoutes };

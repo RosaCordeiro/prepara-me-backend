@@ -646,7 +646,7 @@ INSERT INTO "companyEmployees" (
     'NO',
     true,
     false,
-    NOW() - INTERVAL '20 days',
+    NOW() - INTERVAL '25 days',
     'Analista de Atendimento',
     'Customer Success',
     'DEMO TESTE',

@@ -152,6 +152,9 @@ class User {
     @Column()
     brandRiskJSON: string;
 
+    @Column({ nullable: true })
+    dismissalReasonsJSON: string;
+
     @Column()
     surveyQuestion: string;
 
@@ -190,7 +193,8 @@ class User {
         expiresDate: Date,
         periodTest: Date,
         subscribeToken: string,
-        companyNameSignIn: string
+        companyNameSignIn: string,
+        dismissalReasonsJSON?: string
     ) {
         if (id) {
             this.id = id;
@@ -221,6 +225,7 @@ class User {
         this.surveyQuestion = surveyQuestion;
         this.brandRiskJSON = brandRiskJSON;
         this.laborRiskAlert = laborRiskAlert;
+        if (dismissalReasonsJSON !== undefined) this.dismissalReasonsJSON = dismissalReasonsJSON;
         this.expiresDate = expiresDate;
         this.periodTest = periodTest;
         this.subscribeToken = subscribeToken;
