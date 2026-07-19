@@ -29,35 +29,31 @@ Isso instala os binários, cria o banco `preparame` e atualiza o `.env`.
 Script de criação do banco (reutilizável): `scripts/create-database.sql`
 
 Conexões:
-- **WSL / Node local:** `localhost:5432`
-- **Docker (backend):** `host.docker.internal:5432`
+- **WSL / Node local:** `localhost:5432` (Postgres WSL) ou `localhost:5435` (Postgres no Compose)
+- **App no Docker Compose:** host `database`, porta `5432` (serviço `database` na rede `preparame`)
 
 ## 🚀 Início Rápido
 
 ### Pré-requisitos
 
 -   Docker no WSL (usuário no grupo `docker`)
--   PostgreSQL configurado no Windows
 -   Node.js no WSL (para o frontend)
 
 ### Como executar
 
 ```bash
-# Backend (Docker, banco no Windows)
-./scripts/dev-backend.sh
+# Backend + Postgres (Docker)
+cd prepara-me-backend
+docker compose up --build -d
 
 # Frontend (WSL)
 cd ../preparame-platform
-./scripts/dev-frontend.sh
+npm run dev
 ```
 
-Ou use o menu interativo:
+API: http://localhost:3334 · Frontend: http://localhost:8080
 
-```bash
-./start.sh
-```
-
-**Pronto!** A API estará em http://localhost:3334 e o frontend em http://localhost:8080
+Logs da API: `docker compose logs -f app`
 
 ### Modo Debug (Desenvolvimento)
 

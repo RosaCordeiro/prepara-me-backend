@@ -1,4 +1,4 @@
-import { ICreateUserProductAvailableDTO } from "@modules/accounts/dtos/ICreateUserProductAvailableLogDTO";
+import { ICreateUserProductAvailableDTO } from "@modules/accounts/dtos/ICreateUserProductAvailableDTO";
 import { IUserProductAvailableResponseDTO } from "@modules/accounts/dtos/IUserProductAvailableResponseDTO";
 import { UserProductAvailable } from "@modules/accounts/infra/typeorm/entities/UserProductAvailable";
 import { UserProductsAvailableMap } from "@modules/accounts/mapper/UserProductsAvailable";
@@ -37,6 +37,19 @@ class UserProductsAvailableRepositoryInMemory
         return this.userProductsAvailable.filter((userProductAvailable) => {
             return userProductAvailable.userId === userId;
         });
+    }
+
+    async update(id: string, productId: string): Promise<UserProductAvailable> {
+        const userProductAvailable = this.userProductsAvailable.find(
+            (item) => item.id === id
+        );
+
+        if (!userProductAvailable) {
+            return undefined;
+        }
+
+        userProductAvailable.productId = productId;
+        return userProductAvailable;
     }
 
     async find({

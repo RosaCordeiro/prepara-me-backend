@@ -1,22 +1,32 @@
+import { UserProductsAvailableRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UserProductsAvailableRepositoryInMemory";
 import { UsersRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UsersRepositoryInMemory";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
 import { CompanyEmployeeEasyRegisterEnum } from "@modules/company/enums/CompanyEmployeeEasyRegisterEnum";
 import { CompanyEmployeesRepositoryInMemory } from "@modules/company/repositories/in-memory/CompanyEmployeesRepositoryInMemory";
+import { SubscriptionPlansRepositoryInMemory } from "@modules/products/repositories/in-memory/SubscriptionPlansRepositoryInMemory";
 import { AppError } from "@shared/errors/AppError";
 import { CreateCompanyEmployeeUseCase } from "./CreateCompanyEmployeeUseCase";
 
 let companyEmployeesRepositoryInMemory: CompanyEmployeesRepositoryInMemory;
 let usersRepositoryInMemory: UsersRepositoryInMemory;
+let userProductsAvailableRepositoryInMemory: UserProductsAvailableRepositoryInMemory;
+let subscriptionPlansRepositoryInMemory: SubscriptionPlansRepositoryInMemory;
 let createCompanyEmployeeUseCase: CreateCompanyEmployeeUseCase;
 
 describe("Create Company Employee", () => {
     beforeEach(() => {
-        usersRepositoryInMemory = new UsersRepositoryInMemory()
+        usersRepositoryInMemory = new UsersRepositoryInMemory();
         companyEmployeesRepositoryInMemory =
             new CompanyEmployeesRepositoryInMemory();
+        userProductsAvailableRepositoryInMemory =
+            new UserProductsAvailableRepositoryInMemory();
+        subscriptionPlansRepositoryInMemory =
+            new SubscriptionPlansRepositoryInMemory();
         createCompanyEmployeeUseCase = new CreateCompanyEmployeeUseCase(
             companyEmployeesRepositoryInMemory,
-            usersRepositoryInMemory
+            usersRepositoryInMemory,
+            userProductsAvailableRepositoryInMemory,
+            subscriptionPlansRepositoryInMemory
         );
     });
 

@@ -36,34 +36,46 @@ import { UpdateCompanyEmployeeLinkedinController } from "@modules/company/useCas
 const companiesRoutes = Router();
 const uploadImage = multer(uploadConfig);
 
-//Nova rota: Armazenamento de perguntas
-const createSurveyQuestionsController = new CreateSurveyQuestionController()
-companiesRoutes.post("/surveyquestions", createSurveyQuestionsController.handle)
+// Perguntas qualitativas: GET list autenticado (consumo pesquisa);
+// escrita e GET by id restritos a ADMIN da plataforma.
+const createSurveyQuestionsController = new CreateSurveyQuestionController();
+companiesRoutes.post(
+    "/surveyquestions",
+    ensuredAuthenticated,
+    ensureAdmin,
+    createSurveyQuestionsController.handle
+);
 
-
-//Nova rota: Leitura de perguntas
 const getSurveyQuestionController = new GetSurveyQuestionController();
 companiesRoutes.get(
     "/surveyquestions",
+    ensuredAuthenticated,
     getSurveyQuestionController.handle
 );
 
 const getSurveyQuestionByIdController = new GetSurveyQuestionByIdController();
 companiesRoutes.get(
     "/surveyquestions/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
     getSurveyQuestionByIdController.handle
 );
 
-//Nova rota: Deletar de perguntas
 const deleteSurveyQuestionController = new DeleteSurveyQuestionController();
 companiesRoutes.delete(
     "/surveyquestions/:id",
-    ensuredAuthenticated, 
+    ensuredAuthenticated,
+    ensureAdmin,
     deleteSurveyQuestionController.handle
 );
 
 const updateSurveyQuestionController = new UpdateSurveyQuestionController();
-companiesRoutes.put("/surveyquestions/:id", updateSurveyQuestionController.handle);
+companiesRoutes.put(
+    "/surveyquestions/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
+    updateSurveyQuestionController.handle
+);
 
 
 const getCompanyParametersController = new GetCompanyParametersController();
@@ -139,13 +151,13 @@ companiesRoutes.patch(
 
 companiesRoutes.get(
     "/employees",
-    
+    ensuredAuthenticated,
     listCompanyEmployeeController.handle
 );
 
 companiesRoutes.get(
     "/employees/:id",
-    
+    ensuredAuthenticated,
     listCompanyEmployeeController.handle
 );
 

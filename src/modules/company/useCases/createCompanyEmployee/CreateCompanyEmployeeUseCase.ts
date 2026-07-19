@@ -151,32 +151,41 @@ class CreateCompanyEmployeeUseCase {
         if (!id) {
             cEmp.plan = planModel?.name;
 
-            const companyEmployeeEmailExists =
-                await this.companyEmployeesRepository.find({
-                    email,
-                });
+            if (email) {
+                const companyEmployeeEmailExists =
+                    await this.companyEmployeesRepository.find({
+                        email,
+                    });
+
+                if (companyEmployeeEmailExists.length > 0) {
+                    throw new AppError("Company Employee already exists");
+                }
+            }
 
             const companyEmployeeDocumentExists =
                 await this.companyEmployeesRepository.find({
                     documentId,
                 });
 
-            if (
-                companyEmployeeEmailExists.length > 0 ||
-                companyEmployeeDocumentExists.length > 0
-            ) {
+            if (companyEmployeeDocumentExists.length > 0) {
                 throw new AppError("Company Employee already exists");
             }
 
-            const userEmailExists = await this.usersRepository.find({
-                email,
-            });
+            if (email) {
+                const userEmailExists = await this.usersRepository.find({
+                    email,
+                });
+
+                if (userEmailExists.length > 0) {
+                    throw new AppError("User already exists");
+                }
+            }
 
             const userDocumentExists = await this.usersRepository.find({
                 documentId,
             });
 
-            if (userEmailExists.length > 0 || userDocumentExists.length > 0) {
+            if (userDocumentExists.length > 0) {
                 throw new AppError("User already exists");
             }
         } else {
