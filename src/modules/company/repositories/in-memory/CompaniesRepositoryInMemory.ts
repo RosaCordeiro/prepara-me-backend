@@ -35,6 +35,14 @@ class CompaniesRepositoryInMemory implements ICompaniesRepository {
         return companies;
     }
 
+    async findAll(): Promise<Company[]> {
+        return this.companies;
+    }
+
+    async listVacancies(_companyName: string): Promise<number> {
+        return 0;
+    }
+
     async remove(id: string) {
         this.companies = this.companies.filter((company) => {
             return id !== company.id;
@@ -43,4 +51,3 @@ class CompaniesRepositoryInMemory implements ICompaniesRepository {
 }
 
 export { CompaniesRepositoryInMemory };
-

@@ -35,6 +35,10 @@ class SubscriptionPlansRepositoryInMemory
         );
     }
 
+    async findAll(): Promise<SubscriptionPlan[]> {
+        return this.subscriptionPlans;
+    }
+
     async find({
         name,
         status,

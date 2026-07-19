@@ -1,27 +1,52 @@
+import { UserProductsAvailableRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UserProductsAvailableRepositoryInMemory";
 import { UsersRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UsersRepositoryInMemory";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
 import { CompanyEmployeeEasyRegisterEnum } from "@modules/company/enums/CompanyEmployeeEasyRegisterEnum";
 import { CompanyEmployeesRepositoryInMemory } from "@modules/company/repositories/in-memory/CompanyEmployeesRepositoryInMemory";
+import { SubscriptionPlansRepositoryInMemory } from "@modules/products/repositories/in-memory/SubscriptionPlansRepositoryInMemory";
 import { CreateCompanyEmployeeUseCase } from "../createCompanyEmployee/CreateCompanyEmployeeUseCase";
 import { ListCompanyEmployeeUseCase } from "./ListCompanyEmployeeUseCase";
 
 let companyEmployeesRepositoryInMemory: CompanyEmployeesRepositoryInMemory;
 let usersRepositoryInMemory: UsersRepositoryInMemory;
+let userProductsAvailableRepositoryInMemory: UserProductsAvailableRepositoryInMemory;
+let subscriptionPlansRepositoryInMemory: SubscriptionPlansRepositoryInMemory;
 let listCompanyEmployeeUseCase: ListCompanyEmployeeUseCase;
 let createCompanyEmployeeUseCase: CreateCompanyEmployeeUseCase;
+
+const emptyListFilters = {
+    documentId: "",
+    email: "",
+    phone: "",
+    userId: "",
+    notUserId: null,
+    name: "",
+    id: "",
+    companyId: "",
+    department: "",
+    dismissalType: "",
+    companyName: "",
+    openToWork: "",
+};
 
 describe("List Company Employees", () => {
     beforeEach(() => {
         companyEmployeesRepositoryInMemory =
             new CompanyEmployeesRepositoryInMemory();
-        usersRepositoryInMemory = new UsersRepositoryInMemory()
+        usersRepositoryInMemory = new UsersRepositoryInMemory();
+        userProductsAvailableRepositoryInMemory =
+            new UserProductsAvailableRepositoryInMemory();
+        subscriptionPlansRepositoryInMemory =
+            new SubscriptionPlansRepositoryInMemory();
         listCompanyEmployeeUseCase = new ListCompanyEmployeeUseCase(
             companyEmployeesRepositoryInMemory
         );
         createCompanyEmployeeUseCase = new CreateCompanyEmployeeUseCase(
             companyEmployeesRepositoryInMemory,
-            usersRepositoryInMemory
-        ); 
+            usersRepositoryInMemory,
+            userProductsAvailableRepositoryInMemory,
+            subscriptionPlansRepositoryInMemory
+        );
     });
 
     it("should be able to list company employees", async () => {
@@ -29,9 +54,9 @@ describe("List Company Employees", () => {
             companyId: "company first",
             name: "first",
             subscribeToken: "teste",
-            documentId: "123",
+            documentId: "doc-001",
             email: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee1);
@@ -40,22 +65,15 @@ describe("List Company Employees", () => {
             companyId: "company second",
             name: "second",
             subscribeToken: "teste",
-            documentId: "123",
+            documentId: "doc-002",
             email: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee2);
 
         const result = await listCompanyEmployeeUseCase.execute({
-            documentId: "",
-            email: "",
-            phone: "",
-            userId: "",
-            notUserId: null,
-            name: "",
-            id: "",
-            companyId: ""
+            ...emptyListFilters,
         });
 
         expect(result).toHaveLength(2);
@@ -66,9 +84,9 @@ describe("List Company Employees", () => {
             companyId: "123",
             name: "teste",
             subscribeToken: "teste",
-            documentId: "123",
+            documentId: "doc-101",
             email: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee1);
@@ -77,22 +95,16 @@ describe("List Company Employees", () => {
             companyId: "123",
             name: "teste 2",
             subscribeToken: "teste",
-            documentId: "123",
+            documentId: "doc-102",
             email: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee2);
 
         const result = await listCompanyEmployeeUseCase.execute({
-            documentId: "",
-            email: "",
-            phone: "",
-            userId: "",
-            notUserId: null,
+            ...emptyListFilters,
             name: "teste 2",
-            id: "",
-            companyId: ""
         });
 
         expect(result).toHaveLength(1);
@@ -105,7 +117,7 @@ describe("List Company Employees", () => {
             subscribeToken: "teste",
             documentId: "123",
             email: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee1);
@@ -116,20 +128,14 @@ describe("List Company Employees", () => {
             subscribeToken: "teste",
             documentId: "321",
             email: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee2);
 
         const result = await listCompanyEmployeeUseCase.execute({
+            ...emptyListFilters,
             documentId: "123",
-            email: "",
-            phone: "",
-            userId: "",
-            notUserId: null,
-            name: "",
-            id: "",
-            companyId: ""
         });
 
         expect(result).toHaveLength(1);
@@ -138,41 +144,35 @@ describe("List Company Employees", () => {
     it("should be able to list company filtered by email", async () => {
         const companyEmployee1: ICreateCompanyEmployeeDTO = {
             companyId: "123",
-            documentId: "321",
-            name: "teste 2",
+            documentId: "doc-201",
+            name: "teste 1",
             subscribeToken: "teste",
             userId: "",
             phone: "8888888",
             email: "teste1@teste.com",
             id: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
-        
+
         await createCompanyEmployeeUseCase.execute(companyEmployee1);
-        
+
         const companyEmployee2: ICreateCompanyEmployeeDTO = {
             companyId: "123",
-            documentId: "321",
+            documentId: "doc-202",
             name: "teste 2",
             subscribeToken: "teste",
             userId: "",
             phone: "8888888",
             email: "teste2@teste.com",
             id: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee2);
 
         const result = await listCompanyEmployeeUseCase.execute({
-            documentId: "",
+            ...emptyListFilters,
             email: "teste2@teste.com",
-            phone: "",
-            userId: "",
-            notUserId: null,
-            name: "",
-            id: "",
-            companyId: ""
         });
 
         expect(result).toHaveLength(1);
@@ -181,41 +181,35 @@ describe("List Company Employees", () => {
     it("should be able to list company filtered by phone", async () => {
         const companyEmployee1: ICreateCompanyEmployeeDTO = {
             companyId: "123",
-            documentId: "321",
-            name: "teste 2",
+            documentId: "doc-301",
+            name: "teste 1",
             subscribeToken: "teste",
             userId: "",
             phone: "9999999",
-            email: "teste2@teste.com",
+            email: "phone1@teste.com",
             id: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
-        
+
         await createCompanyEmployeeUseCase.execute(companyEmployee1);
-        
+
         const companyEmployee2: ICreateCompanyEmployeeDTO = {
             companyId: "123",
-            documentId: "321",
+            documentId: "doc-302",
             name: "teste 2",
             subscribeToken: "teste",
             userId: "",
             phone: "8888888",
-            email: "teste2@teste.com",
+            email: "phone2@teste.com",
             id: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee2);
 
         const result = await listCompanyEmployeeUseCase.execute({
-            name: "",
-            documentId: "",
-            userId: "",
-            notUserId: null,
+            ...emptyListFilters,
             phone: "8888888",
-            email: "",
-            id: "",
-            companyId: ""
         });
 
         expect(result).toHaveLength(1);
@@ -224,44 +218,37 @@ describe("List Company Employees", () => {
     it("should be able to list company filtered by company", async () => {
         const companyEmployee1: ICreateCompanyEmployeeDTO = {
             companyId: "123",
-            documentId: "321",
-            name: "teste 2",
+            documentId: "doc-401",
+            name: "teste 1",
             subscribeToken: "teste",
             userId: "",
             phone: "9999999",
-            email: "teste2@teste.com",
+            email: "co1@teste.com",
             id: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
-        
+
         await createCompanyEmployeeUseCase.execute(companyEmployee1);
-        
+
         const companyEmployee2: ICreateCompanyEmployeeDTO = {
             companyId: "321",
-            documentId: "321",
+            documentId: "doc-402",
             name: "teste 2",
             subscribeToken: "teste",
             userId: "",
             phone: "8888888",
-            email: "teste2@teste.com",
+            email: "co2@teste.com",
             id: "",
-            easyRegister: CompanyEmployeeEasyRegisterEnum.NO
+            easyRegister: CompanyEmployeeEasyRegisterEnum.NO,
         };
 
         await createCompanyEmployeeUseCase.execute(companyEmployee2);
 
         const result = await listCompanyEmployeeUseCase.execute({
-            name: "",
-            documentId: "",
-            userId: "",
-            notUserId: null,
-            phone: "",
-            email: "",
-            id: "",
-            companyId: "123"
+            ...emptyListFilters,
+            companyId: "123",
         });
 
         expect(result).toHaveLength(1);
     });
 });
-

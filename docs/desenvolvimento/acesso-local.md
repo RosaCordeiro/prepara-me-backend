@@ -16,6 +16,20 @@ Referência rápida para ambiente local no WSL. **Não usar em produção.**
 
 ## Banco PostgreSQL
 
+### Opção A — Postgres no Docker (Compose atual)
+
+| Campo | Valor |
+|---|---|
+| Host (app no Compose) | `database` |
+| Host (DBeaver / host) | `localhost` |
+| Porta (host) | `5435` |
+| Porta (rede Docker) | `5432` |
+| Database | `preparame` |
+| Usuário | `docker` |
+| Senha | `admin@01` |
+
+### Opção B — Postgres local WSL
+
 | Campo | Valor |
 |---|---|
 | Host | `localhost` |
@@ -85,12 +99,29 @@ Perfis de pesquisa: `scripts/seed-test-company-profiles.js`
 
 ## Subir o ambiente
 
-```bash
-# Backend (API :3334) — na pasta prepara-me-backend
-npm run dev
+### Backend + Postgres (Docker Compose) — recomendado
 
-# Frontend (:8080) — na pasta preparame-platform
+```bash
+cd prepara-me-backend
+# .env: DB_HOST=database e DB_PORT=5432 (o compose também força isso no serviço app)
+docker compose up --build -d
+docker compose logs -f app   # até "Server is running on 3334!"
+```
+
+API: http://localhost:3334
+
+### Frontend (:8080)
+
+```bash
+cd preparame-platform
 npm run dev
 ```
 
-PostgreSQL local deve estar ativo (`scripts/start-postgres.sh`).
+### Alternativa — API no host (sem container app)
+
+```bash
+# Postgres: Docker na 5435 OU scripts/start-postgres.sh na 5432
+# .env: DB_HOST=localhost e DB_PORT conforme a opção
+cd prepara-me-backend
+npm run dev
+```
