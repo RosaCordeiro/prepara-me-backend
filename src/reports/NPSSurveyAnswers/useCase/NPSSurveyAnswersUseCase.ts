@@ -83,7 +83,7 @@ class NPSSurveyAnswersUseCase {
             cityArray.length === 0 &&
             stateArray.length === 0;
 
-        const lessThanFive = this.shouldCheckSurveyLimit(
+        const insufficientSample = this.isSampleInsufficient(
             companyId,
             users,
             undefined,
@@ -91,7 +91,7 @@ class NPSSurveyAnswersUseCase {
         );
 
         return {
-            lessThanFive,
+            insufficientSample,
             laborRisk: this.getLaborRisk(
                 users,
                 companyId,
@@ -103,7 +103,9 @@ class NPSSurveyAnswersUseCase {
                 shouldApplyException
             ),
             nps: this.getNps(users, companyId, shouldApplyException),
-            realocateds: this.getRealocateds(result || users, companyId),
+            realocateds: insufficientSample
+                ? "Sem informações"
+                : this.getRealocateds(result || users, companyId),
 
             termination: this.getTermination(
                 users,
@@ -112,10 +114,11 @@ class NPSSurveyAnswersUseCase {
             ),
             laborIssues: result
                 ? this.getLaborIssues(result, companyId, shouldApplyException)
-                : "N/A",
-            welcomed: result
-                ? this.getWelcomed(result, companyId, users)
-                : "N/A",
+                : "Sem informações",
+            welcomed:
+                result && !insufficientSample
+                    ? this.getWelcomed(result, companyId, users)
+                    : "Sem informações",
             feelingMap: this.getFeelingMap(
                 users,
                 companyId,
@@ -125,16 +128,17 @@ class NPSSurveyAnswersUseCase {
                 ? this.getVoluntaryReasonsMap(users, companyId, shouldApplyException)
                 : [],
             shutDown: this.getShutDown(users, companyId, shouldApplyException),
-            realocatedCount: this.getRealocatedsNumber(users),
-            companyQuestions: await this.getAnswersCompanyQuestions(
-                users,
-                companyId
-            ),
+            realocatedCount: insufficientSample
+                ? 0
+                : this.getRealocatedsNumber(users),
+            companyQuestions: insufficientSample
+                ? []
+                : await this.getAnswersCompanyQuestions(users, companyId),
             general: {
                 laborRisk: this.getLaborRisk(usersAll, companyId),
                 brandRisk: this.getBrandRisk(usersAll, companyId),
                 nps: this.getNps(usersAll, companyId),
-                realocateds: `N/A`,
+                realocateds: `Sem informações`,
                 termination: this.getTermination(usersAll, companyId),
                 laborIssues: this.getLaborIssuesAllUsers(usersAll, companyId),
                 welcomed: this.getWelcomed(usersAll, companyId, users),
@@ -179,7 +183,23 @@ class NPSSurveyAnswersUseCase {
         return result;
     }
 
-    shouldCheckSurveyLimit(
+    getAnonymityMinRespondents(): number {
+        const raw = process.env.SURVEY_ANONYMITY_MIN_RESPONDENTS;
+        const parsed = raw === undefined || raw === "" ? NaN : Number(raw);
+
+        if (!Number.isFinite(parsed) || parsed < 0) {
+            return 5;
+        }
+
+        return Math.floor(parsed);
+    }
+
+    /**
+     * Returns true when filter-specific metrics must be omitted (sample ≤ X).
+     * ADMIN bypasses the threshold (MVP). COMPANY_ADMIN never bypasses.
+     * EXCEPTION_COMPANY_IDS does not apply to COMPANY_ADMIN.
+     */
+    isSampleInsufficient(
         companyId: string,
         users: any[],
         filterUsers?: any[],
@@ -189,7 +209,7 @@ class NPSSurveyAnswersUseCase {
             return true;
         }
 
-        if (this.roleUser === "ADMIN" || this.roleUser === "COMPANY_ADMIN") {
+        if (this.roleUser === "ADMIN") {
             return false;
         }
 
@@ -201,13 +221,21 @@ class NPSSurveyAnswersUseCase {
             "a6375b9e-b1fa-4eea-a970-fec411693ca9",
         ];
 
-        if (EXCEPTION_COMPANY_IDS.includes(companyId) && shouldApplyException) {
+        if (
+            this.roleUser !== "COMPANY_ADMIN" &&
+            EXCEPTION_COMPANY_IDS.includes(companyId) &&
+            shouldApplyException
+        ) {
             return false;
         }
 
         const targetUsers = filterUsers || users;
+        const answeredCount = targetUsers.filter(
+            (user) => user?.surveyAnswered
+        ).length;
+        const minRespondents = this.getAnonymityMinRespondents();
 
-        return targetUsers.filter((user) => user?.surveyAnswered).length <= 5;
+        return answeredCount <= minRespondents;
     }
 
     getLaborRisk(
@@ -216,14 +244,14 @@ class NPSSurveyAnswersUseCase {
         shouldApplyException: boolean = true
     ) {
         if (
-            this.shouldCheckSurveyLimit(
+            this.isSampleInsufficient(
                 companyId,
                 users,
                 undefined,
                 shouldApplyException
             )
         ) {
-            return "N/A";
+            return "Sem informações";
         }
 
         const npsSurveyAnswers = users.filter((npsSurvey: any) => {
@@ -233,7 +261,7 @@ class NPSSurveyAnswersUseCase {
         });
 
         if (npsSurveyAnswers.length === 0) {
-            return "N/A";
+            return "Sem informações";
         }
 
         const laborRisk: number = npsSurveyAnswers.reduce(
@@ -252,14 +280,14 @@ class NPSSurveyAnswersUseCase {
         shouldApplyException: boolean = true
     ) {
         if (
-            this.shouldCheckSurveyLimit(
+            this.isSampleInsufficient(
                 companyId,
                 users,
                 undefined,
                 shouldApplyException
             )
         ) {
-            return "N/A";
+            return "Sem informações";
         }
         const lastAnswers: any[] = [];
 
@@ -300,7 +328,7 @@ class NPSSurveyAnswersUseCase {
         companyId: any,
         shouldApplyException: boolean = true
     ) {
-        if (this.roleUser === "ADMIN" || this.roleUser === "COMPANY_ADMIN") {
+        if (this.roleUser === "ADMIN") {
             shouldApplyException = false;
         }
 
@@ -312,11 +340,14 @@ class NPSSurveyAnswersUseCase {
         const filterUsers = normalizedUsers.filter((user: any) => user?.id);
 
         if (
-            shouldApplyException &&
-            this.shouldCheckSurveyLimit(companyId, filterUsers, undefined, shouldApplyException)
+            this.isSampleInsufficient(
+                companyId,
+                filterUsers,
+                undefined,
+                shouldApplyException
+            )
         ) {
-
-            return "N/A";
+            return "Sem informações";
         }
 
         const laborRiskAlerts = filterUsers.filter((user: any) => {
@@ -329,8 +360,8 @@ class NPSSurveyAnswersUseCase {
     }
 
     getLaborIssuesAllUsers(users: any, companyId: any) {
-        if (this.shouldCheckSurveyLimit(companyId, users)) {
-            return "N/A";
+        if (this.isSampleInsufficient(companyId, users)) {
+            return "Sem informações";
         }
 
         const filteredUsers = users.filter((user: any) => {
@@ -350,14 +381,14 @@ class NPSSurveyAnswersUseCase {
         shouldApplyException: boolean = true
     ) {
         if (
-            this.shouldCheckSurveyLimit(
+            this.isSampleInsufficient(
                 companyId,
                 users,
                 undefined,
                 shouldApplyException
             )
         ) {
-            return "N/A";
+            return "Sem informações";
         }
         const npsSurveyAnswers = users.filter((npsSurvey: any) => {
             if (npsSurvey) {
@@ -366,7 +397,7 @@ class NPSSurveyAnswersUseCase {
         });
 
         if (npsSurveyAnswers.length === 0) {
-            return "N/A";
+            return "Sem informações";
         }
 
         let brandRisk: number = npsSurveyAnswers.reduce(
@@ -381,14 +412,14 @@ class NPSSurveyAnswersUseCase {
 
     getNps(users: any, companyId: any, shouldApplyException: boolean = true) {
         if (
-            this.shouldCheckSurveyLimit(
+            this.isSampleInsufficient(
                 companyId,
                 users,
                 undefined,
                 shouldApplyException
             )
         ) {
-            return "N/A";
+            return "Sem informações";
         }
         /*  try { */
         //fazer um if para verificar diferente de undefined e de zero
@@ -404,7 +435,7 @@ class NPSSurveyAnswersUseCase {
             //se nao voce para aqui
         }).length;
         if (countUsersResponded === 0) {
-            return "N/A";
+            return "Sem informações";
         }
 
         const result = users.reduce(
@@ -471,7 +502,7 @@ class NPSSurveyAnswersUseCase {
 
     getFeelingMap(users: any, companyId: any, shouldApplyException: boolean = true) {
         if (
-            this.shouldCheckSurveyLimit(
+            this.isSampleInsufficient(
                 companyId,
                 users,
                 undefined,
@@ -538,7 +569,7 @@ class NPSSurveyAnswersUseCase {
         shouldApplyException: boolean = true
     ) {
         if (
-            this.shouldCheckSurveyLimit(
+            this.isSampleInsufficient(
                 companyId,
                 users,
                 undefined,
@@ -592,7 +623,7 @@ class NPSSurveyAnswersUseCase {
 
     getShutDown(users: any, companyId: any, shouldApplyException: boolean = true) {
         if (
-            this.shouldCheckSurveyLimit(
+            this.isSampleInsufficient(
                 companyId,
                 users,
                 undefined,

@@ -55,6 +55,31 @@ API: http://localhost:3334 · Frontend: http://localhost:8080
 
 Logs da API: `docker compose logs -f app`
 
+### Anonimato (relatórios RH)
+
+Variável no `.env.exemple` (opcional no `.env`; default **5** no código):
+
+```bash
+SURVEY_ANONYMITY_MIN_RESPONDENTS=5
+```
+
+Para `COMPANY_ADMIN`, se o filtro tiver ≤ esse número de respondentes com pesquisa respondida:
+- a API retorna `insufficientSample: true`
+- métricas do filtro vêm como **`Sem informações`** (não usa mais `N/A` / `lessThanFive`)
+- respostas qualitativas do filtro vêm vazias
+
+`ADMIN` da plataforma não está sujeito ao limiar neste MVP. Reinicie a API após alterar a env.
+
+Endpoint (inalterado): `GET` reports `/npsSurveyAnswers`.
+
+### Testes (anonimato)
+
+```bash
+npm test -- --testPathPattern=NPSSurveyAnswersUseCase.spec --coverage=false
+```
+
+Spec/design: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
+
 ### Modo Debug (Desenvolvimento)
 
 O modo debug é perfeito para desenvolvimento com debugger:
