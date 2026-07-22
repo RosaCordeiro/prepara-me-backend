@@ -19,10 +19,13 @@ class ProductsRepositoryInMemory implements IProductsRepository {
         type,
         bestSeller,
         id,
+        slug,
+        onlyAdmin,
     }: ICreateProductDTO): Promise<Product> {
         const product = new Product(
             name,
             shortName,
+            slug || shortName || name,
             price,
             duration,
             status,
@@ -30,6 +33,7 @@ class ProductsRepositoryInMemory implements IProductsRepository {
             bestSeller,
             id
         );
+        product.onlyAdmin = onlyAdmin ?? false;
 
         this.products.push(product);
 
@@ -38,6 +42,42 @@ class ProductsRepositoryInMemory implements IProductsRepository {
 
     async findById(id: string): Promise<Product> {
         return this.products.find((product) => product.id === id);
+    }
+
+    async findBySlug(slug: string): Promise<Product> {
+        return this.products.find((product) => product.slug === slug);
+    }
+
+    async findLassThanPrice(_id: string): Promise<Product[]> {
+        return [];
+    }
+
+    async findByUserId(
+        _userId: string,
+        _onlyAvailables: boolean,
+        _productId?: string,
+        _onlyAdmin?: boolean
+    ): Promise<any> {
+        return [];
+    }
+
+    async removeByProductAvailableId(_id: string): Promise<void> {
+        return;
+    }
+
+    async findByUserIdWithSpecialist(
+        _userId: string,
+        _productId?: string
+    ): Promise<any> {
+        return [];
+    }
+
+    async findProductsAvailableByUserId(
+        _userId: string,
+        _onlyAvailables: boolean,
+        _onlyAdmin: boolean
+    ): Promise<any[]> {
+        return [];
     }
 
     async findAvailable(): Promise<Product[]> {

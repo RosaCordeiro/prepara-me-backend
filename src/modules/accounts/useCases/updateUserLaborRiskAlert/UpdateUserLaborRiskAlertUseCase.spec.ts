@@ -8,6 +8,7 @@ import { UsersRepositoryInMemory } from "@modules/accounts/repositories/in-memor
 import { CompanyEmployeesRepositoryInMemory } from "@modules/company/repositories/in-memory/CompanyEmployeesRepositoryInMemory";
 import { CompanySubscriptionPlansRepositoryInMemory } from "@modules/company/repositories/in-memory/CompanySubscriptionPlansRepositoryInMemory";
 import { SubscriptionPlansRepositoryInMemory } from "@modules/products/repositories/in-memory/SubscriptionPlansRepositoryInMemory";
+import { MailProviderInMemory } from "@shared/container/providers/MailProvider/inMemory/MailProviderInMemory";
 import { CreateUserUseCase } from "../createUser/CreateUserUseCase";
 import { UpdateUserLaborRiskAlertUseCase } from "./UpdateUserLaborRiskAlertUseCase";
 
@@ -17,11 +18,19 @@ let companySubscriptionPlansRepository: CompanySubscriptionPlansRepositoryInMemo
 let companyEmployeesRepository: CompanyEmployeesRepositoryInMemory;
 let subscriptionPlansRepository: SubscriptionPlansRepositoryInMemory;
 let userProductsAvailableRepository: UserProductsAvailableRepositoryInMemory;
+let mailProviderInMemory: MailProviderInMemory;
 let updateUserLaborRiskAlertUseCase: UpdateUserLaborRiskAlertUseCase;
 
 describe("update user labor risk alert", () => {
     beforeEach(() => {
         usersRepositoryInMemory = new UsersRepositoryInMemory();
+        companySubscriptionPlansRepository =
+            new CompanySubscriptionPlansRepositoryInMemory();
+        companyEmployeesRepository = new CompanyEmployeesRepositoryInMemory();
+        subscriptionPlansRepository = new SubscriptionPlansRepositoryInMemory();
+        userProductsAvailableRepository =
+            new UserProductsAvailableRepositoryInMemory();
+        mailProviderInMemory = new MailProviderInMemory();
         createUserUseCase = new CreateUserUseCase(
             usersRepositoryInMemory,
             companySubscriptionPlansRepository,
@@ -30,7 +39,8 @@ describe("update user labor risk alert", () => {
             userProductsAvailableRepository
         );
         updateUserLaborRiskAlertUseCase = new UpdateUserLaborRiskAlertUseCase(
-            usersRepositoryInMemory
+            usersRepositoryInMemory,
+            mailProviderInMemory
         );
     });
 
