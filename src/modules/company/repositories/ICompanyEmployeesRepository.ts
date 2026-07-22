@@ -18,6 +18,8 @@ interface IRequestFind {
     dismissalType?: DismissalTypeEnum;
     companyName?: string;
     openToWork?: boolean;
+    segmentId?: string;
+    subsegmentId?: string;
     position?: string;
     city?: string;
     state?: string;

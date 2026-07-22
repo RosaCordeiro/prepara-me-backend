@@ -14,6 +14,8 @@ type ListCompanyEmployeeInput = {
     dismissalType?: string;
     companyName?: string;
     openToWork?: boolean | string;
+    segmentId?: string;
+    subsegmentId?: string;
     position?: string;
     city?: string;
     state?: string;
@@ -40,6 +42,8 @@ class ListCompanyEmployeeUseCase {
         dismissalType,
         companyName,
         openToWork,
+        segmentId,
+        subsegmentId,
         position,
         city,
         state,
@@ -58,6 +62,8 @@ class ListCompanyEmployeeUseCase {
             dismissalType: dismissalType as any,
             companyName,
             openToWork: openToWork === true || openToWork === "true",
+            segmentId,
+            subsegmentId,
             position,
             city,
             state,

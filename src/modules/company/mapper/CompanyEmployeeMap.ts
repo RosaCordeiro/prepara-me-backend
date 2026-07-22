@@ -87,6 +87,31 @@ class CompanyEmployeeMap {
 
         return companyEmployee;
     }
+
+    static toOpenToWorkDTO(companyEmployee: CompanyEmployee) {
+        const {
+            id,
+            name,
+            position,
+            department,
+            city,
+            state,
+            linkedinUrl,
+            company,
+        } = companyEmployee;
+
+        return instanceToInstance({
+            id,
+            name,
+            position,
+            department,
+            city,
+            state,
+            linkedinUrl,
+            segmentName: company?.segment?.name ?? null,
+            subsegmentName: company?.subsegment?.name ?? null,
+        });
+    }
 }
 
 export { CompanyEmployeeMap };

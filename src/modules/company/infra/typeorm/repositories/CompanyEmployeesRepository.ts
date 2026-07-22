@@ -344,6 +344,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         dismissalType,
         companyName,
         openToWork,
+        segmentId,
+        subsegmentId,
         position,
         city,
         state,
@@ -361,6 +363,8 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         dismissalType?: string;
         companyName?: string;
         openToWork?: boolean;
+        segmentId?: string;
+        subsegmentId?: string;
         position?: string;
         city?: string;
         state?: string;
@@ -370,6 +374,12 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
             .createQueryBuilder("ce")
             .leftJoinAndSelect("ce.user", "u")
             .leftJoinAndSelect("ce.company", "c");
+
+        if (openToWork) {
+            companyEmployeesQuery
+                .leftJoinAndSelect("c.segment", "segment")
+                .leftJoinAndSelect("c.subsegment", "subsegment");
+        }
 
         if (id) {
             companyEmployeesQuery.andWhere("ce.id = :id", {
@@ -465,6 +475,18 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                 );
             }
 
+            if (segmentId) {
+                companyEmployeesQuery.andWhere("c.segmentId = :segmentId", {
+                    segmentId,
+                });
+            }
+
+            if (subsegmentId) {
+                companyEmployeesQuery.andWhere("c.subsegmentId = :subsegmentId", {
+                    subsegmentId,
+                });
+            }
+
             if (openToWork) {
                 companyEmployeesQuery
                     .andWhere(
@@ -488,6 +510,12 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         }
 
         const companyEmployees = await companyEmployeesQuery.getMany();
+
+        if (openToWork) {
+            return companyEmployees.map((companyEmployee: CompanyEmployee) => {
+                return CompanyEmployeeMap.toOpenToWorkDTO(companyEmployee);
+            }) as any;
+        }
 
         const companyEmployeesMapped = companyEmployees.map(
             (companyEmployee: CompanyEmployee) => {

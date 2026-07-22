@@ -72,12 +72,29 @@ Para `COMPANY_ADMIN`, se o filtro tiver ≤ esse número de respondentes com pes
 
 Endpoint (inalterado): `GET` reports `/npsSurveyAnswers`.
 
-### Open to Work (`GET /companies/employees/open-to-work`)
+### Segmento / Subsegmento + Open to Work
 
-- Query opcional: `position`, `department`, `city`, `state` (busca parcial).
+Cadastros Admin e classificação opcional da empresa; filtros/colunas no OTW.
+
+**Migration:** `CreateSegmentsAndSubsegments1772500000000` — rodar após pull:
+
+```bash
+docker compose exec app npm run typeorm migration:run
+```
+
+| Método | Path | Auth |
+|--------|------|------|
+| GET/POST/DELETE | `/segments`, `/segments/:id` | Autenticado; **POST/DELETE = ADMIN** |
+| GET/POST/DELETE | `/subsegments`, `/subsegments/:id` | Autenticado; **POST/DELETE = ADMIN**; GET aceita `?segmentId=` |
+| POST/GET | `/companies` | Aceita `segmentId` / `subsegmentId` opcionais no body |
+| GET | `/companies/employees/open-to-work` | Autenticado; query opcional `position`, `department`, `city`, `state`, `segmentId`, `subsegmentId`. Resposta com `segmentName`/`subsegmentName`, **sem** dados de empresa |
+
 - Elegíveis: permissão OTW permitir (`true`/nulo), não realocados, **LinkedIn não obrigatório**.
 - `COMPANY_ADMIN`: exclui automaticamente a própria empresa.
-- Spec: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-open-to-work-melhorias.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-open-to-work-melhorias.md).
+
+Sem novas variáveis de ambiente. Sem `@clamed/logger` / `light-node-metrics` neste MVP.
+
+Specs: [`2026-07-22-rh-segmento-subsegmento`](docs/desenvolvimento/especificacoes/2026-07-22-rh-segmento-subsegmento.md) · [`2026-07-21-rh-open-to-work-melhorias`](docs/desenvolvimento/especificacoes/2026-07-21-rh-open-to-work-melhorias.md).
 
 ### Testes (anonimato + listagem)
 
@@ -86,7 +103,13 @@ npm test -- --testPathPattern=NPSSurveyAnswersUseCase.spec --coverage=false
 npm test -- --testPathPattern=ListCompanyEmployeeUseCase --coverage=false
 ```
 
-Spec anonimato: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
+Suite geral da API:
+
+```bash
+npm test
+```
+
+Spec/design anonimato: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
 
 ### Modo Debug (Desenvolvimento)
 

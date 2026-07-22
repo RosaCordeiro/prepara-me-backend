@@ -71,7 +71,14 @@ class ListCompanyEmployeeController {
         request: Request,
         response: Response
     ): Promise<Response> {
-        const { position, department, city, state } = request.query;
+        const {
+            position,
+            department,
+            city,
+            state,
+            segmentId,
+            subsegmentId,
+        } = request.query;
 
         let excludeCompanyId: string | undefined;
 
@@ -100,6 +107,8 @@ class ListCompanyEmployeeController {
             department,
             city,
             state,
+            segmentId,
+            subsegmentId,
             excludeCompanyId,
             openToWork: true,
         });
