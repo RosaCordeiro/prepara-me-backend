@@ -10,7 +10,7 @@
 | Branch | `fix/testes-automatizados-jest` |
 | Severidade | media |
 | Ambiente | local (suite `npm test`) |
-| Status | corrigido |
+| Status | verificado |
 | Data do incidente | 2026-07-21 (reproducao na suite completa) |
 | Data deste documento | 2026-07-21 |
 | Relator | desenvolvimento |
@@ -145,10 +145,10 @@ Elimina a dessincronia que impede o TypeScript de compilar as suites; a suite vo
 
 | Campo | Valor |
 |-------|-------|
-| Commit(s) | (pendente — aguardando pedido do usuario) |
-| O que mudou de fato | Harness: StorageProviderInMemory; Products/Schedule/SubscriptionPlanProducts in-memory; 18 specs alinhados (ctors, DTOs, onlyAdmin, user seed em schedule) |
+| Commit(s) | `ce3c829` |
+| O que mudou de fato | Harness: StorageProviderInMemory; Products/Schedule/SubscriptionPlanProducts in-memory; 18 specs alinhados; `coverage` no `.gitignore` |
 | Verificacoes executadas (V-xx) | V-01: `npm test -- --coverage=false` → **53 passed / 129 tests passed** |
-| Status final | corrigido (pendente review/commit) |
+| Status final | verificado |
 
 ## 10. Licoes / prevencao (opcional)
 
