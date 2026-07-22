@@ -344,6 +344,10 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         dismissalType,
         companyName,
         openToWork,
+        position,
+        city,
+        state,
+        excludeCompanyId,
     }: {
         name?: string;
         documentId?: string;
@@ -357,6 +361,10 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         dismissalType?: string;
         companyName?: string;
         openToWork?: boolean;
+        position?: string;
+        city?: string;
+        state?: string;
+        excludeCompanyId?: string;
     }): Promise<ICompanyEmployeeResponseDTO[]> {
         const companyEmployeesQuery = this.repository
             .createQueryBuilder("ce")
@@ -414,9 +422,27 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                 });
             }
 
-            if (department) {
+            if (department && !openToWork) {
                 companyEmployeesQuery.andWhere("ce.department = :department", {
                     department: department,
+                });
+            }
+
+            if (position) {
+                companyEmployeesQuery.andWhere("ce.position ILIKE :position", {
+                    position: `%${position}%`,
+                });
+            }
+
+            if (city) {
+                companyEmployeesQuery.andWhere("ce.city ILIKE :city", {
+                    city: `%${city}%`,
+                });
+            }
+
+            if (state) {
+                companyEmployeesQuery.andWhere("ce.state ILIKE :state", {
+                    state: `%${state}%`,
                 });
             }
 
@@ -432,11 +458,32 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                 });
             }
 
+            if (excludeCompanyId) {
+                companyEmployeesQuery.andWhere(
+                    "ce.companyId <> :excludeCompanyId",
+                    { excludeCompanyId }
+                );
+            }
+
             if (openToWork) {
                 companyEmployeesQuery
-                    .andWhere("ce.showLinkedinInRelocationProgram = true")
-                    .andWhere("ce.linkedinUrl IS NOT NULL")
-                    .andWhere("ce.linkedinUrl <> ''");
+                    .andWhere(
+                        "(ce.showLinkedinInRelocationProgram IS NULL OR ce.showLinkedinInRelocationProgram = true)"
+                    )
+                    .andWhere(
+                        "(ce.realocate IS NULL OR ce.realocate = false)"
+                    )
+                    .andWhere(
+                        "(u.id IS NULL OR u.realocated IS NULL OR u.realocated <> :realocatedStatus)",
+                        { realocatedStatus: "REALOCATED" }
+                    );
+
+                if (department) {
+                    companyEmployeesQuery.andWhere(
+                        "ce.department ILIKE :departmentOtw",
+                        { departmentOtw: `%${department}%` }
+                    );
+                }
             }
         }
 
