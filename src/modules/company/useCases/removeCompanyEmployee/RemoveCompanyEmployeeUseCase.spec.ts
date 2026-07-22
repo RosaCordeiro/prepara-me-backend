@@ -1,24 +1,33 @@
+import { UserProductsAvailableRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UserProductsAvailableRepositoryInMemory";
 import { UsersRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UsersRepositoryInMemory";
 import { ICreateCompanyEmployeeDTO } from "@modules/company/dtos/ICreateCompanyEmployeeDTO";
 import { CompanyEmployeeEasyRegisterEnum } from "@modules/company/enums/CompanyEmployeeEasyRegisterEnum";
 import { CompanyEmployeesRepositoryInMemory } from "@modules/company/repositories/in-memory/CompanyEmployeesRepositoryInMemory";
+import { SubscriptionPlansRepositoryInMemory } from "@modules/products/repositories/in-memory/SubscriptionPlansRepositoryInMemory";
 import { CreateCompanyEmployeeUseCase } from "../createCompanyEmployee/CreateCompanyEmployeeUseCase";
 import { RemoveCompanyEmployeeUseCase } from "./RemoveCompanyEmployeeUseCase";
 
 let createCompanyEmployeeUseCase: CreateCompanyEmployeeUseCase;
 let usersRepositoryInMemory: UsersRepositoryInMemory;
 let companyEmployeesRepositoryInMemory: CompanyEmployeesRepositoryInMemory;
+let userProductsAvailableRepositoryInMemory: UserProductsAvailableRepositoryInMemory;
+let subscriptionPlansRepositoryInMemory: SubscriptionPlansRepositoryInMemory;
 let removeCompanyEmployeeUseCase: RemoveCompanyEmployeeUseCase;
 
 describe("Remove Company Employee", () => {
     beforeEach(() => {
         companyEmployeesRepositoryInMemory =
             new CompanyEmployeesRepositoryInMemory();
-            usersRepositoryInMemory =
-            new UsersRepositoryInMemory();
+        usersRepositoryInMemory = new UsersRepositoryInMemory();
+        userProductsAvailableRepositoryInMemory =
+            new UserProductsAvailableRepositoryInMemory();
+        subscriptionPlansRepositoryInMemory =
+            new SubscriptionPlansRepositoryInMemory();
         createCompanyEmployeeUseCase = new CreateCompanyEmployeeUseCase(
             companyEmployeesRepositoryInMemory,
-            usersRepositoryInMemory
+            usersRepositoryInMemory,
+            userProductsAvailableRepositoryInMemory,
+            subscriptionPlansRepositoryInMemory
         );
         removeCompanyEmployeeUseCase = new RemoveCompanyEmployeeUseCase(
             companyEmployeesRepositoryInMemory
@@ -30,7 +39,7 @@ describe("Remove Company Employee", () => {
             companyId: "123",
             name: "teste",
             subscribeToken: "123",
-            documentId: "123",
+            documentId: "111",
             easyRegister: CompanyEmployeeEasyRegisterEnum.NO
         };
 
@@ -40,7 +49,7 @@ describe("Remove Company Employee", () => {
             companyId: "123",
             name: "teste",
             subscribeToken: "123",
-            documentId: "123",
+            documentId: "222",
             easyRegister: CompanyEmployeeEasyRegisterEnum.NO
         };
 
@@ -54,12 +63,12 @@ describe("Remove Company Employee", () => {
         expect(idRemoved).toBe(companyEmployeeCreated.id);
     });
 
-    it("should be able to delete a company employee", async () => {
+    it("should be able to delete a second company employee", async () => {
         const companyEmployee1: ICreateCompanyEmployeeDTO = {
             companyId: "123",
             name: "teste",
             subscribeToken: "123",
-            documentId: "123",
+            documentId: "333",
             easyRegister: CompanyEmployeeEasyRegisterEnum.NO
         };
 
@@ -69,7 +78,7 @@ describe("Remove Company Employee", () => {
             companyId: "123",
             name: "teste",
             subscribeToken: "123",
-            documentId: "123",
+            documentId: "444",
             easyRegister: CompanyEmployeeEasyRegisterEnum.NO
         };
 

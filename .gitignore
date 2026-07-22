@@ -30,3 +30,6 @@ sendgrid.env
 # Temp files
 /tmp/*
 
+
+# jest coverage
+coverage

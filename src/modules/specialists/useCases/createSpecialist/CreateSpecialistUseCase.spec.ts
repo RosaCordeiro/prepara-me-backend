@@ -1,17 +1,21 @@
 import { ICreateSpecialistDTO } from "@modules/specialists/dtos/ICreateSpecialistDTO";
 import { SpecialistStatusEnum } from "@modules/specialists/enums/SpecialistStatusEnum";
 import { SpecialistsRepositoryInMemory } from "@modules/specialists/repositories/in-memory/SpecialistsRepositoryInMemory";
+import { StorageProviderInMemory } from "@shared/container/providers/StorageProvider/inMemory/StorageProviderInMemory";
 import { AppError } from "@shared/errors/AppError";
 import { CreateSpecialistUseCase } from "./CreateSpecialistUseCase";
 
 let specialistsRepositoryInMemory: SpecialistsRepositoryInMemory;
+let storageProviderInMemory: StorageProviderInMemory;
 let createSpecialistUseCase: CreateSpecialistUseCase;
 
 describe("Create Especialist", () => {
     beforeEach(() => {
         specialistsRepositoryInMemory = new SpecialistsRepositoryInMemory();
+        storageProviderInMemory = new StorageProviderInMemory();
         createSpecialistUseCase = new CreateSpecialistUseCase(
-            specialistsRepositoryInMemory
+            specialistsRepositoryInMemory,
+            storageProviderInMemory
         );
     });
 

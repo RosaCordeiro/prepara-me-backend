@@ -1,4 +1,4 @@
-import { ICreateUserProductAvailableDTO } from "@modules/accounts/dtos/ICreateUserProductAvailableLogDTO";
+import { ICreateUserProductAvailableDTO } from "@modules/accounts/dtos/ICreateUserProductAvailableDTO";
 import { UserProductsAvailableRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UserProductsAvailableRepositoryInMemory";
 import { AppError } from "@shared/errors/AppError";
 import { CreateUserProductAvailableUseCase } from "./CreateUserProductAvailableUseCase";

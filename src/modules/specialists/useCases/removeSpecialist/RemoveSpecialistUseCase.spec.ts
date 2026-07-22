@@ -3,11 +3,13 @@ import { SpecialistStatusEnum } from "@modules/specialists/enums/SpecialistStatu
 import { ProductsSpecialistsRepositoryInMemory } from "@modules/specialists/repositories/in-memory/ProductsSpecialistsRepositoryInMemory";
 import { SpecialistScheduleRepositoryInMemory } from "@modules/specialists/repositories/in-memory/SpecialistScheduleRepositoryInMemory";
 import { SpecialistsRepositoryInMemory } from "@modules/specialists/repositories/in-memory/SpecialistsRepositoryInMemory";
+import { StorageProviderInMemory } from "@shared/container/providers/StorageProvider/inMemory/StorageProviderInMemory";
 import { CreateSpecialistUseCase } from "../createSpecialist/CreateSpecialistUseCase";
 import { ListSpecialistUseCase } from "../listSpecialist/ListSpecialistUseCase";
 import { RemoveSpecialistUseCase } from "./RemoveSpecialistUseCase";
 
 let specialistsRepositoryInMemory: SpecialistsRepositoryInMemory;
+let storageProviderInMemory: StorageProviderInMemory;
 let listSpecialistUseCase: ListSpecialistUseCase;
 let createSpecialistUseCase: CreateSpecialistUseCase;
 let removeSpecialistUseCase: RemoveSpecialistUseCase;
@@ -17,13 +19,15 @@ let specialistScheduleRepositoryInMemory: SpecialistScheduleRepositoryInMemory;
 describe("Remove Specialists", () => {
     beforeEach(() => {
         specialistsRepositoryInMemory = new SpecialistsRepositoryInMemory();
+        storageProviderInMemory = new StorageProviderInMemory();
         productsSpecialistsRepositoryInMemory = new ProductsSpecialistsRepositoryInMemory();
         specialistScheduleRepositoryInMemory = new SpecialistScheduleRepositoryInMemory();
         listSpecialistUseCase = new ListSpecialistUseCase(
             specialistsRepositoryInMemory
         );
         createSpecialistUseCase = new CreateSpecialistUseCase(
-            specialistsRepositoryInMemory
+            specialistsRepositoryInMemory,
+            storageProviderInMemory
         );
         removeSpecialistUseCase = new RemoveSpecialistUseCase(
             specialistsRepositoryInMemory,

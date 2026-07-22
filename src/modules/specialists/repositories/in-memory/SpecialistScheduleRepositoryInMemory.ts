@@ -112,7 +112,7 @@ class SpecialistScheduleRepositoryInMemory
             }
         }
 
-        return specialistSchedules;
+        return specialistSchedules as unknown as ISpecialistScheduleResponseDTO[];
     }
 
     async remove(id: string): Promise<string> {
@@ -124,7 +124,30 @@ class SpecialistScheduleRepositoryInMemory
 
         return id;
     }
+
+    async findById(id: string): Promise<SpecialistSchedule> {
+        return this.specialistSchedules.find(
+            (specialistSchedule) => specialistSchedule.id === id
+        );
+    }
+
+    async findToUser(data: IRequestFindLike): Promise<any> {
+        return this.find(data as any);
+    }
 }
+
+type IRequestFindLike = {
+    dateBegin?: Date;
+    dateEnd?: Date;
+    name?: string;
+    userId?: string;
+    status?: any;
+    productId?: string;
+    specialistId?: string;
+    specialistUserId?: string;
+    id?: string;
+    dateSchedule?: Date;
+};
 
 export { SpecialistScheduleRepositoryInMemory };
 
