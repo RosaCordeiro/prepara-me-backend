@@ -18,6 +18,10 @@ interface IRequestFind {
     dismissalType?: DismissalTypeEnum;
     companyName?: string;
     openToWork?: boolean;
+    position?: string;
+    city?: string;
+    state?: string;
+    excludeCompanyId?: string;
 }
 
 interface ICompanyEmployeesRepository {

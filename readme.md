@@ -72,13 +72,21 @@ Para `COMPANY_ADMIN`, se o filtro tiver ≤ esse número de respondentes com pes
 
 Endpoint (inalterado): `GET` reports `/npsSurveyAnswers`.
 
-### Testes (anonimato)
+### Open to Work (`GET /companies/employees/open-to-work`)
+
+- Query opcional: `position`, `department`, `city`, `state` (busca parcial).
+- Elegíveis: permissão OTW permitir (`true`/nulo), não realocados, **LinkedIn não obrigatório**.
+- `COMPANY_ADMIN`: exclui automaticamente a própria empresa.
+- Spec: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-open-to-work-melhorias.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-open-to-work-melhorias.md).
+
+### Testes (anonimato + listagem)
 
 ```bash
 npm test -- --testPathPattern=NPSSurveyAnswersUseCase.spec --coverage=false
+npm test -- --testPathPattern=ListCompanyEmployeeUseCase --coverage=false
 ```
 
-Spec/design: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
+Spec anonimato: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
 
 ### Modo Debug (Desenvolvimento)
 
