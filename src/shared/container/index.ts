@@ -4,6 +4,7 @@ import "./repositories/resumes";
 import "./repositories/products";
 import "./repositories/specialists";
 import "./repositories/companies";
+import "./repositories/segments";
 import "./repositories/subscriptionPlans";
 import "./repositories/clicks";
 import "./repositories/mentoring";

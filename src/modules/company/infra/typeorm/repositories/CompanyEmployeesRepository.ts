@@ -344,6 +344,12 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         dismissalType,
         companyName,
         openToWork,
+        segmentId,
+        subsegmentId,
+        position,
+        city,
+        state,
+        excludeCompanyId,
     }: {
         name?: string;
         documentId?: string;
@@ -357,11 +363,23 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
         dismissalType?: string;
         companyName?: string;
         openToWork?: boolean;
+        segmentId?: string;
+        subsegmentId?: string;
+        position?: string;
+        city?: string;
+        state?: string;
+        excludeCompanyId?: string;
     }): Promise<ICompanyEmployeeResponseDTO[]> {
         const companyEmployeesQuery = this.repository
             .createQueryBuilder("ce")
             .leftJoinAndSelect("ce.user", "u")
             .leftJoinAndSelect("ce.company", "c");
+
+        if (openToWork) {
+            companyEmployeesQuery
+                .leftJoinAndSelect("c.segment", "segment")
+                .leftJoinAndSelect("c.subsegment", "subsegment");
+        }
 
         if (id) {
             companyEmployeesQuery.andWhere("ce.id = :id", {
@@ -414,9 +432,33 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                 });
             }
 
-            if (department) {
+            if (department && !openToWork) {
                 companyEmployeesQuery.andWhere("ce.department = :department", {
                     department: department,
+                });
+            }
+
+            if (department && openToWork) {
+                companyEmployeesQuery.andWhere("ce.department ILIKE :department", {
+                    department: `%${department}%`,
+                });
+            }
+
+            if (position) {
+                companyEmployeesQuery.andWhere("ce.position ILIKE :position", {
+                    position: `%${position}%`,
+                });
+            }
+
+            if (city) {
+                companyEmployeesQuery.andWhere("ce.city ILIKE :city", {
+                    city: `%${city}%`,
+                });
+            }
+
+            if (state) {
+                companyEmployeesQuery.andWhere("ce.state ILIKE :state", {
+                    state: `%${state}%`,
                 });
             }
 
@@ -432,15 +474,47 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                 });
             }
 
+            if (excludeCompanyId) {
+                companyEmployeesQuery.andWhere(
+                    "ce.companyId <> :excludeCompanyId",
+                    { excludeCompanyId }
+                );
+            }
+
+            if (segmentId) {
+                companyEmployeesQuery.andWhere("c.segmentId = :segmentId", {
+                    segmentId,
+                });
+            }
+
+            if (subsegmentId) {
+                companyEmployeesQuery.andWhere("c.subsegmentId = :subsegmentId", {
+                    subsegmentId,
+                });
+            }
+
             if (openToWork) {
                 companyEmployeesQuery
-                    .andWhere("ce.showLinkedinInRelocationProgram = true")
-                    .andWhere("ce.linkedinUrl IS NOT NULL")
-                    .andWhere("ce.linkedinUrl <> ''");
+                    .andWhere(
+                        "(ce.showLinkedinInRelocationProgram IS NULL OR ce.showLinkedinInRelocationProgram = true)"
+                    )
+                    .andWhere(
+                        "(ce.realocate IS NULL OR ce.realocate = false)"
+                    )
+                    .andWhere(
+                        "(u.id IS NULL OR u.realocated IS NULL OR u.realocated <> :realocatedStatus)",
+                        { realocatedStatus: "REALOCATED" }
+                    );
             }
         }
 
         const companyEmployees = await companyEmployeesQuery.getMany();
+
+        if (openToWork) {
+            return companyEmployees.map((companyEmployee: CompanyEmployee) => {
+                return CompanyEmployeeMap.toOpenToWorkDTO(companyEmployee);
+            }) as any;
+        }
 
         const companyEmployeesMapped = companyEmployees.map(
             (companyEmployee: CompanyEmployee) => {

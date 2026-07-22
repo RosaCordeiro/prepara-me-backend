@@ -72,13 +72,40 @@ Para `COMPANY_ADMIN`, se o filtro tiver ≤ esse número de respondentes com pes
 
 Endpoint (inalterado): `GET` reports `/npsSurveyAnswers`.
 
+### Segmento / Subsegmento + Open to Work
+
+Cadastros Admin e classificação opcional da empresa; filtros/colunas no OTW.
+
+**Migration:** `CreateSegmentsAndSubsegments1772500000000` — rodar após pull:
+
+```bash
+docker compose exec app npm run typeorm migration:run
+```
+
+| Método | Path | Auth |
+|--------|------|------|
+| GET/POST/DELETE | `/segments`, `/segments/:id` | Autenticado; **POST/DELETE = ADMIN** |
+| GET/POST/DELETE | `/subsegments`, `/subsegments/:id` | Autenticado; **POST/DELETE = ADMIN**; GET aceita `?segmentId=` |
+| POST/GET | `/companies` | Aceita `segmentId` / `subsegmentId` opcionais no body |
+| GET | `/companies/employees/open-to-work` | Autenticado; query opcional `segmentId`, `subsegmentId` (+ cargo/área/cidade/estado se usados). Resposta com `segmentName`/`subsegmentName`, **sem** dados de empresa |
+
+Sem novas variáveis de ambiente. Sem `@clamed/logger` / `light-node-metrics` neste MVP.
+
+Spec/design: [`docs/desenvolvimento/especificacoes/2026-07-22-rh-segmento-subsegmento.md`](docs/desenvolvimento/especificacoes/2026-07-22-rh-segmento-subsegmento.md).
+
 ### Testes (anonimato)
 
 ```bash
 npm test -- --testPathPattern=NPSSurveyAnswersUseCase.spec --coverage=false
 ```
 
-Spec/design: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
+Suite geral da API:
+
+```bash
+npm test
+```
+
+Spec/design anonimato: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
 
 ### Modo Debug (Desenvolvimento)
 

@@ -65,15 +65,45 @@ class ListCompanyEmployeeController {
         request: Request,
         response: Response
     ): Promise<Response> {
-        const { companyId, companyName } = request.query;
+        const {
+            position,
+            department,
+            city,
+            state,
+            segmentId,
+            subsegmentId,
+        } = request.query;
+
+        let excludeCompanyId: string | undefined;
+
+        if (request.user?.id) {
+            const usersRepository = new UsersRepository();
+            const user = await usersRepository.findById(request.user.id);
+
+            if (user?.type === UserTypeEnum.COMPANY_ADMIN) {
+                if (!user.companyId) {
+                    throw new AppError(
+                        "Company admin without company linked",
+                        400
+                    );
+                }
+
+                excludeCompanyId = user.companyId;
+            }
+        }
 
         const listCompanyEmployeeUseCase = container.resolve(
             ListCompanyEmployeeUseCase
         );
 
         const companyEmployees = await listCompanyEmployeeUseCase.execute({
-            companyId,
-            companyName,
+            position,
+            department,
+            city,
+            state,
+            segmentId,
+            subsegmentId,
+            excludeCompanyId,
             openToWork: true,
         });
 

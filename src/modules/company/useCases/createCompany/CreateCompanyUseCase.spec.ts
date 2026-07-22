@@ -1,16 +1,24 @@
 import { ICreateCompanyDTO } from "@modules/company/dtos/ICreateCompanyDTO";
 import { CompaniesRepositoryInMemory } from "@modules/company/repositories/in-memory/CompaniesRepositoryInMemory";
+import { SegmentsRepositoryInMemory } from "@modules/segments/repositories/in-memory/SegmentsRepositoryInMemory";
+import { SubsegmentsRepositoryInMemory } from "@modules/subsegments/repositories/in-memory/SubsegmentsRepositoryInMemory";
 import { AppError } from "@shared/errors/AppError";
 import { CreateCompanyUseCase } from "./CreateCompanyUseCase";
 
 let companiesRepositoryInMemory: CompaniesRepositoryInMemory;
+let segmentsRepositoryInMemory: SegmentsRepositoryInMemory;
+let subsegmentsRepositoryInMemory: SubsegmentsRepositoryInMemory;
 let createCompanyUseCase: CreateCompanyUseCase;
 
 describe("Create Company", () => {
     beforeEach(() => {
         companiesRepositoryInMemory = new CompaniesRepositoryInMemory();
+        segmentsRepositoryInMemory = new SegmentsRepositoryInMemory();
+        subsegmentsRepositoryInMemory = new SubsegmentsRepositoryInMemory();
         createCompanyUseCase = new CreateCompanyUseCase(
-            companiesRepositoryInMemory
+            companiesRepositoryInMemory,
+            subsegmentsRepositoryInMemory,
+            segmentsRepositoryInMemory
         );
     });
 
