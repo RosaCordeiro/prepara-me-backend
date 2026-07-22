@@ -87,16 +87,20 @@ docker compose exec app npm run typeorm migration:run
 | GET/POST/DELETE | `/segments`, `/segments/:id` | Autenticado; **POST/DELETE = ADMIN** |
 | GET/POST/DELETE | `/subsegments`, `/subsegments/:id` | Autenticado; **POST/DELETE = ADMIN**; GET aceita `?segmentId=` |
 | POST/GET | `/companies` | Aceita `segmentId` / `subsegmentId` opcionais no body |
-| GET | `/companies/employees/open-to-work` | Autenticado; query opcional `segmentId`, `subsegmentId` (+ cargo/área/cidade/estado se usados). Resposta com `segmentName`/`subsegmentName`, **sem** dados de empresa |
+| GET | `/companies/employees/open-to-work` | Autenticado; query opcional `position`, `department`, `city`, `state`, `segmentId`, `subsegmentId`. Resposta com `segmentName`/`subsegmentName`, **sem** dados de empresa |
+
+- Elegíveis: permissão OTW permitir (`true`/nulo), não realocados, **LinkedIn não obrigatório**.
+- `COMPANY_ADMIN`: exclui automaticamente a própria empresa.
 
 Sem novas variáveis de ambiente. Sem `@clamed/logger` / `light-node-metrics` neste MVP.
 
-Spec/design: [`docs/desenvolvimento/especificacoes/2026-07-22-rh-segmento-subsegmento.md`](docs/desenvolvimento/especificacoes/2026-07-22-rh-segmento-subsegmento.md).
+Specs: [`2026-07-22-rh-segmento-subsegmento`](docs/desenvolvimento/especificacoes/2026-07-22-rh-segmento-subsegmento.md) · [`2026-07-21-rh-open-to-work-melhorias`](docs/desenvolvimento/especificacoes/2026-07-21-rh-open-to-work-melhorias.md).
 
-### Testes (anonimato)
+### Testes (anonimato + listagem)
 
 ```bash
 npm test -- --testPathPattern=NPSSurveyAnswersUseCase.spec --coverage=false
+npm test -- --testPathPattern=ListCompanyEmployeeUseCase --coverage=false
 ```
 
 Suite geral da API:

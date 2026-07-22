@@ -21,6 +21,9 @@ class ListCompanyEmployeeController {
             dismissalType,
             companyName,
             openToWork,
+            position,
+            city,
+            state,
         } = request.query;
 
         if (request.user?.id) {
@@ -56,6 +59,9 @@ class ListCompanyEmployeeController {
             dismissalType,
             companyName,
             openToWork,
+            position,
+            city,
+            state,
         });
 
         return response.status(200).send(companyEmployees);

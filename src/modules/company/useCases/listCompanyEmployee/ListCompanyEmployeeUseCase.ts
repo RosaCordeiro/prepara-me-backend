@@ -1,25 +1,25 @@
 import { ICompanyEmployeesRepository } from "@modules/company/repositories/ICompanyEmployeesRepository";
 import { inject, injectable } from "tsyringe";
 
-type ListCompanyEmployeeRequest = {
-    name?: any;
-    documentId?: any;
-    userId?: any;
-    notUserId?: any;
-    phone?: any;
-    email?: any;
-    companyId?: any;
-    id?: any;
-    department?: any;
-    dismissalType?: any;
-    companyName?: any;
-    openToWork?: any;
-    segmentId?: any;
-    subsegmentId?: any;
-    position?: any;
-    city?: any;
-    state?: any;
-    excludeCompanyId?: any;
+type ListCompanyEmployeeInput = {
+    name?: string;
+    documentId?: string;
+    userId?: string;
+    notUserId?: string;
+    phone?: string;
+    email?: string;
+    companyId?: string;
+    id?: string;
+    department?: string;
+    dismissalType?: string;
+    companyName?: string;
+    openToWork?: boolean | string;
+    segmentId?: string;
+    subsegmentId?: string;
+    position?: string;
+    city?: string;
+    state?: string;
+    excludeCompanyId?: string;
 };
 
 @injectable()
@@ -48,7 +48,7 @@ class ListCompanyEmployeeUseCase {
         city,
         state,
         excludeCompanyId,
-    }: ListCompanyEmployeeRequest) {
+    }: ListCompanyEmployeeInput) {
         const companyEmployees = await this.companyEmployeesRepository.find({
             name,
             documentId,
@@ -59,7 +59,7 @@ class ListCompanyEmployeeUseCase {
             companyId,
             id,
             department,
-            dismissalType,
+            dismissalType: dismissalType as any,
             companyName,
             openToWork: openToWork === true || openToWork === "true",
             segmentId,
@@ -69,8 +69,6 @@ class ListCompanyEmployeeUseCase {
             state,
             excludeCompanyId,
         });
-
-        console.log("companyEmployees", companyEmployees);
 
         return companyEmployees;
     }

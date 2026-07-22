@@ -438,12 +438,6 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                 });
             }
 
-            if (department && openToWork) {
-                companyEmployeesQuery.andWhere("ce.department ILIKE :department", {
-                    department: `%${department}%`,
-                });
-            }
-
             if (position) {
                 companyEmployeesQuery.andWhere("ce.position ILIKE :position", {
                     position: `%${position}%`,
@@ -505,6 +499,13 @@ class CompanyEmployeesRepository implements ICompanyEmployeesRepository {
                         "(u.id IS NULL OR u.realocated IS NULL OR u.realocated <> :realocatedStatus)",
                         { realocatedStatus: "REALOCATED" }
                     );
+
+                if (department) {
+                    companyEmployeesQuery.andWhere(
+                        "ce.department ILIKE :departmentOtw",
+                        { departmentOtw: `%${department}%` }
+                    );
+                }
             }
         }
 
