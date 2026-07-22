@@ -67,7 +67,13 @@ async function getConfig(token) {
 }
 
 function assertNotNaMetric(label, value) {
-  if (value === undefined || value === null || value === "" || value === "N/A") {
+  if (
+    value === undefined ||
+    value === null ||
+    value === "" ||
+    value === "N/A" ||
+    value === "Sem informações"
+  ) {
     fail(label, `valor inválido: ${value}`);
     return false;
   }
@@ -130,7 +136,7 @@ async function main() {
     ]);
 
     assertNotNaMetric("Baseline e-NPS", baseline.nps);
-    pass("Baseline lessThanFive", String(baseline.lessThanFive));
+    pass("Baseline insufficientSample", String(baseline.insufficientSample));
     pass(
       "Baseline shutDown",
       `${(baseline.shutDown || []).length} perguntas pós-demissão`
@@ -140,10 +146,10 @@ async function main() {
       `${(baseline.feelingMap || []).length} sentimentos`
     );
 
-    if (baseline.lessThanFive) {
+    if (baseline.insufficientSample) {
       warn(
-        "Baseline lessThanFive",
-        "true — COMPANY_ADMIN deveria bypass; verificar seed/respostas"
+        "Baseline insufficientSample",
+        "true — amostra ≤ limiar de anonimato; seed pode ter poucos respondentes"
       );
     }
   } catch (error) {
@@ -161,28 +167,50 @@ async function main() {
       { name: "area", model: JSON.stringify(["Tecnologia"]) },
     ]);
 
-    assertNotNaMetric("Filtro Operações e-NPS", operacoes.nps);
-    assertNotNaMetric("Filtro Tecnologia e-NPS", tecnologia.nps);
+    if (operacoes.insufficientSample) {
+      pass(
+        "Anonimato filtro Operações",
+        "insufficientSample=true — dados do filtro omitidos"
+      );
+    } else {
+      assertNotNaMetric("Filtro Operações e-NPS", operacoes.nps);
+    }
 
-    if (operacoes.nps !== tecnologia.nps) {
+    if (tecnologia.insufficientSample) {
+      pass(
+        "Anonimato filtro Tecnologia",
+        "insufficientSample=true — dados do filtro omitidos"
+      );
+    } else {
+      assertNotNaMetric("Filtro Tecnologia e-NPS", tecnologia.nps);
+    }
+
+    if (
+      !operacoes.insufficientSample &&
+      !tecnologia.insufficientSample &&
+      operacoes.nps !== tecnologia.nps
+    ) {
       pass(
         "Comparativo áreas distintas",
         `Operações=${operacoes.nps} vs Tecnologia=${tecnologia.nps}`
       );
-    } else {
+    } else if (
+      !operacoes.insufficientSample &&
+      !tecnologia.insufficientSample
+    ) {
       warn(
         "Comparativo áreas distintas",
         `mesmo e-NPS (${operacoes.nps}) — seed pode ter valores iguais`
       );
     }
 
-    if (operacoes.lessThanFive || tecnologia.lessThanFive) {
+    if ("lessThanFive" in operacoes || "lessThanFive" in tecnologia) {
       fail(
-        "COMPANY_ADMIN bypass filtros",
-        `lessThanFive Operações=${operacoes.lessThanFive}, Tecnologia=${tecnologia.lessThanFive}`
+        "Contrato insufficientSample",
+        "campo legado lessThanFive ainda presente na resposta"
       );
     } else {
-      pass("COMPANY_ADMIN bypass filtros", "lessThanFive=false com filtro de área");
+      pass("Contrato insufficientSample", "sem campo lessThanFive");
     }
   } catch (error) {
     fail("Comparativo por área", error.response?.data?.message || error.message);
@@ -213,7 +241,11 @@ async function main() {
     );
 
     const rawValues = timelinePoints.map((p) =>
-      p.nps === "N/A" || !p.nps ? null : Number(String(p.nps).replace("%", ""))
+      p.nps === "N/A" ||
+      p.nps === "Sem informações" ||
+      !p.nps
+        ? null
+        : Number(String(p.nps).replace("%", ""))
     );
 
     let last = null;
