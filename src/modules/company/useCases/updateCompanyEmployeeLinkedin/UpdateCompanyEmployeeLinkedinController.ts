@@ -13,6 +13,7 @@ class UpdateCompanyEmployeeLinkedinController {
 
         const employee = await updateCompanyEmployeeLinkedinUseCase.execute({
             id,
+            requesterUserId: request.user.id,
             linkedinUrl,
             showLinkedinInRelocationProgram,
         });
