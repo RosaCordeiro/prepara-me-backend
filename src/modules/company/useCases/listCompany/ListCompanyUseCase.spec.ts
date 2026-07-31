@@ -1,5 +1,7 @@
 import { ICreateCompanyDTO } from "@modules/company/dtos/ICreateCompanyDTO";
 import { CompaniesRepositoryInMemory } from "@modules/company/repositories/in-memory/CompaniesRepositoryInMemory";
+import { SegmentsRepositoryInMemory } from "@modules/segments/repositories/in-memory/SegmentsRepositoryInMemory";
+import { SubsegmentsRepositoryInMemory } from "@modules/subsegments/repositories/in-memory/SubsegmentsRepositoryInMemory";
 import { CreateCompanyUseCase } from "../createCompany/CreateCompanyUseCase";
 import { ListCompanyUseCase } from "./ListCompanyUseCase";
 
@@ -14,7 +16,9 @@ describe("List Companies", () => {
             companiesRepositoryInMemory
         );
         createCompanyUseCase = new CreateCompanyUseCase(
-            companiesRepositoryInMemory
+            companiesRepositoryInMemory,
+            new SubsegmentsRepositoryInMemory(),
+            new SegmentsRepositoryInMemory()
         );
     });
 

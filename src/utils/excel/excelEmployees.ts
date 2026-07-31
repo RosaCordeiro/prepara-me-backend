@@ -31,6 +31,7 @@ export class GeradorExcelEmployeeTools {
                 "PCD",
                 "Cidade",
                 "Estado",
+                "Página do LinkedIn",
             ];
 
             const wb = new xl.Workbook();

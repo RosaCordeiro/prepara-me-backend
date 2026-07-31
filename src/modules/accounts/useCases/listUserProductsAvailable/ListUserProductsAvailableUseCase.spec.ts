@@ -1,4 +1,4 @@
-import { ICreateUserProductAvailableDTO } from "@modules/accounts/dtos/ICreateUserProductAvailableLogDTO";
+import { ICreateUserProductAvailableDTO } from "@modules/accounts/dtos/ICreateUserProductAvailableDTO";
 import { UserProductsAvailableRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UserProductsAvailableRepositoryInMemory";
 import { CreateUserProductAvailableUseCase } from "../createUserProductAvailable/CreateUserProductAvailableUseCase";
 import { ListUserProductsAvailableUseCase } from "./ListUserProductsAvailableUseCase";
@@ -41,6 +41,7 @@ describe("List User Products Available", () => {
             id: null,
             productId: null,
             userId: null,
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(2);
@@ -67,6 +68,7 @@ describe("List User Products Available", () => {
             id: null,
             productId: "321",
             userId: null,
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);
@@ -93,6 +95,7 @@ describe("List User Products Available", () => {
             id: null,
             productId: null,
             userId: "123",
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);

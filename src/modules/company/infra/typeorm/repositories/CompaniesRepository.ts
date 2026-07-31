@@ -39,10 +39,17 @@ class CompaniesRepository implements ICompaniesRepository {
         return response;
     }
 
-    async create({ name, id }: ICreateCompanyDTO): Promise<Company> {
+    async create({
+        name,
+        id,
+        segmentId,
+        subsegmentId,
+    }: ICreateCompanyDTO): Promise<Company> {
         const company = this.repository.create({
             name,
             id,
+            segmentId: segmentId ?? null,
+            subsegmentId: subsegmentId ?? null,
         });
 
         await this.repository.save(company);
@@ -66,7 +73,9 @@ class CompaniesRepository implements ICompaniesRepository {
             .leftJoinAndSelect(
                 "companySubscriptionPlans.subscriptionPlan",
                 "subscriptionPlans"
-            );
+            )
+            .leftJoinAndSelect("c.segment", "segment")
+            .leftJoinAndSelect("c.subsegment", "subsegment");
 
         if (id) {
             companiesQuery.andWhere("c.id = :id", {
