@@ -1,6 +1,27 @@
 import { ICompanyEmployeesRepository } from "@modules/company/repositories/ICompanyEmployeesRepository";
 import { inject, injectable } from "tsyringe";
 
+type ListCompanyEmployeeInput = {
+    name?: string;
+    documentId?: string;
+    userId?: string;
+    notUserId?: string;
+    phone?: string;
+    email?: string;
+    companyId?: string;
+    id?: string;
+    department?: string;
+    dismissalType?: string;
+    companyName?: string;
+    openToWork?: boolean | string;
+    segmentId?: string;
+    subsegmentId?: string;
+    position?: string;
+    city?: string;
+    state?: string;
+    excludeCompanyId?: string;
+};
+
 @injectable()
 class ListCompanyEmployeeUseCase {
     constructor(
@@ -19,7 +40,15 @@ class ListCompanyEmployeeUseCase {
         id,
         department,
         dismissalType,
-    }) {
+        companyName,
+        openToWork,
+        segmentId,
+        subsegmentId,
+        position,
+        city,
+        state,
+        excludeCompanyId,
+    }: ListCompanyEmployeeInput) {
         const companyEmployees = await this.companyEmployeesRepository.find({
             name,
             documentId,
@@ -30,10 +59,16 @@ class ListCompanyEmployeeUseCase {
             companyId,
             id,
             department,
-            dismissalType,
+            dismissalType: dismissalType as any,
+            companyName,
+            openToWork: openToWork === true || openToWork === "true",
+            segmentId,
+            subsegmentId,
+            position,
+            city,
+            state,
+            excludeCompanyId,
         });
-
-        console.log("companyEmployees", companyEmployees);
 
         return companyEmployees;
     }

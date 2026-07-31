@@ -21,6 +21,12 @@ let updateUserSurveyFieldsUseCase: UpdateUserSurveyFieldsUseCase;
 describe("update user survey", () => {
     beforeEach(() => {
         usersRepositoryInMemory = new UsersRepositoryInMemory();
+        companySubscriptionPlansRepository =
+            new CompanySubscriptionPlansRepositoryInMemory();
+        companyEmployeesRepository = new CompanyEmployeesRepositoryInMemory();
+        subscriptionPlansRepository = new SubscriptionPlansRepositoryInMemory();
+        userProductsAvailableRepository =
+            new UserProductsAvailableRepositoryInMemory();
         createUserUseCase = new CreateUserUseCase(
             usersRepositoryInMemory,
             companySubscriptionPlansRepository,
@@ -58,6 +64,7 @@ describe("update user survey", () => {
             brandRisk: 1,
             brandRiskJSON: "[{teste: 123}]",
             laborRiskJSON: "[{teste: 123}]",
+            surveyQuestion: null,
         });
 
         expect(result).toHaveProperty("id");

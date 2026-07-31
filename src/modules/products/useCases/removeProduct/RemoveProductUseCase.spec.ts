@@ -68,6 +68,7 @@ describe("Remove Products", () => {
             type: "",
             bestSeller: "",
             id: "",
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);

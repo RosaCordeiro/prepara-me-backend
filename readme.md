@@ -2,29 +2,114 @@
 
 API backend para o sistema Preparame desenvolvida com Node.js, TypeScript e PostgreSQL.
 
+## Banco de dados (PostgreSQL no WSL)
+
+O PostgreSQL roda **localmente no WSL** (sem Docker), em `~/.local/pgsql/data`.
+
+### Setup inicial
+
+```bash
+./scripts/setup-wsl-postgres.sh
+```
+
+Isso instala os binários, cria o banco `preparame` e atualiza o `.env`.
+
+### Subir o PostgreSQL
+
+```bash
+./scripts/start-postgres.sh
+```
+
+### Restaurar dump
+
+```bash
+./dumps/restore-dump.sh "/caminho/para/backup.sql"
+```
+
+Script de criação do banco (reutilizável): `scripts/create-database.sql`
+
+Conexões:
+- **WSL / Node local:** `localhost:5432` (Postgres WSL) ou `localhost:5435` (Postgres no Compose)
+- **App no Docker Compose:** host `database`, porta `5432` (serviço `database` na rede `preparame`)
+
 ## 🚀 Início Rápido
 
 ### Pré-requisitos
 
--   Docker e Docker Compose instalados
--   Node.js (para modo debug)
+-   Docker no WSL (usuário no grupo `docker`)
+-   Node.js no WSL (para o frontend)
 
 ### Como executar
 
 ```bash
-# Script interativo com menu de opções
-./start.sh
+# Backend + Postgres (Docker)
+cd prepara-me-backend
+docker compose up --build -d
+
+# Frontend (WSL)
+cd ../preparame-platform
+npm run dev
 ```
 
-O script mostrará um menu com as opções:
+API: http://localhost:3334 · Frontend: http://localhost:8080
 
-1. **🐳 Ambiente Completo (Docker)** - App + Banco no Docker
-2. **🐛 Modo Debug** - Só banco Docker + Node local para debugger
-3. **🗄️ Apenas Banco** - Só PostgreSQL
-4. **⏹️ Parar Serviços** - Para todos os containers
-5. **🚪 Sair**
+Logs da API: `docker compose logs -f app`
 
-**Pronto!** A API estará rodando em: http://localhost:3334
+### Anonimato (relatórios RH)
+
+Variável no `.env.exemple` (opcional no `.env`; default **5** no código):
+
+```bash
+SURVEY_ANONYMITY_MIN_RESPONDENTS=5
+```
+
+Para `COMPANY_ADMIN`, se o filtro tiver ≤ esse número de respondentes com pesquisa respondida:
+- a API retorna `insufficientSample: true`
+- métricas do filtro vêm como **`Sem informações`** (não usa mais `N/A` / `lessThanFive`)
+- respostas qualitativas do filtro vêm vazias
+
+`ADMIN` da plataforma não está sujeito ao limiar neste MVP. Reinicie a API após alterar a env.
+
+Endpoint (inalterado): `GET` reports `/npsSurveyAnswers`.
+
+### Segmento / Subsegmento + Open to Work
+
+Cadastros Admin e classificação opcional da empresa; filtros/colunas no OTW.
+
+**Migration:** `CreateSegmentsAndSubsegments1772500000000` — rodar após pull:
+
+```bash
+docker compose exec app npm run typeorm migration:run
+```
+
+| Método | Path | Auth |
+|--------|------|------|
+| GET/POST/DELETE | `/segments`, `/segments/:id` | Autenticado; **POST/DELETE = ADMIN** |
+| GET/POST/DELETE | `/subsegments`, `/subsegments/:id` | Autenticado; **POST/DELETE = ADMIN**; GET aceita `?segmentId=` |
+| POST/GET | `/companies` | Aceita `segmentId` / `subsegmentId` opcionais no body |
+| GET | `/companies/employees/open-to-work` | Autenticado; query opcional `position`, `department`, `city`, `state`, `segmentId`, `subsegmentId`. Resposta com `segmentName`/`subsegmentName`, **sem** dados de empresa |
+
+- Elegíveis: permissão OTW permitir (`true`/nulo), não realocados, **LinkedIn não obrigatório**.
+- `COMPANY_ADMIN`: exclui automaticamente a própria empresa.
+
+Sem novas variáveis de ambiente. Sem `@clamed/logger` / `light-node-metrics` neste MVP.
+
+Specs: [`2026-07-22-rh-segmento-subsegmento`](docs/desenvolvimento/especificacoes/2026-07-22-rh-segmento-subsegmento.md) · [`2026-07-21-rh-open-to-work-melhorias`](docs/desenvolvimento/especificacoes/2026-07-21-rh-open-to-work-melhorias.md).
+
+### Testes (anonimato + listagem)
+
+```bash
+npm test -- --testPathPattern=NPSSurveyAnswersUseCase.spec --coverage=false
+npm test -- --testPathPattern=ListCompanyEmployeeUseCase --coverage=false
+```
+
+Suite geral da API:
+
+```bash
+npm test
+```
+
+Spec/design anonimato: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
 
 ### Modo Debug (Desenvolvimento)
 

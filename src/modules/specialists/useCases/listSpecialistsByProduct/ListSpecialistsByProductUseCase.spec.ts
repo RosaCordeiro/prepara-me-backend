@@ -1,11 +1,13 @@
 import { SpecialistStatusEnum } from "@modules/specialists/enums/SpecialistStatusEnum";
 import { ProductsSpecialistsRepositoryInMemory } from "@modules/specialists/repositories/in-memory/ProductsSpecialistsRepositoryInMemory";
 import { SpecialistsRepositoryInMemory } from "@modules/specialists/repositories/in-memory/SpecialistsRepositoryInMemory";
+import { StorageProviderInMemory } from "@shared/container/providers/StorageProvider/inMemory/StorageProviderInMemory";
 import { CreateProductSpecialistUseCase } from "../createProductSpecialist/CreateProductSpecialistUseCase";
 import { CreateSpecialistUseCase } from "../createSpecialist/CreateSpecialistUseCase";
 import { ListSpecialistsByProductUseCase } from "./ListSpecialistsByProductUseCase";
 
 let specialistsRepositoryInMemory: SpecialistsRepositoryInMemory;
+let storageProviderInMemory: StorageProviderInMemory;
 let productsSpecialistsRepositoryInMemory: ProductsSpecialistsRepositoryInMemory;
 let listSpecialistsByProductUseCase: ListSpecialistsByProductUseCase;
 let createProductSpecialistUseCase: CreateProductSpecialistUseCase;
@@ -16,8 +18,10 @@ describe("List Specialists", () => {
         productsSpecialistsRepositoryInMemory =
             new ProductsSpecialistsRepositoryInMemory();
         specialistsRepositoryInMemory = new SpecialistsRepositoryInMemory();
+        storageProviderInMemory = new StorageProviderInMemory();
         createSpecialistUseCase = new CreateSpecialistUseCase(
-            specialistsRepositoryInMemory
+            specialistsRepositoryInMemory,
+            storageProviderInMemory
         );
         createProductSpecialistUseCase = new CreateProductSpecialistUseCase(
             productsSpecialistsRepositoryInMemory

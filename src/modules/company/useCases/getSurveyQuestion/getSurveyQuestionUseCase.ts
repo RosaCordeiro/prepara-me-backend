@@ -10,13 +10,7 @@ class GetSurveyQuestionUseCase {
     ) {}
 
     async execute(companyId: string): Promise<SurveyQuestion[]> {
-        const surveyQuestions = await this.surveyQuestionsRepository.listByCompanyId(companyId);
-
-        if (surveyQuestions.length === 0) {
-            throw new Error("No survey questions found for this company");
-        }
-
-        return surveyQuestions;
+        return this.surveyQuestionsRepository.listByCompanyId(companyId);
     }
 }
 

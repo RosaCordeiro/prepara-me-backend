@@ -53,6 +53,7 @@ class CompanyEmployeesRepositoryInMemory
         pcd,
         city,
         state,
+        linkedinUrl,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         if (id) {
             const companyEmployeeIndex = this.companyEmployees.findIndex(
@@ -83,7 +84,8 @@ class CompanyEmployeesRepositoryInMemory
                 etnia,
                 pcd,
                 city,
-                state
+                state,
+                linkedinUrl
             );
 
             this.companyEmployees[companyEmployeeIndex] = companyEmployee;
@@ -114,7 +116,8 @@ class CompanyEmployeesRepositoryInMemory
                 etnia,
                 pcd,
                 city,
-                state
+                state,
+                linkedinUrl
             );
 
             this.companyEmployees.push(companyEmployee);
@@ -140,6 +143,7 @@ class CompanyEmployeesRepositoryInMemory
         pcd,
         city,
         state,
+        linkedinUrl,
     }: IUpdateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         const employeeIndex = this.companyEmployees.findIndex(
             (employee) => employee.id === id
@@ -167,6 +171,7 @@ class CompanyEmployeesRepositoryInMemory
         if (pcd !== undefined) employee.pcd = pcd;
         if (city !== undefined) employee.city = city;
         if (state !== undefined) employee.state = state;
+        if (linkedinUrl !== undefined) employee.linkedinUrl = linkedinUrl;
 
         this.companyEmployees[employeeIndex] = employee;
 
