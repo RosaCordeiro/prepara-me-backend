@@ -51,6 +51,7 @@ describe("List Products", () => {
             type: "",
             bestSeller: "",
             id: "",
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(2);
@@ -88,6 +89,7 @@ describe("List Products", () => {
             type: "",
             bestSeller: "",
             id: "",
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);
@@ -125,6 +127,7 @@ describe("List Products", () => {
             type: "",
             bestSeller: "",
             id: "",
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);
@@ -162,6 +165,7 @@ describe("List Products", () => {
             type: "",
             bestSeller: ProductBestSellerEnum.BEST_SELLER,
             id: "",
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);
@@ -199,6 +203,7 @@ describe("List Products", () => {
             type: "",
             bestSeller: "",
             id: "",
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);
@@ -236,6 +241,7 @@ describe("List Products", () => {
             type: ProductTypeEnum.NON_SCHEDULED,
             bestSeller: "",
             id: "",
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);
@@ -273,6 +279,7 @@ describe("List Products", () => {
             type: "",
             bestSeller: "",
             id: productCreated.id,
+            onlyAdmin: null,
         });
 
         expect(result).toHaveLength(1);

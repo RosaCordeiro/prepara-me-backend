@@ -28,39 +28,54 @@ import { GetSurveyQuestionController } from "@modules/company/useCases/getSurvey
 import { DeleteSurveyQuestionController } from "@modules/company/useCases/deleteSurveyQuestion/deleteSurveyQuestionController";
 import { UpdateSurveyQuestionController } from "@modules/company/useCases/uptadeSurveyQuestion/UpdateSurveyQuestionController";
 import { GetSurveyQuestionByIdController } from "@modules/company/useCases/getSurveyQuestionById/getSurveyQuestionByIdController";
+import { GetMyCompanyEmployeeProfileController } from "@modules/company/useCases/getMyCompanyEmployeeProfile/GetMyCompanyEmployeeProfileController";
+import { UpdateMyCompanyEmployeeProfileController } from "@modules/company/useCases/updateMyCompanyEmployeeProfile/UpdateMyCompanyEmployeeProfileController";
+import { UpdateCompanyEmployeeLinkedinController } from "@modules/company/useCases/updateCompanyEmployeeLinkedin/UpdateCompanyEmployeeLinkedinController";
 
 
 const companiesRoutes = Router();
 const uploadImage = multer(uploadConfig);
 
-//Nova rota: Armazenamento de perguntas
-const createSurveyQuestionsController = new CreateSurveyQuestionController()
-companiesRoutes.post("/surveyquestions", createSurveyQuestionsController.handle)
+// Perguntas qualitativas: GET list autenticado (consumo pesquisa);
+// escrita e GET by id restritos a ADMIN da plataforma.
+const createSurveyQuestionsController = new CreateSurveyQuestionController();
+companiesRoutes.post(
+    "/surveyquestions",
+    ensuredAuthenticated,
+    ensureAdmin,
+    createSurveyQuestionsController.handle
+);
 
-
-//Nova rota: Leitura de perguntas
 const getSurveyQuestionController = new GetSurveyQuestionController();
 companiesRoutes.get(
     "/surveyquestions",
+    ensuredAuthenticated,
     getSurveyQuestionController.handle
 );
 
 const getSurveyQuestionByIdController = new GetSurveyQuestionByIdController();
 companiesRoutes.get(
     "/surveyquestions/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
     getSurveyQuestionByIdController.handle
 );
 
-//Nova rota: Deletar de perguntas
 const deleteSurveyQuestionController = new DeleteSurveyQuestionController();
 companiesRoutes.delete(
     "/surveyquestions/:id",
-    ensuredAuthenticated, 
+    ensuredAuthenticated,
+    ensureAdmin,
     deleteSurveyQuestionController.handle
 );
 
 const updateSurveyQuestionController = new UpdateSurveyQuestionController();
-companiesRoutes.put("/surveyquestions/:id", updateSurveyQuestionController.handle);
+companiesRoutes.put(
+    "/surveyquestions/:id",
+    ensuredAuthenticated,
+    ensureAdmin,
+    updateSurveyQuestionController.handle
+);
 
 
 const getCompanyParametersController = new GetCompanyParametersController();
@@ -121,14 +136,28 @@ companiesRoutes.get(
 
 const listCompanyEmployeeController = new ListCompanyEmployeeController();
 companiesRoutes.get(
+    "/employees/open-to-work",
+    ensuredAuthenticated,
+    listCompanyEmployeeController.handleOpenToWork
+);
+
+const updateCompanyEmployeeLinkedinController =
+    new UpdateCompanyEmployeeLinkedinController();
+companiesRoutes.patch(
+    "/employees/:id/linkedin",
+    ensuredAuthenticated,
+    updateCompanyEmployeeLinkedinController.handle
+);
+
+companiesRoutes.get(
     "/employees",
-    
+    ensuredAuthenticated,
     listCompanyEmployeeController.handle
 );
 
 companiesRoutes.get(
     "/employees/:id",
-    
+    ensuredAuthenticated,
     listCompanyEmployeeController.handle
 );
 

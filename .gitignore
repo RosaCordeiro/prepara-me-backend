@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
 /dist
+/coverage
+coverage
 src/infra/typeorm/seed/admin.ts
 .env
 ormconfig.json
@@ -29,4 +31,3 @@ sendgrid.env
 
 # Temp files
 /tmp/*
-

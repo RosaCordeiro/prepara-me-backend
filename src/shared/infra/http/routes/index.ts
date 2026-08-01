@@ -5,6 +5,8 @@ import { specialistsRoutes } from "./specialists.routes";
 import { passwordRoutes } from "./password.routes";
 import { productsRoutes } from "./products.routes";
 import { companiesRoutes } from "./companies.routes";
+import { segmentsRoutes } from "./segments.routes";
+import { subsegmentsRoutes } from "./subsegments.routes";
 import { subscriptionPlansRoutes } from "./subscriptionPlans.routes";
 import { usersRoutes } from "./users.routes";
 import { reportsRoutes } from "./reports.routes";
@@ -14,12 +16,15 @@ import { clicksRoutes } from "./clicks.routes";
 import { mentoringRoutes } from "./mentoring.routes";
 import { interviewRoutes } from "./interview.route";
 import { materialRoutes } from "./materials.routes";
+import { adminBackupRoutes } from "./adminBackups.routes";
 
 const router = Router();
 
 router.use("/specialists", specialistsRoutes);
 router.use("/products", productsRoutes);
 router.use("/companies", companiesRoutes);
+router.use("/segments", segmentsRoutes);
+router.use("/subsegments", subsegmentsRoutes);
 router.use("/subscriptionPlans", subscriptionPlansRoutes);
 router.use("/password", passwordRoutes);
 router.use("/users", usersRoutes);
@@ -30,6 +35,7 @@ router.use("/clicks", clicksRoutes);
 router.use("/mentoring", mentoringRoutes);
 router.use("/interview", interviewRoutes);
 router.use("/materials", materialRoutes);
+router.use("/admin/backups", adminBackupRoutes);
 
 router.use(authenticateRoutes);
 

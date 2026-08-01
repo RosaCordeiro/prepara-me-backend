@@ -30,6 +30,8 @@ class CompanyEmployeeMap {
         pcd,
         city,
         state,
+        linkedinUrl,
+        showLinkedinInRelocationProgram,
     }: CompanyEmployee): ICompanyEmployeeResponseDTO {
         let easyRegisterMapped = "";
 
@@ -75,9 +77,40 @@ class CompanyEmployeeMap {
             pcd,
             city,
             state,
+            linkedinUrl,
+            showLinkedinInRelocationProgram:
+                showLinkedinInRelocationProgram === null ||
+                showLinkedinInRelocationProgram === undefined
+                    ? true
+                    : showLinkedinInRelocationProgram,
         });
 
         return companyEmployee;
+    }
+
+    static toOpenToWorkDTO(companyEmployee: CompanyEmployee) {
+        const {
+            id,
+            name,
+            position,
+            department,
+            city,
+            state,
+            linkedinUrl,
+            company,
+        } = companyEmployee;
+
+        return instanceToInstance({
+            id,
+            name,
+            position,
+            department,
+            city,
+            state,
+            linkedinUrl,
+            segmentName: company?.segment?.name ?? null,
+            subsegmentName: company?.subsegment?.name ?? null,
+        });
     }
 }
 

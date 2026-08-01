@@ -47,18 +47,26 @@ class CreateCompanyEmployeeBatchUseCase {
             "PCD",
             "Cidade",
             "Estado",
+            "Página do LinkedIn",
         ];
 
         const fileRows: any[][] = await readXlsxFile(`${files[0].filepath}`);
-        if (fileRows[0].length < 11) {
+        const columnCount = fileRows[0]?.length || 0;
+
+        if (columnCount < 11) {
             return {
                 message: "Arquivo inválido",
                 success: false,
             };
         }
 
-        for (let i = 0; i < fileRows[0].length; i++) {
-            if (fileRows[0][i]?.toString().trim() !== headers[i]) {
+        const expectedHeaders =
+            columnCount >= headers.length
+                ? headers
+                : headers.slice(0, columnCount);
+
+        for (let i = 0; i < expectedHeaders.length; i++) {
+            if (fileRows[0][i]?.toString().trim() !== expectedHeaders[i]) {
                 return {
                     message: "Arquivo inválido",
                     success: false,
@@ -153,6 +161,7 @@ class CreateCompanyEmployeeBatchUseCase {
                     pcd: row[13] === "Sim" ? true : false,
                     city: row[14] || null,
                     state: row[15] || null,
+                    linkedinUrl: row[16] || null,
                 });
 
             console.log("companyEmployeeCreated", companyEmployeeCreated);
@@ -209,6 +218,7 @@ class CreateCompanyEmployeeBatchUseCase {
                     pcd: companyEmployeeCreated.pcd,
                     city: companyEmployeeCreated.city,
                     state: companyEmployeeCreated.state,
+                    linkedinUrl: companyEmployeeCreated.linkedinUrl,
                 });
 
             console.log("companyEmployeeCreated", companyEmployeeCreated);

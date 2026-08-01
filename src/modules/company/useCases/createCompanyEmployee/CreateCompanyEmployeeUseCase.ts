@@ -44,6 +44,8 @@ class CreateCompanyEmployeeUseCase {
         pcd,
         city,
         state,
+        linkedinUrl,
+        showLinkedinInRelocationProgram,
     }: ICreateCompanyEmployeeDTO): Promise<CompanyEmployee> {
         console.log({
             companyId,
@@ -68,6 +70,8 @@ class CreateCompanyEmployeeUseCase {
             pcd,
             city,
             state,
+            linkedinUrl,
+            showLinkedinInRelocationProgram,
         });
 
         if (!name) {
@@ -137,37 +141,51 @@ class CreateCompanyEmployeeUseCase {
             pcd,
             city,
             state,
+            linkedinUrl,
+            showLinkedinInRelocationProgram:
+                showLinkedinInRelocationProgram !== undefined
+                    ? showLinkedinInRelocationProgram
+                    : true,
         };
 
         if (!id) {
             cEmp.plan = planModel?.name;
 
-            const companyEmployeeEmailExists =
-                await this.companyEmployeesRepository.find({
-                    email,
-                });
+            if (email) {
+                const companyEmployeeEmailExists =
+                    await this.companyEmployeesRepository.find({
+                        email,
+                    });
+
+                if (companyEmployeeEmailExists.length > 0) {
+                    throw new AppError("Company Employee already exists");
+                }
+            }
 
             const companyEmployeeDocumentExists =
                 await this.companyEmployeesRepository.find({
                     documentId,
                 });
 
-            if (
-                companyEmployeeEmailExists.length > 0 ||
-                companyEmployeeDocumentExists.length > 0
-            ) {
+            if (companyEmployeeDocumentExists.length > 0) {
                 throw new AppError("Company Employee already exists");
             }
 
-            const userEmailExists = await this.usersRepository.find({
-                email,
-            });
+            if (email) {
+                const userEmailExists = await this.usersRepository.find({
+                    email,
+                });
+
+                if (userEmailExists.length > 0) {
+                    throw new AppError("User already exists");
+                }
+            }
 
             const userDocumentExists = await this.usersRepository.find({
                 documentId,
             });
 
-            if (userEmailExists.length > 0 || userDocumentExists.length > 0) {
+            if (userDocumentExists.length > 0) {
                 throw new AppError("User already exists");
             }
         } else {
@@ -220,6 +238,11 @@ class CreateCompanyEmployeeUseCase {
             if (pcd !== undefined) updateData.pcd = pcd;
             if (city !== undefined) updateData.city = city;
             if (state !== undefined) updateData.state = state;
+            if (linkedinUrl !== undefined) updateData.linkedinUrl = linkedinUrl;
+            if (showLinkedinInRelocationProgram !== undefined) {
+                updateData.showLinkedinInRelocationProgram =
+                    showLinkedinInRelocationProgram;
+            }
 
             const updatedEmployee = await this.companyEmployeesRepository.update({
                 id,
@@ -312,6 +335,9 @@ class CreateCompanyEmployeeUseCase {
                     pcd: companyEmployeeCreated.pcd,
                     city: companyEmployeeCreated.city,
                     state: companyEmployeeCreated.state,
+                    linkedinUrl: companyEmployeeCreated.linkedinUrl,
+                    showLinkedinInRelocationProgram:
+                        companyEmployeeCreated.showLinkedinInRelocationProgram,
                 });
 
             if (!id && plan && planModel?.subscriptionPlanProduct)

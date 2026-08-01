@@ -22,6 +22,12 @@ class SubscriptionPlanProductsRepositoryInMemory
 
         return subscriptionPlanProduct;
     }
+
+    async delete(id: string): Promise<void> {
+        this.subscriptionPlanProducts = this.subscriptionPlanProducts.filter(
+            (item) => item.id !== id
+        );
+    }
 }
 
 export { SubscriptionPlanProductsRepositoryInMemory };
