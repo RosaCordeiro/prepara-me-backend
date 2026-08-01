@@ -12,7 +12,25 @@ log() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"; }
 die() { log "ERRO: $*"; exit 1; }
 
 require_cmd() {
-  command -v "$1" >/dev/null 2>&1 || die "comando obrigatório não encontrado: $1"
+  command -v "$1" >/dev/null 2>&1 || die "comando obrigatório não encontrado: $1 (instale postgresql-client no servidor do runner)"
+}
+
+resolve_backup_root() {
+  local candidates=()
+  [[ -n "${BACKUP_ROOT:-}" ]] && candidates+=("${BACKUP_ROOT}")
+  candidates+=("/var/backups/preparame")
+  candidates+=("/var/www/preparame/backups")
+  candidates+=("${HOME}/preparame-backups")
+  candidates+=("/tmp/preparame-backups")
+
+  local dir
+  for dir in "${candidates[@]}"; do
+    if mkdir -p "${dir}" 2>/dev/null && [[ -w "${dir}" ]]; then
+      BACKUP_ROOT="${dir}"
+      return 0
+    fi
+  done
+  die "não foi possível criar diretório gravável para backup (tentou: ${candidates[*]})"
 }
 
 load_env_file() {
@@ -65,9 +83,10 @@ if [[ "$DB_HOST" == "database" || "$DB_HOST" == "host.docker.internal" ]]; then
   DB_HOST="127.0.0.1"
 fi
 
+log "Resolvendo pasta de backup..."
+resolve_backup_root
 log "Destino do backup: ${BACKUP_ROOT}"
 log "Alvo: ${DB_USER}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
-mkdir -p "${BACKUP_ROOT}"
 
 export PGPASSWORD="${DB_PASS}"
 
