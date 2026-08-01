@@ -112,3 +112,20 @@ deploy_production:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: manual
   allow_failure: false
+
+# Sem SSH: habilita ENABLE_DB_BACKUP_API no .env de prod e reinicia a API.
+# Opcional: defina CI/CD variable DB_BACKUP_API_TOKEN (masked) no projeto GitLab.
+enable_admin_backup_env:
+  stage: deploy
+  script:
+    - |
+      set -e
+      sed -i 's/\r$//' ./scripts/enable_admin_backup_env.sh
+      chmod +x ./scripts/enable_admin_backup_env.sh
+      ./scripts/enable_admin_backup_env.sh
+  tags:
+    - preparame_prod
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: manual
+  allow_failure: false
