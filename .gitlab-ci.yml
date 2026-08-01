@@ -39,6 +39,42 @@ backup_prod_db:
       when: manual
   allow_failure: false
 
+# Copia o dump mais recente do servidor para artifact do GitLab (download na UI).
+# ATENCAO: contem dados de producao — baixe, guarde offline e nao compartilhe o link.
+download_latest_prod_backup:
+  stage: backup
+  script:
+    - |
+      set -e
+      mkdir -p downloaded-backup
+      LATEST=$(ls -1t /var/backups/preparame/preparame_prod_*.sql 2>/dev/null | head -1 || true)
+      if [ -z "$LATEST" ]; then
+        LATEST=$(ls -1t /var/www/preparame/backups/preparame_prod_*.sql 2>/dev/null | head -1 || true)
+      fi
+      if [ -z "$LATEST" ]; then
+        echo "Nenhum backup encontrado em /var/backups/preparame"
+        exit 1
+      fi
+      echo "Copiando $LATEST"
+      cp -v "$LATEST" downloaded-backup/
+      cp -v "${LATEST}.sha256" downloaded-backup/ 2>/dev/null || true
+      cp -v "${LATEST}.meta" downloaded-backup/ 2>/dev/null || true
+      ls -lh downloaded-backup/
+  artifacts:
+    name: "preparame-prod-backup"
+    paths:
+      - downloaded-backup/
+    expire_in: 3 days
+    when: on_success
+  tags:
+    - preparame_prod
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH =~ /^chore\/ci-backup/'
+      when: manual
+  allow_failure: false
+
 deploy_job:
   stage: deploy
   script:
