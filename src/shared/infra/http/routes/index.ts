@@ -16,6 +16,7 @@ import { clicksRoutes } from "./clicks.routes";
 import { mentoringRoutes } from "./mentoring.routes";
 import { interviewRoutes } from "./interview.route";
 import { materialRoutes } from "./materials.routes";
+import { adminBackupRoutes } from "./adminBackups.routes";
 
 const router = Router();
 
@@ -34,6 +35,7 @@ router.use("/clicks", clicksRoutes);
 router.use("/mentoring", mentoringRoutes);
 router.use("/interview", interviewRoutes);
 router.use("/materials", materialRoutes);
+router.use("/admin/backups", adminBackupRoutes);
 
 router.use(authenticateRoutes);
 
