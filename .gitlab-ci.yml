@@ -1,4 +1,5 @@
 stages:
+    - backup
     - deploy
 
 variables:
@@ -9,6 +10,34 @@ variables:
     projectPm2Name: app-preparame-api
     projectPm2NameProd: preparame-api
     projetctFolderProd: preparame/api
+    # Diretório live da API em produção (credenciais .env / ormconfig)
+    PROD_APP_DIR: "/var/www/preparame/api"
+    BACKUP_ROOT: "/var/backups/preparame"
+
+# Backup manual do Postgres em produção.
+# Rode ESTE job e confirme o log (BACKUP OK + tamanho) ANTES do deploy_production.
+# Em master, o deploy só libera depois deste job ter sucesso (needs).
+backup_prod_db:
+    stage: backup
+    script:
+        - echo "Backup Postgres produção — Prepara.me"
+        - echo "PROD_APP_DIR=${PROD_APP_DIR}"
+        - echo "BACKUP_ROOT=${BACKUP_ROOT}"
+        - test -d "${PROD_APP_DIR}" || (echo "Pasta da API não encontrada: ${PROD_APP_DIR}" && exit 1)
+        - sed -i 's/\r$//' ./scripts/backup_prod_db.sh
+        - chmod +x ./scripts/backup_prod_db.sh
+        - ./scripts/backup_prod_db.sh
+        - echo "Listando backups recentes:"
+        - ls -lht "${BACKUP_ROOT}" | head -20
+    tags:
+        - preparame_prod
+    rules:
+        # Teste do job sem promover código de app
+        - if: $CI_COMMIT_BRANCH =~ /^chore\/ci-backup/
+          when: manual
+        - if: $CI_COMMIT_BRANCH == "master"
+          when: manual
+    allow_failure: false
 
 deploy_job:
     stage: deploy
@@ -27,8 +56,12 @@ deploy_job:
     only:
         - develop
 
+# Só sobe produção depois de backup OK no mesmo pipeline.
+# Clique: 1) backup_prod_db  →  2) deploy_production (manual).
 deploy_production:
     stage: deploy
+    needs:
+        - job: backup_prod_db
     script:
         - echo "Deploying master branch..."
         - cd /var/www/$projetctFolderProd
@@ -41,5 +74,7 @@ deploy_production:
         - echo "Finalizando deploy..."
     tags:
         - preparame_prod
-    only:
-        - master # Run on branches starting with ''
+    rules:
+        - if: $CI_COMMIT_BRANCH == "master"
+          when: manual
+    allow_failure: false
