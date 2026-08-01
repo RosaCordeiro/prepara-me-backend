@@ -36,4 +36,5 @@ class AdminBackupController {
         fs.createReadStream(absolutePath).pipe(response);
     };
 }
+
 export { AdminBackupController };

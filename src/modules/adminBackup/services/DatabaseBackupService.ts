@@ -14,6 +14,8 @@ export type BackupFileInfo = {
 const FILE_NAME_REGEX = /^preparame_prod_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.sql$/;
 const MIN_BYTES = 10 * 1024;
 const KEEP_LAST = Number(process.env.DB_BACKUP_KEEP_LAST || 10);
+const PROD_APP_DIR =
+    process.env.PROD_APP_DIR || "/var/www/preparame/api";
 
 let backupInProgress = false;
 
@@ -23,6 +25,69 @@ function assertFeatureEnabled() {
             "API de backup desabilitada. Defina ENABLE_DB_BACKUP_API=true no servidor.",
             403
         );
+    }
+}
+
+/** Garante credenciais do .env/.ormconfig do app em prod (não só do process no boot). */
+function loadServerDbEnv() {
+    const envFile = path.join(PROD_APP_DIR, ".env");
+    if (fs.existsSync(envFile)) {
+        const raw = fs.readFileSync(envFile, "utf8");
+        for (const line of raw.split(/\r?\n/)) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith("#")) continue;
+            const eq = trimmed.indexOf("=");
+            if (eq <= 0) continue;
+            const key = trimmed.slice(0, eq).trim();
+            let value = trimmed.slice(eq + 1).trim();
+            if (
+                (value.startsWith('"') && value.endsWith('"')) ||
+                (value.startsWith("'") && value.endsWith("'"))
+            ) {
+                value = value.slice(1, -1);
+            }
+            if (
+                process.env[key] === undefined ||
+                process.env[key] === "" ||
+                key.startsWith("DB_") ||
+                key === "ENABLE_DB_BACKUP_API" ||
+                key === "BACKUP_ROOT"
+            ) {
+                // Credenciais do .env do app em prod têm prioridade no backup
+                if (
+                    key.startsWith("DB_") ||
+                    key === "ENABLE_DB_BACKUP_API" ||
+                    key === "BACKUP_ROOT"
+                ) {
+                    process.env[key] = value;
+                } else if (!process.env[key]) {
+                    process.env[key] = value;
+                }
+            }
+        }
+    }
+
+    const ormFile = path.join(PROD_APP_DIR, "ormconfig.json");
+    if (fs.existsSync(ormFile)) {
+        try {
+            const orm = JSON.parse(fs.readFileSync(ormFile, "utf8")) as {
+                host?: string;
+                port?: number | string;
+                username?: string;
+                password?: string;
+                database?: string;
+            };
+            if (!process.env.DB_HOST && orm.host) process.env.DB_HOST = String(orm.host);
+            if (!process.env.DB_PORT && orm.port) process.env.DB_PORT = String(orm.port);
+            if (!process.env.DB_USER && orm.username)
+                process.env.DB_USER = String(orm.username);
+            if (!process.env.DB_PASS && orm.password !== undefined)
+                process.env.DB_PASS = String(orm.password);
+            if (!process.env.DB_NAME && orm.database)
+                process.env.DB_NAME = String(orm.database);
+        } catch {
+            // ignore invalid ormconfig
+        }
     }
 }
 
@@ -56,6 +121,7 @@ function normalizeDbHost(host: string): string {
 }
 
 function getDbConfig() {
+    loadServerDbEnv();
     return {
         host: normalizeDbHost(process.env.DB_HOST || "127.0.0.1"),
         port: String(process.env.DB_PORT || "5432"),
@@ -108,6 +174,12 @@ function pruneOldBackups(root: string) {
 async function runPgDump(outFile: string): Promise<void> {
     const db = getDbConfig();
 
+    if (!db.password) {
+        console.warn(
+            "[admin-backup] DB_PASS vazio — pg_dump pode travar na autenticação TCP"
+        );
+    }
+
     await new Promise<void>((resolve, reject) => {
         const child = spawn(
             "pg_dump",
@@ -138,7 +210,18 @@ async function runPgDump(outFile: string): Promise<void> {
             stderr += chunk.toString();
         });
 
+        const timer = setTimeout(() => {
+            child.kill("SIGTERM");
+            reject(
+                new AppError(
+                    "pg_dump excedeu 3 minutos e foi cancelado (timeout interno)",
+                    504
+                )
+            );
+        }, 3 * 60 * 1000);
+
         child.on("error", (err) => {
+            clearTimeout(timer);
             reject(
                 new AppError(
                     `Falha ao iniciar pg_dump: ${err.message}. Instale postgresql-client no servidor.`,
@@ -148,6 +231,7 @@ async function runPgDump(outFile: string): Promise<void> {
         });
 
         child.on("close", (code) => {
+            clearTimeout(timer);
             if (code === 0) {
                 resolve();
                 return;
@@ -175,6 +259,7 @@ class DatabaseBackupService {
 
     list(): BackupFileInfo[] {
         assertFeatureEnabled();
+        loadServerDbEnv();
         const root = resolveBackupRoot();
 
         return fs
@@ -198,6 +283,7 @@ class DatabaseBackupService {
             .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
     }
 
+    /** Síncrono: só responde quando o dump estiver pronto no disco. */
     async create(): Promise<BackupFileInfo> {
         assertFeatureEnabled();
 
