@@ -8,6 +8,8 @@ import { ReplacementsReportController } from "../../../../reports/ReplacementsRe
 import { ImportSurveyAnswersBatchController } from "../../../../reports/NPSSurveyAnswers/useCase/ImportSurveyAnswersBatchController";
 import { DownloadSurveyAnswersTemplateController } from "../../../../reports/NPSSurveyAnswers/useCase/DownloadSurveyAnswersTemplateController";
 import { DownloadVolunteerAnswersTemplateController } from "../../../../reports/NPSSurveyAnswers/useCase/DownloadVolunteerAnswersTemplateController";
+import { RealocationTimelineController } from "../../../../reports/RealocationTimeline/useCase/RealocationTimelineController";
+import { ExEmployeeEvaluationController } from "../../../../reports/ExEmployeeEvaluation/useCase/ExEmployeeEvaluationController";
 import { uploadFileXlsx } from "../middlewares/uploadFileXlsx";
 
 const reportsRoutes = Router();
@@ -17,6 +19,20 @@ reportsRoutes.get(
     "/npsSurveyAnswers",
     ensuredAuthenticated,
     npsSurveyAnswersController.handle
+);
+
+const realocationTimelineController = new RealocationTimelineController();
+reportsRoutes.get(
+    "/realocationTimeline",
+    ensuredAuthenticated,
+    realocationTimelineController.handle
+);
+
+const exEmployeeEvaluationController = new ExEmployeeEvaluationController();
+reportsRoutes.get(
+    "/exEmployeeEvaluation",
+    ensuredAuthenticated,
+    exEmployeeEvaluationController.handle
 );
 
 const schedulesController = new ScheduleController();
