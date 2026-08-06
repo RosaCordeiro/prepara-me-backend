@@ -20,7 +20,9 @@ class NPSSurveyAnswers {
         etnia: string[] = [],
         pcd: string[] = [],
         city: string[] = [],
-        state: string[] = []
+        state: string[] = [],
+        periodStart?: string,
+        periodEnd?: string
     ) {
 
         console.log("Company ID:", companyId);
@@ -45,7 +47,17 @@ class NPSSurveyAnswers {
             );
         }
 
-        if (period.length > 0) {
+        if (periodStart || periodEnd) {
+            const start = periodStart
+                ? `${periodStart} 00:00:00`
+                : "1900-01-01 00:00:00";
+            const end = periodEnd
+                ? `${periodEnd} 23:59:59`
+                : "2999-12-31 23:59:59";
+            NPSSurveyAnswers.andWhere(
+                `ce.entryDate BETWEEN '${start}' AND '${end}'`
+            );
+        } else if (period.length > 0) {
             NPSSurveyAnswers.andWhere(`(${period
                 .map(
                     (p) =>
