@@ -142,7 +142,7 @@ class NPSSurveyAnswersUseCase {
                 laborRisk: this.getLaborRisk(usersAll, companyId),
                 brandRisk: this.getBrandRisk(usersAll, companyId),
                 nps: this.getNps(usersAll, companyId),
-                realocateds: `Sem informações`,
+                realocateds: this.getRealocateds(usersAll, companyId),
                 termination: this.getTermination(usersAll, companyId),
                 laborIssues: this.getLaborIssuesAllUsers(usersAll, companyId),
                 welcomed: this.getWelcomed(usersAll, companyId, users),
