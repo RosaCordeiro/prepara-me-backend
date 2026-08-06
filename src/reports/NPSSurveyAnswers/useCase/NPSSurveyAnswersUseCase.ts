@@ -15,7 +15,7 @@ class NPSSurveyAnswersUseCase {
         this.surveyQuestionsRepository = surveyQuestionsRepository ?? new SurveyQuestionsRepository();
     }
 
-    async execute({ companyId, area, role, period, unity, dismissalType, gender, etnia, pcd, city, state }: { companyId: string; area: string; role: string; period: string; unity: string; dismissalType: string; gender: string; etnia: string; pcd: string; city: string; state: string }, userId: string) {
+    async execute({ companyId, area, role, period, periodStart, periodEnd, unity, dismissalType, gender, etnia, pcd, city, state }: { companyId: string; area: string; role: string; period: string; periodStart?: string; periodEnd?: string; unity: string; dismissalType: string; gender: string; etnia: string; pcd: string; city: string; state: string }, userId: string) {
         const areaArray = area ? JSON.parse(area) : [];
         const roleArray = role ? JSON.parse(role) : [];
         const periodArray = period ? JSON.parse(period) : [];
@@ -47,6 +47,11 @@ class NPSSurveyAnswersUseCase {
         let users;
         let result;
 
+        const periodRanges =
+            periodStart || periodEnd
+                ? []
+                : periodArray.map((p: string) => getFirstAndLastDayOfMonth(p));
+
         if (companyId === "TUDO") {
             users = await npsSurveyAnswers.reportAllusers();
         } else if (companyId === "B2B") {
@@ -58,14 +63,16 @@ class NPSSurveyAnswersUseCase {
                 companyId,
                 areaArray,
                 roleArray,
-                periodArray.map((p: string) => getFirstAndLastDayOfMonth(p)),
+                periodRanges,
                 unityArray,
                 dismissalTypeArray,
                 genderArray,
                 etniaArray,
                 pcdArray,
                 cityArray,
-                stateArray
+                stateArray,
+                periodStart ? String(periodStart) : undefined,
+                periodEnd ? String(periodEnd) : undefined
             );
 
             users = result
