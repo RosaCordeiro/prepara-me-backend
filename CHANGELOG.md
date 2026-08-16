@@ -8,6 +8,8 @@ Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Fixed
 
+- `GET /companies/config/:id` rejeita ids `"null"` / `"undefined"` / vazios com **400** (não mais 500 UUID no Postgres) — `GetCompanyParametersUseCase` + testes.
+- CORR: `docs/desenvolvimento/correcoes/2026-08-16-admin-import-survey-uuid-null.md` (par com platform: refresh/import Admin).
 - Update de Funcionário (`POST /companies/:id/employees` com `id`) **não** recria mais `userProductsAvailable` quando o plano não mudou — evita duplicar mentorias a cada save do CRUD RH.
 - Testes Jest cobrindo update: mesmo plano / plano alterado / sem userId / sem `plan` no body (`CreateCompanyEmployeeUseCase.spec.ts`).
 - CORR/design: `docs/desenvolvimento/correcoes/2026-08-16-employee-update-duplica-mentorias.md` (+ `-design.md`).
