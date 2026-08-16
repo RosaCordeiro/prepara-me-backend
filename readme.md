@@ -96,6 +96,18 @@ Sem novas variáveis de ambiente. Sem `@clamed/logger` / `light-node-metrics` ne
 
 Specs: [`2026-07-22-rh-segmento-subsegmento`](docs/desenvolvimento/especificacoes/2026-07-22-rh-segmento-subsegmento.md) · [`2026-07-21-rh-open-to-work-melhorias`](docs/desenvolvimento/especificacoes/2026-07-21-rh-open-to-work-melhorias.md).
 
+### Funcionário — update sem duplicar mentorias
+
+`POST /companies/:id/employees` (create e update no mesmo endpoint).
+
+No **update** (`id` no body), créditos `userProductsAvailable` (mentorias) só são concedidos de novo se o **plano mudou** (nome resolvido ≠ `employee.plan`). Salvar a ficha reenviando o mesmo `planId` **não** duplica mentorias.
+
+- Create com plano: comportamento inalterado (concede uma vez).
+- Sem novas env / migrations.
+- Sem `@clamed/logger` / `light-node-metrics` neste fix.
+
+CORR/design: [`2026-08-16-employee-update-duplica-mentorias`](docs/desenvolvimento/correcoes/2026-08-16-employee-update-duplica-mentorias.md) · [`-design`](docs/desenvolvimento/correcoes/2026-08-16-employee-update-duplica-mentorias-design.md).
+
 ### Testes (anonimato + listagem)
 
 ```bash
@@ -107,6 +119,12 @@ Suite geral da API:
 
 ```bash
 npm test
+```
+
+Testes do fix de update de Funcionário (créditos/mentoria):
+
+```bash
+npm test -- --testPathPattern=CreateCompanyEmployeeUseCase.spec --coverage=false
 ```
 
 Spec/design anonimato: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).

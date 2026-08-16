@@ -9,8 +9,10 @@ import { IGetParametersResponseDTO } from "@modules/company/dtos/IGetParametersR
 class CompanyEmployeesRepositoryInMemory
     implements ICompanyEmployeesRepository
 {
-    findById(id: string): Promise<CompanyEmployee> {
-        throw new Error("Method not implemented.");
+    async findById(id: string): Promise<CompanyEmployee> {
+        return this.companyEmployees.find(
+            (companyEmployee) => companyEmployee.id === id
+        );
     }
     getParameters(
         id: string,

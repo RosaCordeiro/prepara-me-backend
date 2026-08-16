@@ -6,6 +6,12 @@ Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Update de Funcionário (`POST /companies/:id/employees` com `id`) **não** recria mais `userProductsAvailable` quando o plano não mudou — evita duplicar mentorias a cada save do CRUD RH.
+- Testes Jest cobrindo update: mesmo plano / plano alterado / sem userId / sem `plan` no body (`CreateCompanyEmployeeUseCase.spec.ts`).
+- CORR/design: `docs/desenvolvimento/correcoes/2026-08-16-employee-update-duplica-mentorias.md` (+ `-design.md`).
+
 ### Added
 
 - Cadastro de **Segmento** e **Subsegmento** (`/segments`, `/subsegments`); FKs opcionais `segmentId`/`subsegmentId` em `companies`.
