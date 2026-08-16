@@ -216,7 +216,17 @@ class CreateCompanyEmployeeUseCase {
                 if (resolvedPlan) {
                     updateData.plan = resolvedPlan.name;
 
-                    if (existingEmployee.userId && resolvedPlan.subscriptionPlanProduct?.length > 0) {
+                    const planChanged =
+                        String(existingEmployee.plan || "").trim() !==
+                        String(resolvedPlan.name || "").trim();
+
+                    // Só concede créditos se o plano realmente mudou.
+                    // O CRUD RH reenvia planId a cada save; recriar produtos duplicava mentorias.
+                    if (
+                        planChanged &&
+                        existingEmployee.userId &&
+                        resolvedPlan.subscriptionPlanProduct?.length > 0
+                    ) {
                         for (const product of resolvedPlan.subscriptionPlanProduct) {
                             await this.userProductsAvailableRepository.create({
                                 userId: existingEmployee.userId,
