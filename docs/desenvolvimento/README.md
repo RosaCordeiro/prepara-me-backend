@@ -11,6 +11,7 @@
 
 | Item | Docs |
 |---|---|
+| Fix: import Admin UUID `"null"` + config 400 | [CORR](correcoes/2026-08-16-admin-import-survey-uuid-null.md) |
 | Fix: update Funcionário duplicava mentorias | [CORR](correcoes/2026-08-16-employee-update-duplica-mentorias.md) · [design](correcoes/2026-08-16-employee-update-duplica-mentorias-design.md) |
 | Segmento / Subsegmento + filtros OTW | [SPEC](especificacoes/2026-07-22-rh-segmento-subsegmento.md) · [design](especificacoes/2026-07-22-rh-segmento-subsegmento-design.md) |
 | Open to Work melhorias | [SPEC](especificacoes/2026-07-21-rh-open-to-work-melhorias.md) · [design](especificacoes/2026-07-21-rh-open-to-work-melhorias-design.md) |

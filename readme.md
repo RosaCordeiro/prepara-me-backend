@@ -108,6 +108,17 @@ No **update** (`id` no body), créditos `userProductsAvailable` (mentorias) só 
 
 CORR/design: [`2026-08-16-employee-update-duplica-mentorias`](docs/desenvolvimento/correcoes/2026-08-16-employee-update-duplica-mentorias.md) · [`-design`](docs/desenvolvimento/correcoes/2026-08-16-employee-update-duplica-mentorias-design.md).
 
+### Admin — parâmetros da empresa (`/companies/config/:id`)
+
+`GET /companies/config/:id` (autenticado).
+
+Ids inválidos (`null`, `"null"`, `"undefined"`, vazio) passam a retornar **400** `Invalid id` **antes** de consultar UUID no Postgres (evita 500 `invalid input syntax for type uuid: "null"`). Agregados `TUDO` / `B2B` / `B2C` inalterados.
+
+- Sem novas env / migrations.
+- Sem `@clamed/logger` / `light-node-metrics` neste fix.
+
+CORR: [`2026-08-16-admin-import-survey-uuid-null`](docs/desenvolvimento/correcoes/2026-08-16-admin-import-survey-uuid-null.md).
+
 ### Testes (anonimato + listagem)
 
 ```bash
@@ -125,6 +136,12 @@ Testes do fix de update de Funcionário (créditos/mentoria):
 
 ```bash
 npm test -- --testPathPattern=CreateCompanyEmployeeUseCase.spec --coverage=false
+```
+
+Testes do harden de `companies/config` (UUID `"null"`):
+
+```bash
+npm test -- --testPathPattern=GetCompanyParametersUseCase.spec --coverage=false
 ```
 
 Spec/design anonimato: [`docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md`](docs/desenvolvimento/especificacoes/2026-07-21-rh-anonimato-limite-amostra.md).
