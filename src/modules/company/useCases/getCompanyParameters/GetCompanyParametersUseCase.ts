@@ -12,9 +12,23 @@ class GetCompanyParametersUseCase {
         private companyEmployeesRepository: ICompanyEmployeesRepository
     ) {}
 
+    private isInvalidCompanyId(id: string): boolean {
+        if (id === undefined || id === null) {
+            return true;
+        }
+
+        const normalized = String(id).trim();
+
+        return (
+            !normalized ||
+            normalized === "null" ||
+            normalized === "undefined"
+        );
+    }
+
     async execute(id: string, period?: any, unity?: any, area?: any, dismissalType?: any) {
-        if (!id) {
-            throw new AppError("Invalid id");
+        if (this.isInvalidCompanyId(id)) {
+            throw new AppError("Invalid id", 400);
         }
 
         if (id !== "TUDO" && id !== "B2B" && id !== "B2C") {
